@@ -2,21 +2,24 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>OBI Tire Inventory</title>
+<title>OBI Premium Tire Inventory</title>
 
 <style>
+
 body{
-font-family:Arial,sans-serif;
-background:#111827;
+background:#0d0d0d;
 color:white;
+font-family:Arial,sans-serif;
 margin:0;
 padding:20px;
 }
 
 h1{
 text-align:center;
-font-size:42px;
-color:#38bdf8;
+font-size:45px;
+color:#ff2d2d;
+margin-bottom:25px;
+text-shadow:0 0 15px #ff2d2d;
 }
 
 .dashboard{
@@ -27,117 +30,132 @@ margin-bottom:20px;
 }
 
 .card{
-background:#1f2937;
+background:#181818;
+border:1px solid #ff2d2d;
+border-radius:12px;
 padding:20px;
-border-radius:15px;
 text-align:center;
 }
 
+.card h2{
+margin:0;
+color:#ff2d2d;
+}
+
 .section{
-background:#1f2937;
+background:#181818;
 padding:20px;
-border-radius:15px;
+border-radius:12px;
 margin-bottom:20px;
 }
 
-input,select,button{
-padding:10px;
-margin:5px;
-border:none;
-border-radius:8px;
-}
-
 input,select{
-background:#374151;
+padding:12px;
+margin:5px;
+border-radius:8px;
+border:1px solid #333;
+background:#111;
 color:white;
 }
 
 button{
-background:#38bdf8;
-font-weight:bold;
+background:#ff2d2d;
+color:white;
+border:none;
+padding:12px 18px;
+border-radius:8px;
 cursor:pointer;
+font-weight:bold;
 }
 
 button:hover{
-background:#0ea5e9;
+background:#cc0000;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-background:#1f2937;
+margin-top:20px;
 }
 
 th{
-background:#38bdf8;
-color:black;
+background:#ff2d2d;
 padding:12px;
 }
 
 td{
+background:#151515;
 padding:12px;
 text-align:center;
-border-top:1px solid #374151;
 }
 
-.deleteBtn{
-background:#ef4444;
-color:white;
-}
 </style>
 </head>
 
 <body>
 
-<h1>🔥 OBI TIRE INVENTORY 🔥</h1>
+<h1>🔥 OBI Premium Tire Inventory 🔥</h1>
 
 <div class="dashboard">
+
 <div class="card">
-<h2 id="total">0</h2>
+<h2 id="totalCount">0</h2>
 <p>Total Tires</p>
 </div>
 
 <div class="card">
-<h2 id="winter">0</h2>
+<h2 id="winterCount">0</h2>
 <p>Winter</p>
 </div>
 
 <div class="card">
-<h2 id="summer">0</h2>
+<h2 id="summerCount">0</h2>
 <p>Summer</p>
 </div>
 
 <div class="card">
-<h2 id="allweather">0</h2>
+<h2 id="allSeasonCount">0</h2>
+<p>All Season</p>
+</div>
+
+<div class="card">
+<h2 id="allWeatherCount">0</h2>
 <p>All Weather</p>
 </div>
+
 </div>
 
 <div class="section">
-<h2>🔍 Search Tire</h2>
-
-<input id="searchBox" placeholder="Enter Tire Number">
-<button onclick="searchTire()">Search</button>
-
-<p id="result"></p>
-</div>
-
-<div class="section">
-<h2>➕ Add Tire</h2>
 
 <input id="number" placeholder="Tire Number">
 <input id="brand" placeholder="Brand">
 <input id="size" placeholder="Size">
-<input id="qty" placeholder="Quantity">
+<input id="qty" type="number" placeholder="Quantity">
 
 <select id="type">
 <option>Winter</option>
 <option>Summer</option>
-<option>All Weather</option>
 <option>All Season</option>
+<option>All Weather</option>
+</select>
+
+<select id="condition">
+<option>New</option>
+<option>Used</option>
+<option>Like New</option>
 </select>
 
 <button onclick="addTire()">Add Tire</button>
+
+</div>
+
+<div class="section">
+
+<input id="search" placeholder="Search Tire Number">
+<button onclick="searchTire()">Search</button>
+
+<p id="result"></p>
+
 </div>
 
 <table>
@@ -148,39 +166,54 @@ color:white;
 <th>Size</th>
 <th>Qty</th>
 <th>Type</th>
+<th>Condition</th>
 <th>Delete</th>
 </tr>
 </thead>
 
-<tbody id="inventory"></tbody>
+<tbody id="inventory">
+</tbody>
 </table>
-
 <script>
 
-let tires = JSON.parse(localStorage.getItem("tires")) || [];
+let tires = JSON.parse(localStorage.getItem("obiTires")) || [];
 
-function saveData(){
-localStorage.setItem("tires",JSON.stringify(tires));
+function saveTires(){
+localStorage.setItem("obiTires", JSON.stringify(tires));
 }
 
 function updateDashboard(){
 
-document.getElementById("total").innerText=tires.length;
+let winter = 0;
+let summer = 0;
+let allSeason = 0;
+let allWeather = 0;
+let total = 0;
 
-document.getElementById("winter").innerText=
-tires.filter(t=>t.type==="Winter").length;
+tires.forEach(tire => {
 
-document.getElementById("summer").innerText=
-tires.filter(t=>t.type==="Summer").length;
+let qty = Number(tire.qty) || 0;
 
-document.getElementById("allweather").innerText=
-tires.filter(t=>t.type==="All Weather").length;
+total += qty;
+
+if(tire.type === "Winter") winter += qty;
+if(tire.type === "Summer") summer += qty;
+if(tire.type === "All Season") allSeason += qty;
+if(tire.type === "All Weather") allWeather += qty;
+
+});
+
+document.getElementById("totalCount").innerText = total;
+document.getElementById("winterCount").innerText = winter;
+document.getElementById("summerCount").innerText = summer;
+document.getElementById("allSeasonCount").innerText = allSeason;
+document.getElementById("allWeatherCount").innerText = allWeather;
 
 }
 
 function renderTable(){
 
-let html="";
+let html = "";
 
 tires.forEach((tire,index)=>{
 
@@ -191,9 +224,9 @@ html += `
 <td>${tire.size}</td>
 <td>${tire.qty}</td>
 <td>${tire.type}</td>
+<td>${tire.condition}</td>
 <td>
-<button class="deleteBtn"
-onclick="deleteTire(${index})">
+<button onclick="deleteTire(${index})">
 Delete
 </button>
 </td>
@@ -202,7 +235,7 @@ Delete
 
 });
 
-document.getElementById("inventory").innerHTML=html;
+document.getElementById("inventory").innerHTML = html;
 
 updateDashboard();
 
@@ -210,47 +243,52 @@ updateDashboard();
 
 function addTire(){
 
-tires.push({
-number:number.value,
-brand:brand.value,
-size:size.value,
-qty:qty.value,
-type:type.value
-});
+const tire = {
+number: document.getElementById("number").value,
+brand: document.getElementById("brand").value,
+size: document.getElementById("size").value,
+qty: document.getElementById("qty").value,
+type: document.getElementById("type").value,
+condition: document.getElementById("condition").value
+};
 
-saveData();
+tires.push(tire);
+
+saveTires();
 renderTable();
 
-number.value="";
-brand.value="";
-size.value="";
-qty.value="";
+document.getElementById("number").value = "";
+document.getElementById("brand").value = "";
+document.getElementById("size").value = "";
+document.getElementById("qty").value = "";
+
 }
 
 function deleteTire(index){
 
 tires.splice(index,1);
 
-saveData();
+saveTires();
 renderTable();
 
 }
 
 function searchTire(){
 
-let tire =
-tires.find(
-t=>t.number===searchBox.value
-);
+const searchValue =
+document.getElementById("search").value;
+
+const tire =
+tires.find(t => t.number === searchValue);
 
 if(tire){
 
-result.innerHTML=
-`✅ ${tire.brand} | ${tire.size} | Qty ${tire.qty} | ${tire.type}`;
+document.getElementById("result").innerHTML =
+`✅ ${tire.brand} | ${tire.size} | Qty ${tire.qty} | ${tire.type} | ${tire.condition}`;
 
 }else{
 
-result.innerHTML=
+document.getElementById("result").innerHTML =
 "❌ Tire Not Found";
 
 }
