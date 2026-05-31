@@ -4,304 +4,148 @@
 <title>OBI Tire Inventory</title>
 
 <style>
-
 body{
-background:#0d0d0d;
-font-family:Arial,sans-serif;
-color:white;
-margin:0;
-padding:20px;
+    font-family:Arial,sans-serif;
+    background:#0f172a;
+    color:white;
+    margin:0;
+    padding:30px;
 }
 
-.header{
-text-align:center;
-padding:30px;
-background:linear-gradient(90deg,#ff0000,#990000);
-border-radius:20px;
-margin-bottom:20px;
-box-shadow:0 0 25px red;
+.container{
+    max-width:1200px;
+    margin:auto;
 }
 
-.header h1{
-font-size:48px;
-margin:0;
-}
-
-.stats{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:15px;
-margin-bottom:20px;
+h1{
+    text-align:center;
+    font-size:48px;
+    color:#38bdf8;
+    text-shadow:0 0 20px #38bdf8;
 }
 
 .card{
-background:#1a1a1a;
-padding:20px;
-border-radius:15px;
-text-align:center;
-box-shadow:0 0 10px rgba(255,0,0,.5);
-}
-
-.card h2{
-margin:0;
-color:#ff4d4d;
-}
-
-.section{
-background:#1a1a1a;
-padding:20px;
-border-radius:15px;
-margin-bottom:20px;
+    background:#1e293b;
+    padding:20px;
+    border-radius:20px;
+    margin-bottom:20px;
+    box-shadow:0 0 20px rgba(0,0,0,0.5);
 }
 
 input,select{
-width:100%;
-padding:12px;
-margin-top:10px;
-margin-bottom:10px;
-border:none;
-border-radius:10px;
-background:#2b2b2b;
-color:white;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    margin:5px;
+    background:#334155;
+    color:white;
 }
 
 button{
-padding:12px 20px;
-border:none;
-border-radius:10px;
-background:#ff0000;
-color:white;
-font-weight:bold;
-cursor:pointer;
+    padding:12px 20px;
+    border:none;
+    border-radius:10px;
+    background:#38bdf8;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
 }
 
 button:hover{
-background:#cc0000;
+    background:#0ea5e9;
 }
 
 table{
-width:100%;
-border-collapse:collapse;
-background:#1a1a1a;
-border-radius:15px;
-overflow:hidden;
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
 }
 
 th{
-background:#ff0000;
-padding:15px;
+    background:#38bdf8;
+    color:black;
+    padding:12px;
 }
 
 td{
-padding:12px;
-text-align:center;
-border-top:1px solid #333;
+    background:#1e293b;
+    padding:12px;
+    text-align:center;
 }
 
-.deleteBtn{
-background:#990000;
+tr:hover td{
+    background:#334155;
 }
-
 </style>
 </head>
 
 <body>
 
-<div class="header">
-<h1>🛞 HAKIMI TIRE INVENTORY</h1>
-<p>Professional Tire Management System</p>
-</div>
+<div class="container">
 
-<div class="stats">
-<div class="card">
-<h2 id="total">0</h2>
-<p>Total Tires</p>
-</div>
+<h1>🔥 OBI Tire Inventory 🔥</h1>
 
 <div class="card">
-<h2 id="winter">0</h2>
-<p>Winter</p>
-</div>
-
-<div class="card">
-<h2 id="summer">0</h2>
-<p>Summer</p>
-</div>
-
-<div class="card">
-<h2 id="weather">0</h2>
-<p>All Weather</p>
-</div>
-</div>
-
-<div class="section">
-<h2>🔍 Search Tire</h2>
-
-<input id="searchBox" placeholder="Enter Tire Number">
-
-<button onclick="searchTire()">Search</button>
-
-<p id="result"></p>
-</div>
-
-<div class="section">
-
-<h2>➕ Add Tire</h2>
+<h2>Add Tire</h2>
 
 <input id="number" placeholder="Tire Number">
-
 <input id="brand" placeholder="Brand">
-
 <input id="size" placeholder="Size">
 
-<input id="qty" placeholder="Quantity">
-
 <select id="type">
+<option>All Weather</option>
 <option>Winter</option>
 <option>Summer</option>
-<option>All Weather</option>
-<option>All Season</option>
 </select>
 
-<button onclick="addTire()">Add Tire</button>
+<input id="qty" type="number" placeholder="Quantity">
 
+<button onclick="addTire()">Add Tire</button>
 </div>
 
-<table>
+<div class="card">
+<h2>Inventory</h2>
 
+<table>
 <thead>
 <tr>
-<th>Number</th>
+<th>Tire Number</th>
 <th>Brand</th>
 <th>Size</th>
-<th>Qty</th>
 <th>Type</th>
-<th>Delete</th>
+<th>Quantity</th>
 </tr>
 </thead>
 
-<tbody id="inventory"></tbody>
+<tbody id="inventory">
+</tbody>
 
 </table>
+</div>
+
+</div>
 
 <script>
+function addTire(){
 
-let tires =
-JSON.parse(localStorage.getItem("tires")) || [];
+let number=document.getElementById("number").value;
+let brand=document.getElementById("brand").value;
+let size=document.getElementById("size").value;
+let type=document.getElementById("type").value;
+let qty=document.getElementById("qty").value;
 
-function saveData(){
-localStorage.setItem(
-"tires",
-JSON.stringify(tires)
-);
-}
-
-function updateStats(){
-
-document.getElementById("total").innerText =
-tires.length;
-
-document.getElementById("winter").innerText =
-tires.filter(t=>t.type==="Winter").length;
-
-document.getElementById("summer").innerText =
-tires.filter(t=>t.type==="Summer").length;
-
-document.getElementById("weather").innerText =
-tires.filter(t=>t.type==="All Weather").length;
-
-}
-
-function renderTable(){
-
-let html="";
-
-tires.forEach((tire,index)=>{
-
-html += `
+let row=`
 <tr>
-<td>${tire.number}</td>
-<td>${tire.brand}</td>
-<td>${tire.size}</td>
-<td>${tire.qty}</td>
-<td>${tire.type}</td>
-<td>
-<button class="deleteBtn"
-onclick="deleteTire(${index})">
-Delete
-</button>
-</td>
+<td>${number}</td>
+<td>${brand}</td>
+<td>${size}</td>
+<td>${type}</td>
+<td>${qty}</td>
 </tr>
 `;
 
-});
-
-document.getElementById("inventory").innerHTML =
-html;
-
-updateStats();
-
+document.getElementById("inventory").innerHTML += row;
 }
-
-function addTire(){
-
-tires.push({
-number:number.value,
-brand:brand.value,
-size:size.value,
-qty:qty.value,
-type:type.value
-});
-
-saveData();
-renderTable();
-
-number.value="";
-brand.value="";
-size.value="";
-qty.value="";
-
-}
-
-function deleteTire(index){
-
-tires.splice(index,1);
-
-saveData();
-renderTable();
-
-}
-
-function searchTire(){
-
-let tire =
-tires.find(
-t=>t.number===searchBox.value
-);
-
-if(tire){
-
-result.innerHTML =
-"✅ Found: " +
-tire.brand +
-" | " +
-tire.size +
-" | Qty: " +
-tire.qty +
-" | " +
-tire.type;
-
-}else{
-
-result.innerHTML =
-"❌ Tire Not Found";
-
-}
-
-}
-
-renderTable();
-
 </script>
 
 </body>
