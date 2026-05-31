@@ -2,80 +2,158 @@
 <html>
 <head>
 <title>Hakimi Tire Inventory</title>
+
 <style>
+
 body{
-font-family:Arial;
-background:#111;
+background:#0d0d0d;
+font-family:Arial,sans-serif;
 color:white;
-max-width:1000px;
-margin:auto;
+margin:0;
 padding:20px;
 }
 
-h1{
+.header{
 text-align:center;
-font-size:40px;
+padding:30px;
+background:linear-gradient(90deg,#ff0000,#990000);
+border-radius:20px;
+margin-bottom:20px;
+box-shadow:0 0 25px red;
+}
+
+.header h1{
+font-size:48px;
+margin:0;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+margin-bottom:20px;
 }
 
 .card{
-background:#222;
+background:#1a1a1a;
+padding:20px;
+border-radius:15px;
+text-align:center;
+box-shadow:0 0 10px rgba(255,0,0,.5);
+}
+
+.card h2{
+margin:0;
+color:#ff4d4d;
+}
+
+.section{
+background:#1a1a1a;
 padding:20px;
 border-radius:15px;
 margin-bottom:20px;
 }
 
-input,select,button{
-padding:10px;
-margin:5px;
-border-radius:8px;
+input,select{
+width:100%;
+padding:12px;
+margin-top:10px;
+margin-bottom:10px;
 border:none;
+border-radius:10px;
+background:#2b2b2b;
+color:white;
 }
 
 button{
+padding:12px 20px;
+border:none;
+border-radius:10px;
+background:#ff0000;
+color:white;
+font-weight:bold;
 cursor:pointer;
+}
+
+button:hover{
+background:#cc0000;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-background:#222;
+background:#1a1a1a;
 border-radius:15px;
 overflow:hidden;
 }
 
 th{
-background:#333;
-padding:12px;
+background:#ff0000;
+padding:15px;
 }
 
 td{
 padding:12px;
-border-top:1px solid #444;
+text-align:center;
+border-top:1px solid #333;
 }
 
-.delete{
-background:red;
-color:white;
+.deleteBtn{
+background:#990000;
 }
+
 </style>
 </head>
+
 <body>
 
-<h1>🛞 Hakimi Tire Inventory</h1>
+<div class="header">
+<h1>🛞 HAKIMI TIRE INVENTORY</h1>
+<p>Professional Tire Management System</p>
+</div>
 
+<div class="stats">
 <div class="card">
-<h2>Search Tire</h2>
-<input id="searchBox" placeholder="Tire Number">
-<button onclick="searchTire()">Search</button>
-<p id="result"></p>
+<h2 id="total">0</h2>
+<p>Total Tires</p>
 </div>
 
 <div class="card">
-<h2>Add Tire</h2>
+<h2 id="winter">0</h2>
+<p>Winter</p>
+</div>
+
+<div class="card">
+<h2 id="summer">0</h2>
+<p>Summer</p>
+</div>
+
+<div class="card">
+<h2 id="weather">0</h2>
+<p>All Weather</p>
+</div>
+</div>
+
+<div class="section">
+<h2>🔍 Search Tire</h2>
+
+<input id="searchBox" placeholder="Enter Tire Number">
+
+<button onclick="searchTire()">Search</button>
+
+<p id="result"></p>
+</div>
+
+<div class="section">
+
+<h2>➕ Add Tire</h2>
 
 <input id="number" placeholder="Tire Number">
+
 <input id="brand" placeholder="Brand">
+
 <input id="size" placeholder="Size">
+
 <input id="qty" placeholder="Quantity">
 
 <select id="type">
@@ -86,9 +164,11 @@ color:white;
 </select>
 
 <button onclick="addTire()">Add Tire</button>
+
 </div>
 
 <table>
+
 <thead>
 <tr>
 <th>Number</th>
@@ -116,13 +196,29 @@ JSON.stringify(tires)
 );
 }
 
+function updateStats(){
+
+document.getElementById("total").innerText =
+tires.length;
+
+document.getElementById("winter").innerText =
+tires.filter(t=>t.type==="Winter").length;
+
+document.getElementById("summer").innerText =
+tires.filter(t=>t.type==="Summer").length;
+
+document.getElementById("weather").innerText =
+tires.filter(t=>t.type==="All Weather").length;
+
+}
+
 function renderTable(){
 
 let html="";
 
 tires.forEach((tire,index)=>{
 
-html+=`
+html += `
 <tr>
 <td>${tire.number}</td>
 <td>${tire.brand}</td>
@@ -130,9 +226,9 @@ html+=`
 <td>${tire.qty}</td>
 <td>${tire.type}</td>
 <td>
-<button class="delete"
+<button class="deleteBtn"
 onclick="deleteTire(${index})">
-X
+Delete
 </button>
 </td>
 </tr>
@@ -140,9 +236,10 @@ X
 
 });
 
-document.getElementById(
-"inventory"
-).innerHTML=html;
+document.getElementById("inventory").innerHTML =
+html;
+
+updateStats();
 
 }
 
@@ -159,6 +256,11 @@ type:type.value
 saveData();
 renderTable();
 
+number.value="";
+brand.value="";
+size.value="";
+qty.value="";
+
 }
 
 function deleteTire(index){
@@ -172,17 +274,29 @@ renderTable();
 
 function searchTire(){
 
-let tire=
+let tire =
 tires.find(
 t=>t.number===searchBox.value
 );
 
-result.innerHTML=
-tire
-?
-`✅ ${tire.brand} | ${tire.size} | Qty ${tire.qty} | ${tire.type}`
-:
+if(tire){
+
+result.innerHTML =
+"✅ Found: " +
+tire.brand +
+" | " +
+tire.size +
+" | Qty: " +
+tire.qty +
+" | " +
+tire.type;
+
+}else{
+
+result.innerHTML =
 "❌ Tire Not Found";
+
+}
 
 }
 
