@@ -1,8 +1,127 @@
-<!DOCTYPE html> <html>
-<head> <title>Tire Inventory</title>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tire Inventory</title>
+<style>
+body{
+font-family:Arial,sans-serif;
+max-width:900px;
+margin:auto;
+padding:20px;
+background:#f4f4f4;
+}
+h1{
+text-align:center;
+}
+input,button{
+padding:10px;
+margin:5px;
+}
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+margin-top:20px;
+}
+th,td{
+border:1px solid #ddd;
+padding:10px;
+text-align:left;
+}
+th{
+background:#222;
+color:white;
+}
+</style>
 </head>
 <body>
-<h1>My Tire Inventory</h1>
-<p>Website is working! 🚗</p>
+
+<h1>🛞 Tire Inventory</h1>
+
+<h2>Search Tire</h2>
+<input id="searchBox" placeholder="Enter Tire Number">
+<button onclick="searchTire()">Search</button>
+
+<p id="result"></p>
+
+<h2>Add Tire</h2>
+
+<input id="number" placeholder="Tire Number">
+<input id="brand" placeholder="Brand">
+<input id="size" placeholder="Size">
+<input id="qty" placeholder="Quantity">
+
+<button onclick="addTire()">Add Tire</button>
+
+<table>
+<thead>
+<tr>
+<th>Tire Number</th>
+<th>Brand</th>
+<th>Size</th>
+<th>Quantity</th>
+</tr>
+</thead>
+<tbody id="inventory"></tbody>
+</table>
+
+<script>
+let tires = [
+{
+number:"2256517",
+brand:"Michelin",
+size:"225/65R17",
+qty:"8"
+},
+{
+number:"2055516",
+brand:"Bridgestone",
+size:"205/55R16",
+qty:"4"
+}
+];
+
+function renderTable(){
+let html = "";
+
+tires.forEach(tire=>{
+html += `
+<tr>
+<td>${tire.number}</td>
+<td>${tire.brand}</td>
+<td>${tire.size}</td>
+<td>${tire.qty}</td>
+</tr>
+`;
+});
+
+document.getElementById("inventory").innerHTML = html;
+}
+
+function addTire(){
+tires.push({
+number:document.getElementById("number").value,
+brand:document.getElementById("brand").value,
+size:document.getElementById("size").value,
+qty:document.getElementById("qty").value
+});
+
+renderTable();
+}
+
+function searchTire(){
+let tire = tires.find(
+t=>t.number===document.getElementById("searchBox").value
+);
+
+document.getElementById("result").innerHTML =
+tire
+? `✅ Found: ${tire.brand} | ${tire.size} | Qty: ${tire.qty}`
+: "❌ Tire Not Found";
+}
+
+renderTable();
+</script>
+
 </body>
 </html>
