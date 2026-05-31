@@ -1,49 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Tire Inventory</title>
+<title>Hakimi Tire Inventory</title>
 <style>
 body{
-font-family:Arial,sans-serif;
-max-width:900px;
+font-family:Arial;
+background:#111;
+color:white;
+max-width:1000px;
 margin:auto;
 padding:20px;
-background:#f4f4f4;
 }
+
 h1{
 text-align:center;
+font-size:40px;
 }
-input,button{
+
+.card{
+background:#222;
+padding:20px;
+border-radius:15px;
+margin-bottom:20px;
+}
+
+input,select,button{
 padding:10px;
 margin:5px;
+border-radius:8px;
+border:none;
 }
+
+button{
+cursor:pointer;
+}
+
 table{
 width:100%;
 border-collapse:collapse;
-background:white;
-margin-top:20px;
-}
-th,td{
-border:1px solid #ddd;
-padding:10px;
-text-align:left;
-}
-th{
 background:#222;
+border-radius:15px;
+overflow:hidden;
+}
+
+th{
+background:#333;
+padding:12px;
+}
+
+td{
+padding:12px;
+border-top:1px solid #444;
+}
+
+.delete{
+background:red;
 color:white;
 }
 </style>
 </head>
 <body>
 
-<h1>🛞 Tire Inventory</h1>
+<h1>🛞 Hakimi Tire Inventory</h1>
 
+<div class="card">
 <h2>Search Tire</h2>
-<input id="searchBox" placeholder="Enter Tire Number">
+<input id="searchBox" placeholder="Tire Number">
 <button onclick="searchTire()">Search</button>
-
 <p id="result"></p>
+</div>
 
+<div class="card">
 <h2>Add Tire</h2>
 
 <input id="number" placeholder="Tire Number">
@@ -51,76 +78,116 @@ color:white;
 <input id="size" placeholder="Size">
 <input id="qty" placeholder="Quantity">
 
+<select id="type">
+<option>Winter</option>
+<option>Summer</option>
+<option>All Weather</option>
+<option>All Season</option>
+</select>
+
 <button onclick="addTire()">Add Tire</button>
+</div>
 
 <table>
 <thead>
 <tr>
-<th>Tire Number</th>
+<th>Number</th>
 <th>Brand</th>
 <th>Size</th>
-<th>Quantity</th>
+<th>Qty</th>
+<th>Type</th>
+<th>Delete</th>
 </tr>
 </thead>
+
 <tbody id="inventory"></tbody>
+
 </table>
 
 <script>
-let tires = [
-{
-number:"2256517",
-brand:"Michelin",
-size:"225/65R17",
-qty:"8"
-},
-{
-number:"2055516",
-brand:"Bridgestone",
-size:"205/55R16",
-qty:"4"
+
+let tires =
+JSON.parse(localStorage.getItem("tires")) || [];
+
+function saveData(){
+localStorage.setItem(
+"tires",
+JSON.stringify(tires)
+);
 }
-];
 
 function renderTable(){
-let html = "";
 
-tires.forEach(tire=>{
-html += `
+let html="";
+
+tires.forEach((tire,index)=>{
+
+html+=`
 <tr>
 <td>${tire.number}</td>
 <td>${tire.brand}</td>
 <td>${tire.size}</td>
 <td>${tire.qty}</td>
+<td>${tire.type}</td>
+<td>
+<button class="delete"
+onclick="deleteTire(${index})">
+X
+</button>
+</td>
 </tr>
 `;
+
 });
 
-document.getElementById("inventory").innerHTML = html;
+document.getElementById(
+"inventory"
+).innerHTML=html;
+
 }
 
 function addTire(){
+
 tires.push({
-number:document.getElementById("number").value,
-brand:document.getElementById("brand").value,
-size:document.getElementById("size").value,
-qty:document.getElementById("qty").value
+number:number.value,
+brand:brand.value,
+size:size.value,
+qty:qty.value,
+type:type.value
 });
 
+saveData();
 renderTable();
+
+}
+
+function deleteTire(index){
+
+tires.splice(index,1);
+
+saveData();
+renderTable();
+
 }
 
 function searchTire(){
-let tire = tires.find(
-t=>t.number===document.getElementById("searchBox").value
+
+let tire=
+tires.find(
+t=>t.number===searchBox.value
 );
 
-document.getElementById("result").innerHTML =
+result.innerHTML=
 tire
-? `✅ Found: ${tire.brand} | ${tire.size} | Qty: ${tire.qty}`
-: "❌ Tire Not Found";
+?
+`✅ ${tire.brand} | ${tire.size} | Qty ${tire.qty} | ${tire.type}`
+:
+"❌ Tire Not Found";
+
 }
 
 renderTable();
+
 </script>
 
 </body>
