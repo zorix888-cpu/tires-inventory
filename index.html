@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OBI Inventory System</title>
 <style>
-/* ---- Begin CSS ---- */
-
 /* General Styles */
 * {
   box-sizing: border-box;
@@ -14,250 +12,285 @@
   padding: 0;
 }
 body {
-  background: #000;
-  color: white;
-  font-family: 'Courier New', monospace;
-  min-height: 100vh;
-}
-input, button, select, textarea {
-  font-family: 'Courier New', monospace;
+  font-family: "Arial", sans-serif;
+  background-color: #121212;
+  color: #ffffff;
 }
 .hidden {
   display: none !important;
 }
-
-/* Login Page */
-#login-page {
+/* Forms & Modals */
+.form-container {
+  padding: 20px;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgb(0 0 0 / 50%);
+  width: 100%;
+  max-width: 400px;
+}
+form {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+}
+input, select, button {
+  padding: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+}
+button {
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.3s;
+}
+button:hover {
+  background-color: #0056b3;
+}
+/* Main Layout */
+#app {
+  display: flex;
   min-height: 100vh;
 }
-.login-box {
-  padding: 20px;
-  background-color: #0a0a0a;
-  border: 1px solid #333;
-  max-width: 400px;
-  width: 100%;
-}
-.error-box {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.12);
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ef4444;
-}
-
-/* Sidebar and Navigation */
-nav {
-  background: #080808;
-  border-right: 1px solid #1a1a1a;
-  padding: 16px;
-  height: 100vh;
+aside {
   width: 240px;
-  position: fixed;
-  top: 0;
-  left: 0;
-}
-
-/* Dashboard and Inventory */
-#app {
-  margin-left: 240px;
+  background-color: #181818;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
-.page-title {
-  font-weight: bold;
-  letter-spacing: -1px;
-  font-size: 20px;
+aside h2 {
+  color: #6bcacb;
+  text-align: center;
+  margin-bottom: 2rem;
 }
-.page-actions {
-  margin-bottom: 20px;
-}
-.btn {
+nav button {
   padding: 10px 16px;
-  margin-right: 5px;
-  font-weight: bold;
+  color: white;
+  text-align: left;
+  background: #121212;
   border: none;
   cursor: pointer;
 }
-.btn-primary {
-  background: #ef4444;
-  color: #fff;
+nav button:hover {
+  background: #333333;
 }
-
-/* Signup Modal */
+main {
+  padding: 20px;
+  flex: 1;
+}
+main h1 {
+  margin-bottom: 2rem;
+}
+/* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 2000;
+  align-items: center;
+  z-index: 1000;
 }
 .modal {
-  background: #0a0a0a;
-  border: 1px solid #333;
   padding: 20px;
   max-width: 500px;
   width: 100%;
+  background: #1e1e1e;
+  border-radius: 4px;
 }
-.modal-header,
-.modal-body {
-  margin-bottom: 16px;
+/* Tables and Dashboard Metrics */
+section h3 {
+  margin-bottom: 1rem;
 }
-.modal-body input {
+table {
   width: 100%;
-  padding: 10px;
-  background: #000;
-  border: 1px solid #333;
-  color: white;
+  border-collapse: collapse;
 }
-
-/* ---- End CSS ---- */
+table th, table td {
+  padding: 12px;
+  border-bottom: 1px solid #333;
+}
+/* Dashboard Stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.stat-card {
+  padding: 20px;
+  background-color: #232323;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
+}
 </style>
 </head>
 <body>
-<div id="login-page">
-  <div class="login-box">
-    <h1>OBI Inventory</h1>
-    <p>Login to continue.</p>
-    <div id="login-error" class="error-box hidden"></div>
-    <div>
-      <label>Username:</label>
-      <input id="login-username" type="text">
+<!-- LOGIN PAGE -->
+<div id="login-page" class="hidden">
+  <div class="form-container">
+    <h1>Login</h1>
+    <div id="login-error" style="color: #f00; display:none;">Invalid credentials!</div>
+    <form onsubmit="return handleLogin(event)">
+      <input type="text" id="login-username" placeholder="Username" required />
+      <input type="password" id="login-password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <div style="text-align:center; margin-top: 1rem;">
+      <button onclick="showSignup()">Don't have an account? Sign Up</button>
     </div>
-    <div>
-      <label>Password:</label>
-      <input id="login-password" type="password">
-    </div>
-    <button class="btn btn-primary" onclick="doLogin()">Login</button>
   </div>
 </div>
 
+<!-- SIGN-UP PAGE -->
+<div id="signup-page" class="hidden">
+  <div class="form-container">
+    <h1>Create Account</h1>
+    <div id="signup-error" style="color: #f00; display:none;">Error during signup!</div>
+    <form onsubmit="return handleSignup(event)">
+      <input type="text" id="signup-username" placeholder="Choose a username" required />
+      <input type="password" id="signup-password" placeholder="Choose a password" required />
+      <select id="signup-role">
+        <option value="Owner">Owner</option>
+        <option value="Manager">Manager</option>
+        <option value="Worker">Worker</option>
+      </select>
+      <button type="submit">Sign Up</button>
+    </form>
+    <div style="text-align:center; margin-top: 1rem;">
+      <button onclick="goToLogin()">Already have an account? Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
 <div id="app" class="hidden">
-  <nav>
+  <aside>
     <h2>OBI System</h2>
-    <button class="btn btn-primary" onclick="navigate('dashboard')">Dashboard</button>
-    <button class="btn btn-primary" onclick="navigate('inventory')">Inventory</button>
-    <button id="signup-btn" class="btn btn-primary hidden" onclick="openSignupModal()">Add Admin</button>
-    <button class="btn" onclick="logout()">Logout</button>
-  </nav>
+    <nav>
+      <button onclick="navigate('dashboard')">Dashboard</button>
+      <button onclick="navigate('inventory')">Inventory</button>
+      <button onclick="logout()">Logout</button>
+    </nav>
+  </aside>
   <main>
-    <section id="page-dashboard" class="hidden">
-      <div class="page-title">Dashboard Overview</div>
+    <section id="dashboard" class="hidden">
+      <h1>Dashboard</h1>
+      <div class="stats">
+        <div class="stat-card">
+          <h3>Total Stock</h3>
+          <p id="total-stock">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Revenue</h3>
+          <p>$0.00</p>
+        </div>
+        <div class="stat-card">
+          <h3>Low Stock Alerts</h3>
+          <p id="low-stock-items">0</p>
+        </div>
+      </div>
     </section>
-    <section id="page-inventory" class="hidden">
-      <div class="page-title">Inventory Management</div>
+    
+    <section id="inventory" class="hidden">
+      <h1>Inventory</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody id="inventory-list"></tbody>
+      </table>
     </section>
   </main>
 </div>
 
-<div id="signup-modal" class="modal-overlay hidden">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Create New Admin</h3>
-      <button onclick="closeSignupModal()">Close</button>
-    </div>
-    <div class="modal-body">
-      <label>Username</label>
-      <input type="text" id="signup-username">
-      <label>Password</label>
-      <input type="password" id="signup-password">
-      <label>Role</label>
-      <select id="signup-role">
-        <option value="Manager">Manager</option>
-        <option value="Worker">Worker</option>
-      </select>
-      <button class="btn btn-primary" onclick="registerAdmin()">Create Admin</button>
-    </div>
-  </div>
-</div>
-
 <script>
-/* Begin JavaScript */
+// DATABASE SIMULATION
 const DB = {
-  users: [
-    { username: 'owner', password: 'obi123', role: 'Owner' }
-  ],
+  users: [{ username: "owner", password: "obi123", role: "Owner" }],
+  session: null,
+  inventory: [{ item: "Tire A", quantity: 10, price: 50 }],
 };
 
-/* Login Function */
-function doLogin() {
-  const username = document.getElementById('login-username').value.trim();
-  const password = document.getElementById('login-password').value.trim();
-  const errorBox = document.getElementById('login-error');
+// AUTHENTICATION
+function handleLogin(event) {
+  event.preventDefault();
+  const username = document.getElementById("login-username").value;
+  const password = document.getElementById("login-password").value;
 
-  const user = DB.users.find(user => user.username === username && user.password === password);
+  const user = DB.users.find(
+    (u) => u.username === username && u.password === password
+  );
 
   if (!user) {
-    errorBox.textContent = 'Invalid Username or Password.';
-    errorBox.classList.remove('hidden');
-    return;
-  }
-
-  sessionStorage.setItem('currentUser', JSON.stringify(user));
-  bootApp(user);
-}
-
-/* Boot the Application */
-function bootApp(user) {
-  document.getElementById('login-page').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
-
-  if (user.role === 'Owner') {
-    document.getElementById('signup-btn').classList.remove('hidden');
+    document.getElementById("login-error").style.display = "block";
+  } else {
+    DB.session = user;
+    launchApp();
   }
 }
 
-/* Create a New Admin */
-function registerAdmin() {
-  const username = document.getElementById('signup-username').value.trim();
-  const password = document.getElementById('signup-password').value.trim();
-  const role = document.getElementById('signup-role').value;
+function handleSignup(event) {
+  event.preventDefault();
+  const username = document.getElementById("signup-username").value;
+  const password = document.getElementById("signup-password").value;
+  const role = document.getElementById("signup-role").value;
 
-  if (!username || !password) {
-    alert('All fields are required!');
-    return;
-  }
-
-  const userAlreadyExists = DB.users.some(user => user.username === username);
-
-  if (userAlreadyExists) {
-    alert('Username already exists!');
+  if (DB.users.find((u) => u.username === username)) {
+    document.getElementById("signup-error").style.display = "block";
     return;
   }
 
   DB.users.push({ username, password, role });
-  alert('Admin successfully created!');
-  closeSignupModal();
+  goToLogin();
 }
 
-/* Open Signup Modal */
-function openSignupModal() {
-  document.getElementById('signup-modal').classList.remove('hidden');
+// APP NAVIGATION
+function launchApp() {
+  document.getElementById("login-page").classList.add("hidden");
+  document.getElementById("signup-page").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  navigate('dashboard');
 }
 
-/* Close Signup Modal */
-function closeSignupModal() {
-  document.getElementById('signup-modal').classList.add('hidden');
-}
-
-/* Navigation Functionality */
 function navigate(page) {
-  document.querySelectorAll('section').forEach(section => {
-    section.classList.add('hidden');
-  });
-  document.getElementById(`page-${page}`).classList.remove('hidden');
+  document.querySelectorAll("section").forEach(section => section.classList.add("hidden"));
+  document.getElementById(page).classList.remove("hidden");
 }
 
-/* Logout Function */
-function logout() {
-  sessionStorage.removeItem('currentUser');
-  document.getElementById('app').classList.add('hidden');
-  document.getElementById('login-page').classList.remove('hidden');
+function showSignup() {
+  document.getElementById("login-page").classList.add("hidden");
+  document.getElementById("signup-page").classList.remove("hidden");
 }
-/* End JavaScript */
+
+function goToLogin() {
+  document.getElementById("signup-page").classList.add("hidden");
+  document.getElementById("login-page").classList.remove("hidden");
+}
+
+function logout() {
+  DB.session = null;
+  document.getElementById("app").classList.add("hidden");
+  document.getElementById("login-page").classList.remove("hidden");
+}
+
+// INVENTORY MANAGEMENT
+function populateInventory() {
+  const table = document.getElementById("inventory-list");
+  table.innerHTML = DB.inventory
+    .map((item) => `<tr><td>${item.item}</td><td>${item.quantity}</td><td>$${item.price}</td></tr>`)
+    .join("");
+}
+
+populateInventory();
 </script>
 </body>
 </html>
