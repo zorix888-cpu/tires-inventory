@@ -4,318 +4,376 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OBI INVENTORY</title>
-
 <style>
-body{
-background:#000;
-color:#fff;
-font-family:Segoe UI,sans-serif;
-padding:20px;
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-h1{
-text-align:center;
-font-size:50px;
-letter-spacing:8px;
-font-weight:300;
-}
+  body {
+    background: #000;
+    color: #fff;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 40px 24px;
+  }
 
-.subtitle{
-text-align:center;
-color:#aaa;
-margin-bottom:30px;
-}
+  .app { max-width: 1100px; margin: 0 auto; }
 
-.dashboard{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-gap:15px;
-margin-bottom:20px;
-}
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #1a1a1a;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
 
-.card{
-background:#111;
-border:1px solid #333;
-border-radius:15px;
-padding:20px;
-text-align:center;
-}
+  .brand h1 { font-size: 52px; font-weight: 700; letter-spacing: -1px; line-height: 1; }
+  .brand p { font-size: 11px; letter-spacing: 4px; color: #555; font-weight: 600; text-transform: uppercase; margin-top: 6px; }
+  .header-actions { display: flex; gap: 10px; }
 
-.section{
-background:#111;
-border:1px solid #333;
-border-radius:15px;
-padding:20px;
-margin-bottom:20px;
-}
+  .btn {
+    padding: 11px 22px; border-radius: 0; font-size: 13px; font-weight: 500;
+    cursor: pointer; border: 1px solid transparent; transition: opacity 0.15s;
+    display: flex; align-items: center; gap: 8px; white-space: nowrap;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: #fff; color: #000; border-color: #fff; }
+  .btn-outline { background: transparent; color: #fff; border-color: #333; }
+  .btn-ghost { background: transparent; color: #555; border-color: transparent; padding: 6px 10px; font-size: 12px; }
+  .btn-ghost:hover { color: #ff4444; background: rgba(255,68,68,0.08); }
 
-input,select{
-padding:10px;
-margin:5px;
-background:#000;
-color:white;
-border:1px solid #333;
-border-radius:8px;
-}
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+  .stat-card { background: #080808; border: 1px solid #1a1a1a; padding: 24px; display: flex; align-items: center; justify-content: space-between; }
+  .stat-card .label { font-size: 10px; letter-spacing: 3px; color: #555; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+  .stat-card .value { font-size: 32px; font-weight: 300; letter-spacing: -1px; }
+  .stat-icon { font-size: 28px; opacity: 0.15; }
 
-button{
-padding:10px 15px;
-background:white;
-color:black;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
+  .main-grid { display: grid; grid-template-columns: 1fr 300px; gap: 32px; align-items: start; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .section-header h2 { font-size: 18px; font-weight: 500; }
 
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:15px;
-}
+  .search-wrap { position: relative; }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: 0.3; }
 
-th{
-background:white;
-color:black;
-padding:12px;
-}
+  input[type="search"], input[type="text"], input[type="number"] {
+    background: transparent; border: 1px solid #222; color: #fff;
+    padding: 9px 12px; font-size: 13px; outline: none; border-radius: 0;
+    transition: border-color 0.15s; width: 100%;
+  }
+  input[type="search"] { padding-left: 36px; width: 220px; }
+  input:focus { border-color: #555; }
+  input::placeholder { color: #444; }
 
-td{
-background:#111;
-padding:12px;
-text-align:center;
-}
+  .table-wrap { border: 1px solid #1a1a1a; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: rgba(255,255,255,0.04); border-bottom: 1px solid #1a1a1a; }
+  th { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #555; font-weight: 600; padding: 12px 16px; text-align: left; }
+  th.right, td.right { text-align: right; }
+  tbody tr { border-bottom: 1px solid #111; transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  tbody tr:hover .row-actions { opacity: 1; }
+  td { padding: 13px 16px; font-size: 13px; color: #ddd; }
+  td.mono { font-family: 'Courier New', monospace; color: #fff; }
+  .row-actions { opacity: 0; transition: opacity 0.15s; display: flex; justify-content: flex-end; gap: 4px; }
+  .empty-state { text-align: center; padding: 60px 20px; color: #333; font-size: 14px; }
+
+  .low-stock-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #ff4444; margin-right: 8px; animation: pulse 1.5s infinite; vertical-align: middle; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .qty-input { width: 60px !important; text-align: center; padding: 5px 6px !important; font-size: 13px !important; }
+
+  .sales-list { border: 1px solid #1a1a1a; }
+  .sale-item { display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid #111; }
+  .sale-item:last-child { border-bottom: none; }
+  .sale-number { font-family: 'Courier New', monospace; font-size: 13px; margin-bottom: 3px; }
+  .sale-date { font-size: 11px; color: #444; }
+  .sale-amount { font-size: 14px; font-weight: 500; text-align: right; }
+  .sale-qty { font-size: 11px; color: #444; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #0a0a0a; border: 1px solid #222; padding: 32px; width: 100%; max-width: 420px; animation: slideUp 0.2s ease; }
+  @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal h3 { font-size: 20px; font-weight: 400; margin-bottom: 28px; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 10px; letter-spacing: 2px; color: #555; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 28px; }
+  .modal-actions .btn { flex: 1; justify-content: center; }
+
+  .toast-container { position: fixed; bottom: 28px; right: 28px; z-index: 200; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+  .toast { background: #111; border: 1px solid #2a2a2a; padding: 14px 18px; font-size: 13px; min-width: 240px; animation: toastIn 0.2s ease; pointer-events: all; }
+  .toast.error { border-color: #ff4444; }
+  .toast-title { font-weight: 600; margin-bottom: 2px; }
+  .toast-desc { color: #777; font-size: 12px; }
+  @keyframes toastIn { from { transform: translateX(16px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  @media (max-width: 800px) {
+    .stats { grid-template-columns: 1fr 1fr; }
+    .stats .stat-card:last-child { grid-column: span 2; }
+    .main-grid { grid-template-columns: 1fr; }
+    .brand h1 { font-size: 36px; }
+  }
+  @media (max-width: 500px) {
+    .stats { grid-template-columns: 1fr; }
+    .stats .stat-card:last-child { grid-column: span 1; }
+    input[type="search"] { width: 160px; }
+  }
 </style>
 </head>
-
 <body>
 
-<h1>OBI INVENTORY</h1>
-<p class="subtitle">Luxury Inventory Management System</p>
+<div class="app">
+  <header>
+    <div class="brand">
+      <h1>OBI</h1>
+      <p>Inventory System</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" onclick="openModal('addModal')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Stock
+      </button>
+      <button class="btn btn-outline" onclick="openModal('saleModal')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        Record Sale
+      </button>
+    </div>
+  </header>
 
-<div class="dashboard">
+  <div class="stats">
+    <div class="stat-card">
+      <div><div class="label">Total Stock</div><div class="value" id="statStock">0</div></div>
+      <div class="stat-icon">📦</div>
+    </div>
+    <div class="stat-card">
+      <div><div class="label">Total Revenue</div><div class="value" id="statRevenue">$0.00</div></div>
+      <div class="stat-icon">📈</div>
+    </div>
+    <div class="stat-card">
+      <div><div class="label">Items Sold</div><div class="value" id="statSold">0</div></div>
+      <div class="stat-icon">⚡</div>
+    </div>
+  </div>
 
-<div class="card">
-<h2 id="totalCount">0</h2>
-<p>Total Tires</p>
+  <div class="main-grid">
+    <div>
+      <div class="section-header">
+        <h2>Current Inventory</h2>
+        <div class="search-wrap">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="searchInput" placeholder="Search number, brand..." oninput="renderInventory()" />
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Number</th><th>Brand</th><th>Size</th><th>Qty</th><th class="right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-header"><h2>Recent Sales</h2></div>
+      <div class="sales-list" id="salesList"></div>
+    </div>
+  </div>
 </div>
 
-<div class="card">
-<h2 id="revenue">$0</h2>
-<p>Total Revenue</p>
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <h3>Add New Tire</h3>
+    <form onsubmit="handleAddTire(event)">
+      <div class="form-group">
+        <label>Number (ID)</label>
+        <input type="text" id="addNumber" required placeholder="e.g. T001" />
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Brand</label><input type="text" id="addBrand" required placeholder="e.g. Michelin" /></div>
+        <div class="form-group"><label>Size</label><input type="text" id="addSize" required placeholder="e.g. 225/45R17" /></div>
+      </div>
+      <div class="form-group"><label>Quantity</label><input type="number" id="addQty" required min="1" value="1" /></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('addModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save to Inventory</button>
+      </div>
+    </form>
+  </div>
 </div>
 
-<div class="card">
-<h2 id="totalSold">0</h2>
-<p>Total Sold</p>
+<!-- SALE MODAL -->
+<div class="modal-overlay" id="saleModal">
+  <div class="modal">
+    <h3>Record Sale</h3>
+    <form onsubmit="handleRecordSale(event)">
+      <div class="form-group"><label>Tire Number</label><input type="text" id="saleNumber" required placeholder="e.g. T001" /></div>
+      <div class="form-row">
+        <div class="form-group"><label>Quantity Sold</label><input type="number" id="saleQty" required min="1" value="1" /></div>
+        <div class="form-group"><label>Total Amount ($)</label><input type="number" id="saleAmount" required min="0" step="0.01" value="0" /></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('saleModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Complete Sale</button>
+      </div>
+    </form>
+  </div>
 </div>
 
-</div>
-
-<div class="section">
-
-<input id="number" placeholder="Tire Number">
-<input id="brand" placeholder="Brand">
-<input id="size" placeholder="Size">
-<input id="qty" type="number" placeholder="Quantity">
-
-<button onclick="addTire()">Add Tire</button>
-
-</div>
-
-<div class="section">
-
-<input id="sellNumber" placeholder="Tire Number">
-<input id="sellQty" type="number" placeholder="Qty Sold">
-<input id="sellPrice" type="number" placeholder="Sale Amount">
-
-<button onclick="sellTire()">Record Sale</button>
-
-</div>
-
-<table>
-<thead>
-<tr>
-<th>Number</th>
-<th>Brand</th>
-<th>Size</th>
-<th>Qty</th>
-<th>Delete</th>
-</tr>
-</thead>
-
-<tbody id="inventory"></tbody>
-</table>
-
-<h2 style="margin-top:30px;">Sales History</h2>
-
-<table>
-<thead>
-<tr>
-<th>Date</th>
-<th>Tire</th>
-<th>Qty</th>
-<th>Amount</th>
-</tr>
-</thead>
-
-<tbody id="salesTable"></tbody>
-</table>
+<div class="toast-container" id="toastContainer"></div>
 
 <script>
-let tires = JSON.parse(localStorage.getItem("obiTires")) || [];
-let sales = JSON.parse(localStorage.getItem("obiSales")) || [];
+  let tires = JSON.parse(localStorage.getItem("obiTires") || "[]");
+  let sales = JSON.parse(localStorage.getItem("obiSales") || "[]");
 
-function saveData(){
-localStorage.setItem("obiTires", JSON.stringify(tires));
-localStorage.setItem("obiSales", JSON.stringify(sales));
-}
+  function save() {
+    localStorage.setItem("obiTires", JSON.stringify(tires));
+    localStorage.setItem("obiSales", JSON.stringify(sales));
+  }
 
-function updateDashboard(){
+  function updateStats() {
+    const totalStock = tires.reduce((a, t) => a + (Number(t.qty) || 0), 0);
+    const totalRevenue = sales.reduce((a, s) => a + (Number(s.amount) || 0), 0);
+    const totalSold = sales.reduce((a, s) => a + (Number(s.qty) || 0), 0);
+    document.getElementById("statStock").textContent = totalStock;
+    document.getElementById("statRevenue").textContent = "$" + totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById("statSold").textContent = totalSold;
+  }
 
-let total = 0;
-let revenueTotal = 0;
-let soldTotal = 0;
+  function renderInventory() {
+    const q = (document.getElementById("searchInput").value || "").toLowerCase();
+    const filtered = q ? tires.filter(t =>
+      t.number.toLowerCase().includes(q) || t.brand.toLowerCase().includes(q) || t.size.toLowerCase().includes(q)
+    ) : tires;
 
-tires.forEach(tire=>{
-total += Number(tire.qty) || 0;
-});
+    const tbody = document.getElementById("inventoryBody");
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No inventory found.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = filtered.map(tire => `
+      <tr>
+        <td class="mono">${esc(tire.number)}</td>
+        <td>${esc(tire.brand)}</td>
+        <td style="color:#aaa">${esc(tire.size)}</td>
+        <td>
+          ${tire.qty <= 2 ? '<span class="low-stock-dot" title="Low stock"></span>' : ''}
+          <input type="number" class="qty-input" value="${tire.qty}" min="0" onchange="updateQty('${esc(tire.number)}', this.value)" />
+        </td>
+        <td class="right">
+          <div class="row-actions">
+            <button class="btn btn-ghost" onclick="deleteTire('${esc(tire.number)}')" title="Delete">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join("");
+  }
 
-sales.forEach(sale=>{
-revenueTotal += Number(sale.amount) || 0;
-soldTotal += Number(sale.qty) || 0;
-});
+  function renderSales() {
+    const container = document.getElementById("salesList");
+    if (sales.length === 0) {
+      container.innerHTML = `<div class="empty-state">No sales recorded yet.</div>`;
+      return;
+    }
+    container.innerHTML = sales.slice(0, 10).map(s => {
+      const d = new Date(s.date);
+      return `
+        <div class="sale-item">
+          <div>
+            <div class="sale-number">${esc(s.number)}</div>
+            <div class="sale-date">${d.toLocaleDateString()} at ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
+          </div>
+          <div>
+            <div class="sale-amount">$${Number(s.amount).toFixed(2)}</div>
+            <div class="sale-qty">Qty: ${s.qty}</div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
 
-document.getElementById("totalCount").innerText = total;
-document.getElementById("revenue").innerText =
-"$" + revenueTotal.toLocaleString();
-document.getElementById("totalSold").innerText = soldTotal;
+  function render() { updateStats(); renderInventory(); renderSales(); }
 
-}
+  function updateQty(number, val) {
+    const t = tires.find(t => t.number === number);
+    if (t) { t.qty = Math.max(0, Number(val)); save(); updateStats(); }
+  }
 
-function renderTable(){
+  function deleteTire(number) {
+    if (!confirm(`Delete tire ${number}? This cannot be undone.`)) return;
+    tires = tires.filter(t => t.number !== number);
+    save(); render();
+    toast("Tire Deleted", `${number} removed from inventory.`);
+  }
 
-let html = "";
+  function handleAddTire(e) {
+    e.preventDefault();
+    const number = document.getElementById("addNumber").value.trim();
+    const brand = document.getElementById("addBrand").value.trim();
+    const size = document.getElementById("addSize").value.trim();
+    const qty = Number(document.getElementById("addQty").value);
+    if (tires.find(t => t.number.toLowerCase() === number.toLowerCase())) {
+      toast("Error", `Tire ${number} already exists.`, true); return;
+    }
+    tires.push({ number, brand, size, qty });
+    save(); render(); closeModal("addModal"); e.target.reset();
+    document.getElementById("addQty").value = 1;
+    toast("Tire Added", `${number} added to inventory.`);
+  }
 
-tires.forEach((tire,index)=>{
+  function handleRecordSale(e) {
+    e.preventDefault();
+    const number = document.getElementById("saleNumber").value.trim();
+    const qty = Number(document.getElementById("saleQty").value);
+    const amount = Number(document.getElementById("saleAmount").value);
+    const tire = tires.find(t => t.number === number);
+    if (!tire) { toast("Error", "Tire not found in inventory.", true); return; }
+    if (tire.qty < qty) { toast("Error", `Only ${tire.qty} in stock.`, true); return; }
+    tire.qty -= qty;
+    sales.unshift({ number, qty, amount, date: new Date().toISOString() });
+    save(); render(); closeModal("saleModal"); e.target.reset();
+    document.getElementById("saleQty").value = 1;
+    document.getElementById("saleAmount").value = 0;
+    toast("Sale Recorded", `Sold ${qty}x ${number} for $${amount.toFixed(2)}.`);
+  }
 
-html += `
-<tr>
-<td>${tire.number}</td>
-<td>${tire.brand}</td>
-<td>${tire.size}</td>
-<td>${tire.qty}</td>
-<td>
-<button onclick="deleteTire(${index})">
-Delete
-</button>
-</td>
-</tr>
-`;
+  function openModal(id) {
+    document.getElementById(id).classList.add("open");
+    document.getElementById(id).querySelector("input").focus();
+  }
 
-});
+  function closeModal(id) { document.getElementById(id).classList.remove("open"); }
 
-document.getElementById("inventory").innerHTML = html;
+  document.querySelectorAll(".modal-overlay").forEach(el => {
+    el.addEventListener("click", e => { if (e.target === el) closeModal(el.id); });
+  });
 
-updateDashboard();
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") document.querySelectorAll(".modal-overlay.open").forEach(el => closeModal(el.id));
+  });
 
-}
+  function toast(title, desc, isError = false) {
+    const c = document.getElementById("toastContainer");
+    const t = document.createElement("div");
+    t.className = "toast" + (isError ? " error" : "");
+    t.innerHTML = `<div class="toast-title">${esc(title)}</div><div class="toast-desc">${esc(desc)}</div>`;
+    c.appendChild(t);
+    setTimeout(() => { t.style.opacity = "0"; t.style.transition = "opacity 0.3s"; setTimeout(() => t.remove(), 300); }, 3000);
+  }
 
-function renderSales(){
+  function esc(str) {
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
 
-let html = "";
-
-sales.forEach(sale=>{
-
-html += `
-<tr>
-<td>${sale.date}</td>
-<td>${sale.number}</td>
-<td>${sale.qty}</td>
-<td>$${sale.amount}</td>
-</tr>
-`;
-
-});
-
-document.getElementById("salesTable").innerHTML = html;
-
-updateDashboard();
-
-}
-
-function addTire(){
-
-if(number.value==="") return;
-
-tires.push({
-number:number.value,
-brand:brand.value,
-size:size.value,
-qty:Number(qty.value)
-});
-
-saveData();
-renderTable();
-
-number.value="";
-brand.value="";
-size.value="";
-qty.value="";
-
-}
-
-function deleteTire(index){
-
-tires.splice(index,1);
-
-saveData();
-renderTable();
-
-}
-
-function sellTire(){
-
-let tire = tires.find(
-t => t.number === sellNumber.value
-);
-
-if(!tire){
-alert("Tire Not Found");
-return;
-}
-
-let qtySold = Number(sellQty.value);
-
-if(qtySold > tire.qty){
-alert("Not Enough Stock");
-return;
-}
-
-tire.qty -= qtySold;
-
-sales.push({
-number:tire.number,
-qty:qtySold,
-amount:Number(sellPrice.value),
-date:new Date().toLocaleString()
-});
-
-saveData();
-
-renderTable();
-renderSales();
-
-sellNumber.value="";
-sellQty.value="";
-sellPrice.value="";
-
-}
-
-renderTable();
-renderSales();
-
+  render();
 </script>
-
 </body>
 </html>
-
