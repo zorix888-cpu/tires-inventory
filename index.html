@@ -1,576 +1,1012 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>OBI Tire Inventory</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBI INVENTORY | INDUSTRIAL SYSTEMS v3.0</title>
 <style>
-body {
-  background:#000; color:#fff; font-family:'Arial'; display:flex; flex-direction:column; min-height:100vh; margin:0;
+/* ──────────────────────────────────────────────────────────────────────────
+   CSS - DESIGN SYSTEM & LAYOUT
+   ────────────────────────────────────────────────────────────────────────── */
+:root {
+    --bg: #000000;
+    --surface: #0a0a0a;
+    --border: #222222;
+    --border-active: #ffffff;
+    --text-main: #ffffff;
+    --text-dim: #666666;
+    --text-mu: #444444;
+    --accent: #ffffff;
+    --error: #ff3333;
+    --success: #00ff66;
+    --warning: #ffcc00;
+    --font-mono: 'Courier New', monospace;
 }
-#auth {
-  position:fixed; inset:0; background:#000; display:flex; align-items:center; justify-content:center; z-index:1000;
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    background: var(--bg); 
+    color: var(--text-main); 
+    font-family: var(--font-mono); 
+    min-height: 100vh; 
+    overflow-x: hidden;
 }
-#auth > div {
-  background:#111; padding:20px; border-radius:8px; width:300px;
+
+input, button, select, textarea { 
+    font-family: var(--font-mono); 
+    background: transparent; 
+    color: inherit; 
 }
-aside {
-  width:200px; background:#222; position:fixed; top:0; bottom:0; left:0; padding-top:20px; display:flex; flex-direction:column; overflow-y:auto;
+
+.hide { display: none !important; }
+
+/* --- AUTH SCREEN --- */
+#auth { 
+    min-height: 100vh; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 20px; 
+    background: radial-gradient(circle at center, #111 0%, #000 100%);
 }
-nav {margin-top:20px; display:flex; flex-direction:column;}
-.nav-item {
-  padding:10px; cursor:pointer; text-align:center; color:#ccc;
+.abox { width: 100%; max-width: 400px; }
+.alogo { text-align: center; margin-bottom: 40px; }
+.alogo h1 { font-size: 64px; font-weight: 800; letter-spacing: -5px; line-height: 0.8; }
+.alogo p { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 6px; margin-top: 10px; }
+
+.atabs { display: flex; border: 1px solid var(--border); margin-bottom: -1px; }
+.atab { 
+    flex: 1; padding: 15px; border: none; cursor: pointer; 
+    font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);
+    transition: 0.2s;
 }
-.nav-item:hover, .nav-item.active {background:#444; color:#fff;}
-aside #user-info {
-  padding:10px; border-top:1px solid #555; margin-top:auto; font-size:14px; text-align:center;
+.atab.on { background: var(--text-main); color: var(--bg); font-weight: bold; }
+
+.acard { border: 1px solid var(--border); padding: 30px; background: var(--surface); }
+.fg { margin-bottom: 20px; }
+.fg label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 8px; }
+.fg input { 
+    width: 100%; padding: 12px; border: 1px solid var(--border); 
+    outline: none; transition: border-color 0.3s;
 }
-main {
-  margin-left:200px; padding:20px; flex:1; display:flex; flex-direction:column; overflow:auto;
+.fg input:focus { border-color: var(--border-active); }
+
+.abtn { 
+    width: 100%; padding: 15px; background: var(--text-main); color: var(--bg); 
+    border: none; cursor: pointer; font-weight: bold; text-transform: uppercase; 
+    letter-spacing: 3px; font-size: 12px;
 }
-.page {display:none;}
-.page.active {display:block;}
-button {
-  margin-top:8px; padding:8px 12px; border:none; cursor:pointer; background:#555; color:#fff; border-radius:4px;
+.abtn:hover { background: #cccccc; }
+
+.amsg { padding: 12px; font-size: 11px; margin-bottom: 20px; border-left: 3px solid var(--text-main); background: #111; }
+.amsg.ok { border-left-color: var(--success); color: var(--success); }
+.amsg.er { border-left-color: var(--error); color: var(--error); }
+
+/* --- APP LAYOUT --- */
+#app { display: flex; min-height: 100vh; }
+
+aside { 
+    width: 240px; border-right: 1px solid var(--border); 
+    display: flex; flex-direction: column; position: fixed; 
+    height: 100vh; z-index: 100; background: var(--bg);
 }
-button:hover {background:#777;}
-input[type=text],input[type=password],input[type=number],select {
-  width:100%; padding:8px; background:#222; border:1px solid #555; color:#fff; border-radius:4px; margin-top:4px;
+.slogo { padding: 30px 20px; border-bottom: 1px solid var(--border); }
+.slogo .brand { font-size: 28px; font-weight: 800; letter-spacing: -2px; }
+.slogo .sub { font-size: 9px; color: var(--text-mu); text-transform: uppercase; letter-spacing: 4px; margin-top: 4px; }
+
+nav { flex: 1; padding: 20px 10px; }
+.ni { 
+    display: flex; align-items: center; gap: 12px; padding: 12px 15px; 
+    font-size: 11px; cursor: pointer; color: var(--text-dim); 
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;
+    transition: 0.2s;
 }
-/* Theme toggle button style */
-#theme-toggle {margin:10px auto; display:block;}
+.ni:hover { color: var(--text-main); background: #ffffff05; }
+.ni.on { background: var(--text-main); color: var(--bg); font-weight: bold; }
+.ni svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+.suser { padding: 20px; border-top: 1px solid var(--border); background: var(--surface); }
+.sname { font-size: 13px; font-weight: bold; margin-bottom: 2px; }
+.srole { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+.slgout { 
+    width: 100%; padding: 10px; border: 1px solid var(--border); 
+    font-size: 10px; text-transform: uppercase; cursor: pointer;
+}
+.slgout:hover { border-color: var(--text-main); }
+
+/* --- MAIN CONTENT --- */
+main { flex: 1; margin-left: 240px; min-width: 0; }
+.page { padding: 40px; display: none; max-width: 1400px; margin: 0 auto; }
+.page.on { display: block; animation: fadeIn 0.4s ease; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+.ph { 
+    display: flex; align-items: center; justify-content: space-between; 
+    border-bottom: 1px solid var(--border); padding-bottom: 25px; margin-bottom: 30px;
+}
+.ph h1 { font-size: 24px; font-weight: 800; letter-spacing: -1px; text-transform: uppercase; }
+.ph p { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 3px; margin-top: 4px; }
+
+/* --- COMPONENTS --- */
+.stats-grid { 
+    display: grid; grid-template-columns: repeat(4, 1fr); 
+    gap: 1px; background: var(--border); border: 1px solid var(--border); 
+    margin-bottom: 30px; 
+}
+.stat-card { background: var(--bg); padding: 25px; }
+.stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 10px; }
+.stat-value { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+.stat-sub { font-size: 11px; color: var(--text-mu); margin-top: 5px; }
+
+.table-wrap { border: 1px solid var(--border); overflow-x: auto; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+th { 
+    padding: 15px; background: #080808; border-bottom: 1px solid var(--border); 
+    font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-mu); 
+}
+td { padding: 15px; border-bottom: 1px solid #111; vertical-align: middle; }
+tr:hover td { background: #ffffff03; }
+
+.badge { 
+    display: inline-block; padding: 3px 8px; font-size: 10px; 
+    text-transform: uppercase; font-weight: bold; border: 1px solid transparent; 
+}
+.badge-out { background: var(--error); color: #000; }
+.badge-low { border-color: var(--warning); color: var(--warning); }
+.badge-ok { border-color: var(--border); color: var(--text-dim); }
+
+.btn { 
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 18px; font-size: 11px; font-weight: bold; text-transform: uppercase; 
+    letter-spacing: 1px; cursor: pointer; border: 1px solid var(--border); transition: 0.2s;
+}
+.btn-primary { background: var(--text-main); color: var(--bg); border-color: var(--text-main); }
+.btn-primary:hover { background: #ddd; }
+.btn-outline { background: transparent; color: var(--text-main); }
+.btn-outline:hover { border-color: var(--text-main); }
+
+/* --- MODAL --- */
+.modal { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
+    display: flex; align-items: center; justify-content: center; 
+    z-index: 1000; padding: 20px;
+}
+.modal-box { 
+    background: var(--bg); border: 1px solid var(--border); 
+    width: 100%; max-width: 600px; position: relative;
+}
+.modal-box.large { max-width: 900px; }
+.modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-header h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 3px; }
+.modal-close { font-size: 24px; cursor: pointer; color: var(--text-mu); line-height: 1; border: none; }
+.modal-close:hover { color: var(--text-main); }
+.modal-body { padding: 30px; max-height: 70vh; overflow-y: auto; }
+.modal-footer { padding: 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* --- TOAST --- */
+.toast { 
+    position: fixed; bottom: 30px; right: 30px; padding: 15px 25px; 
+    background: var(--text-main); color: var(--bg); font-size: 11px; 
+    font-weight: bold; text-transform: uppercase; letter-spacing: 2px; 
+    z-index: 9999; animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+    aside { width: 70px; }
+    aside .sub, aside .sname, aside .srole, aside .brand, aside span { display: none; }
+    nav .ni { justify-content: center; padding: 15px; }
+    main { margin-left: 70px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 </head>
 <body>
 
-<!-- Auth overlay -->
+<!-- ──────────────────────────────────────────────────────────────────────────
+     AUTHENTICATION LAYER
+     ────────────────────────────────────────────────────────────────────────── -->
 <div id="auth">
-  <div>
-    <h2 style="text-align:center;">Welcome</h2>
-    <div style="display:flex; justify-content:space-around; margin-bottom:10px;">
-      <button onclick="showLogin()">Login</button>
-      <button onclick="showSignup()">Sign Up</button>
+    <div class="abox">
+        <div class="alogo">
+            <h1>OBI</h1>
+            <p>Industrial Inventory System</p>
+        </div>
+        <div class="atabs">
+            <button class="atab on" id="tab-login" onclick="switchAuth('login')">Access System</button>
+            <button class="atab" id="tab-signup" onclick="switchAuth('signup')">Initialize</button>
+        </div>
+        <div class="acard">
+            <div id="auth-msg" class="amsg hide"></div>
+            
+            <!-- Login Form -->
+            <div id="form-login">
+                <div class="fg">
+                    <label>Identification</label>
+                    <input type="text" id="l-user" placeholder="Username" autocomplete="username">
+                </div>
+                <div class="fg">
+                    <label>Security Key</label>
+                    <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <button class="abtn" onclick="handleLogin()">Authorize →</button>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="form-signup" class="hide">
+                <div class="fg">
+                    <label>Legal Name</label>
+                    <input type="text" id="s-name" placeholder="Full name">
+                </div>
+                <div class="fg">
+                    <label>Desired ID</label>
+                    <input type="text" id="s-user" placeholder="Username">
+                </div>
+                <div class="fg">
+                    <label>Set Key</label>
+                    <input type="password" id="s-pass" placeholder="Min 6 characters">
+                </div>
+                <div class="fg">
+                    <label>Verify Key</label>
+                    <input type="password" id="s-pass2" placeholder="Repeat password">
+                </div>
+                <button class="abtn" onclick="handleSignup()">Create Identity →</button>
+                <div class="ahint" style="font-size: 9px; color: #444; margin-top: 15px; text-align: center;">
+                    NOTE: The first user created is assigned 'Owner' clearance.
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="loginDiv">
-      <h3>Login</h3>
-      <input id="login-username" placeholder="Username" onkeydown="if(event.key==='Enter'){login();}">
-      <input id="login-password" placeholder="Password" type="password" onkeydown="if(event.key==='Enter'){login();}">
-      <button onclick="login()">Login</button>
-      <div id="login-msg" style="color:red;margin-top:8px;"></div>
-    </div>
-    <div id="signupDiv" style="display:none;">
-      <h3>Sign Up</h3>
-      <input id="signup-fullname" placeholder="Full Name">
-      <input id="signup-username" placeholder="Username" onkeydown="if(event.key==='Enter'){signup();}">
-      <input id="signup-password" placeholder="Password (6+)" type="password">
-      <input id="signup-password2" placeholder="Confirm Password" type="password" onkeydown="if(event.key==='Enter'){signup();}">
-      <button onclick="signup()">Create Account</button>
-      <div id="signup-msg" style="color:red;margin-top:8px;"></div>
-    </div>
-  </div>
 </div>
 
-<!-- Main app -->
-<div id="app" style="display:none; flex:1; min-height:100vh; flex-direction:row;">
-  <aside>
-    <div id="user-info"></div>
-    <nav>
-      <div class="nav-item active" onclick="navigate('d')">Dashboard</div>
-      <div class="nav-item" onclick="navigate('i')">Inventory</div>
-      <div class="nav-item" onclick="navigate('s')">Sales</div>
-      <div class="nav-item" onclick="navigate('sh')">Shipments</div>
-      <div class="nav-item" onclick="navigate('a')">Activity</div>
-      <div class="nav-item" onclick="navigate('e')">Employees</div>
-    </nav>
-    <div style="padding:10px;">
-      <button onclick="logout()">Logout</button>
-      <button onclick="backupData()">Backup</button>
-      <button onclick="restoreDataFile()">Restore</button>
-      <button onclick="resetPassword()">Reset Password</button>
-      <button onclick="toggleTheme()">Toggle Theme</button>
-    </div>
-  </aside>
-  <main>
-    <div id="page-dashboard" class="page"></div>
-    <div id="page-inventory" class="page"></div>
-    <div id="page-sales" class="page"></div>
-    <div id="page-shipment" class="page"></div>
-    <div id="page-activity" class="page"></div>
-    <div id="page-employees" class="page"></div>
-  </main>
+<!-- ──────────────────────────────────────────────────────────────────────────
+     MAIN APPLICATION INTERFACE
+     ────────────────────────────────────────────────────────────────────────── -->
+<div id="app" class="hide">
+    <aside>
+        <div class="slogo">
+            <div class="brand">OBI</div>
+            <div class="sub">V3.0.4 CORE</div>
+        </div>
+        <nav>
+            <div class="ni on" id="nav-dash" onclick="navigate('dash')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <span>Dashboard</span>
+            </div>
+            <div class="ni" id="nav-inv" onclick="navigate('inv')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                <span>Inventory</span>
+            </div>
+            <div class="ni" id="nav-sales" onclick="navigate('sales')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <span>Sales</span>
+            </div>
+            <div class="ni" id="nav-ship" onclick="navigate('ship')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <span>Shipments</span>
+            </div>
+            <div class="ni" id="nav-log" onclick="navigate('log')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span>Activity</span>
+            </div>
+            <div class="ni hide" id="nav-emp" onclick="navigate('emp')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <span>Employees</span>
+            </div>
+        </nav>
+        <div class="suser">
+            <div class="sname" id="user-display-name">—</div>
+            <div class="srole" id="user-display-role">—</div>
+            <button class="slgout" onclick="logout()">Terminate Session</button>
+        </div>
+    </aside>
+
+    <main>
+        <!-- Page: Dashboard -->
+        <div class="page on" id="pg-dash">
+            <div class="ph">
+                <div><h1>Terminal Dashboard</h1><p>System operational metrics</p></div>
+                <div id="dash-date" style="font-size: 11px; color: var(--text-mu)"></div>
+            </div>
+            <div class="stats-grid" id="dash-stats"></div>
+            <div class="grid-2">
+                <div class="table-wrap">
+                    <div style="padding: 15px; font-size: 10px; color: var(--text-mu); border-bottom: 1px solid var(--border)">CRITICAL STOCK LEVELS</div>
+                    <table id="dash-low-stock"></table>
+                </div>
+                <div class="table-wrap">
+                    <div style="padding: 15px; font-size: 10px; color: var(--text-mu); border-bottom: 1px solid var(--border)">RECENT ACTIVITY LOG</div>
+                    <table id="dash-recent-log"></table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page: Inventory -->
+        <div class="page" id="pg-inv">
+            <div class="ph">
+                <div><h1>Inventory Matrix</h1><p>Physical asset database</p></div>
+                <div class="actions">
+                    <button class="btn btn-outline" onclick="exportData('inventory')">Export CSV</button>
+                    <button class="btn btn-primary" onclick="ui.openItemModal()">+ Register Asset</button>
+                </div>
+            </div>
+            <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+                <input type="text" id="inv-search" placeholder="Search by SKU, Brand, or Location..." style="flex: 1; padding: 12px; border: 1px solid var(--border);" oninput="render.inventory()">
+                <select id="inv-filter" style="padding: 12px; border: 1px solid var(--border);" onchange="render.inventory()">
+                    <option value="all">All Status</option>
+                    <option value="low">Low Stock</option>
+                    <option value="out">Out of Stock</option>
+                </select>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset SKU</th>
+                            <th>Brand / Description</th>
+                            <th>Spec / Size</th>
+                            <th>Location</th>
+                            <th style="text-align: right;">Quantity</th>
+                            <th style="text-align: right;">Unit Cost</th>
+                            <th style="text-align: right;">MSRP</th>
+                            <th style="text-align: center;">Control</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inv-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Page: Sales -->
+        <div class="page" id="pg-sales">
+            <div class="ph">
+                <div><h1>Transaction Ledger</h1><p>Revenue and profit tracking</p></div>
+                <button class="btn btn-primary" onclick="ui.openSaleModal()">+ Execute Sale</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>TXN ID</th>
+                            <th>Timestamp</th>
+                            <th>Asset Reference</th>
+                            <th>Operated By</th>
+                            <th style="text-align: right;">Qty</th>
+                            <th style="text-align: right;">Gross Total</th>
+                            <th style="text-align: right;">Net Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sales-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Page: Shipments -->
+        <div class="page" id="pg-ship">
+            <div class="ph">
+                <div><h1>Inbound Manifests</h1><p>Supply chain receiving</p></div>
+                <button class="btn btn-primary" onclick="ui.openShipmentModal()">+ Process Inbound</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Manifest #</th>
+                            <th>Receive Date</th>
+                            <th>Asset SKU</th>
+                            <th>Verified By</th>
+                            <th style="text-align: right;">Units</th>
+                            <th>Reference/Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ship-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Page: Activity -->
+        <div class="page" id="pg-log">
+            <div class="ph">
+                <div><h1>Audit Trail</h1><p>Complete system telemetry</p></div>
+                <button class="btn btn-outline" onclick="clearLogs()">Purge Logs</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event Time</th>
+                            <th>Category</th>
+                            <th>Agent</th>
+                            <th>Reference</th>
+                            <th>Telemetric Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Page: Employees -->
+        <div class="page" id="pg-emp">
+            <div class="ph">
+                <div><h1>Personnel Management</h1><p>Access control list</p></div>
+                <button class="btn btn-primary" onclick="ui.openEmployeeModal()">+ Recruit Agent</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Credential</th>
+                            <th>Full Name</th>
+                            <th>Clearance Level</th>
+                            <th>Joined Date</th>
+                            <th style="text-align: center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="emp-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
 </div>
 
+<!-- ──────────────────────────────────────────────────────────────────────────
+     GLOBAL MODAL SYSTEM
+     ────────────────────────────────────────────────────────────────────────── -->
+<div id="modal-container" class="modal hide" onclick="ui.handleModalBgClick(event)">
+    <div class="modal-box" id="modal-box">
+        <div class="modal-header">
+            <h2 id="modal-title">MODAL_TITLE</h2>
+            <button class="modal-close" onclick="ui.closeModal()">×</button>
+        </div>
+        <div class="modal-body" id="modal-body"></div>
+        <div class="modal-footer" id="modal-footer"></div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<!-- ──────────────────────────────────────────────────────────────────────────
+     JAVASCRIPT - CORE LOGIC
+     ────────────────────────────────────────────────────────────────────────── -->
 <script>
-// --- Data ---
-const STORAGE='obiv3_';
-function gd(k){try{return JSON.parse(localStorage.getItem(STORAGE+k)||'null')}catch(e){return null}}
-function sd(k,v){localStorage.setItem(STORAGE+k,JSON.stringify(v))}
-function users(){return gd('u')||[]}
-function tires(){return gd('t')||[]}
-function sales(){return gd('s')||[]}
-function shipments(){return gd('sh')||[]}
-function logs(){return gd('l')||[]}
-function nextId(arr){return arr.length?Math.max(...arr.map(x=>x.id))+1:1}
-
-// --- Session ---
-let currentUser=null;
-function getSession(){return gd('sess')}
-function setSession(sess){sd('sess',sess)}
-function clearSession(){localStorage.removeItem(STORAGE+'sess')}
-
-// --- Boot ---
-function boot(user){
-  currentUser=user;
-  document.getElementById('auth').style.display='none';
-  document.getElementById('app').style.display='flex';
-  showUserInfo();
-  enforcePermissions();
-  // Initialize dashboard chart
-  renderDashboard();
-}
-function logout(){
-  currentUser=null;
-  clearSession();
-  document.getElementById('auth').style.display='flex';
-  document.getElementById('app').style.display='none';
-}
-
-// --- Show user info ---
-function showUserInfo(){
-  document.getElementById('user-info').innerHTML=`
-    <div style="text-align:center;padding:10px;">
-      <h3>${currentUser.n}</h3>
-      <p>Role: ${currentUser.r}</p>
-    </div>`;
-}
-
-// --- UI toggles ---
-function showLogin(){document.getElementById('loginDiv').style.display='block';document.getElementById('signupDiv').style.display='none';}
-function showSignup(){document.getElementById('loginDiv').style.display='none';document.getElementById('signupDiv').style.display='block';}
-
-// --- Login & Signup ---
-function login(){
-  const u=document.getElementById('login-username').value.trim().toLowerCase();
-  const p=document.getElementById('login-password').value;
-  const all=users();
-  const user=all.find(x=>x.u===u);
-  if(!user){showMsg('login-msg','User not found');return;}
-  if(user.p!==p){showMsg('login-msg','Wrong password');return;}
-  setSession({id:user.id,u:user.u,n:user.n,r:user.r});
-  boot(user);
-}
-function signup(){
-  const n=document.getElementById('signup-fullname').value.trim();
-  const u=document.getElementById('signup-username').value.trim().toLowerCase();
-  const p=document.getElementById('signup-password').value;
-  const p2=document.getElementById('signup-password2').value;
-  if(!n||!u||!p||!p2){showMsg('signup-msg','Fill all fields');return;}
-  if(p.length<6){showMsg('signup-msg','Password too short');return;}
-  if(p!==p2){showMsg('signup-msg','Passwords do not match');return;}
-  const all=users();
-  if(all.find(x=>x.u===u)){showMsg('signup-msg','Username exists');return;}
-  const r=all.length===0?'Owner':'Worker';
-  // Correct object creation
-  const newUser={id:nextId(all), u, n, p, r, c:Date.now()};
-  all.push(newUser);
-  sd('u',all);
-  showMsg('signup-msg','Account created! Please login.');
-  showLogin();
-}
-
-// --- Navigation ---
-const pages={
-  d:'page-dashboard',
-  i:'page-inventory',
-  s:'page-sales',
-  sh:'page-shipment',
-  a:'page-activity',
-  e:'page-employees'
+/**
+ * OBI DATA ARCHITECTURE
+ * Persistent storage via LocalStorage with versioning
+ */
+const STORAGE_PREFIX = 'obi_v3_';
+const db = {
+    get: (key) => {
+        try { return JSON.parse(localStorage.getItem(STORAGE_PREFIX + key) || '[]'); } 
+        catch { return []; }
+    },
+    set: (key, val) => localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(val)),
+    session: {
+        get: () => JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'session')),
+        set: (user) => localStorage.setItem(STORAGE_PREFIX + 'session', JSON.stringify(user)),
+        clear: () => localStorage.removeItem(STORAGE_PREFIX + 'session')
+    }
 };
-function navigate(p){
-  for(let key in pages){document.getElementById(pages[key]).style.display='none';}
-  document.getElementById('page-'+p).style.display='block';
-  if(p==='d')renderDashboard();
-  if(p==='i')renderInventory();
-  if(p==='s')renderSales();
-  if(p==='sh')renderShipment();
-  if(p==='a')renderActivity();
-  if(p==='e')renderEmployees();
+
+let currentUser = null;
+
+/**
+ * INITIALIZATION
+ */
+window.onload = () => {
+    const session = db.session.get();
+    if (session) {
+        // Verify user still exists in DB
+        const users = db.get('users');
+        const match = users.find(u => u.u === session.u && u.p === session.p);
+        if (match) {
+            bootApp(match);
+        } else {
+            db.session.clear();
+        }
+    }
+    updateDashClock();
+    setInterval(updateDashClock, 10000);
+};
+
+function bootApp(user) {
+    currentUser = user;
+    document.getElementById('auth').classList.add('hide');
+    document.getElementById('app').classList.remove('hide');
+    document.getElementById('user-display-name').textContent = user.n;
+    document.getElementById('user-display-role').textContent = user.r;
+    
+    // Role-based visibility
+    if (user.r === 'Owner') {
+        document.getElementById('nav-emp').classList.remove('hide');
+    }
+
+    navigate('dash');
+    logAction('SESSION', `User ${user.u} authorized. System online.`, 'AUTH');
 }
 
-// --- initialize ---
-(function(){
-  const sess=getSession();
-  if(sess){
-    const u=users().find(x=>x.id===sess.id&&x.u===sess.u);
-    if(u){boot(u);return;}
-  }
-  showLogin();
-})();
+/**
+ * NAVIGATION & UI
+ */
+function navigate(pg) {
+    // UI Update
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+    document.querySelectorAll('.ni').forEach(n => n.classList.remove('on'));
+    
+    document.getElementById('pg-' + pg).classList.add('on');
+    document.getElementById('nav-' + pg).classList.add('on');
 
-// --- Permissions ---
-function checkRole(role){
-  if(!currentUser){alert('Not logged in');return false;}
-  if(currentUser.r!==role && currentUser.r!=='Owner'){alert('No permission');return false;}
-  return true;
+    // Load Data
+    if (render[pg]) render[pg]();
 }
-function enforcePermissions(){
-  // hide employee menu if not owner
-  if(currentUser.r!=='Owner'){
-    document.querySelectorAll('.nav-item').forEach(n=>{
-      if(n.textContent==='Employees') n.style.display='none';
+
+const ui = {
+    toast: (msg, isError = false) => {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        if (isError) t.style.background = 'var(--error)';
+        t.textContent = msg;
+        document.getElementById('toast-container').appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    },
+    closeModal: () => document.getElementById('modal-container').classList.add('hide'),
+    openModal: (title, bodyHtml, footerHtml, isLarge = false) => {
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-body').innerHTML = bodyHtml;
+        document.getElementById('modal-footer').innerHTML = footerHtml;
+        const box = document.getElementById('modal-box');
+        isLarge ? box.classList.add('large') : box.classList.remove('large');
+        document.getElementById('modal-container').classList.remove('hide');
+    },
+    handleModalBgClick: (e) => {
+        if (e.target.id === 'modal-container') ui.closeModal();
+    },
+
+    // --- FORM MODALS ---
+    openItemModal: (sku = null) => {
+        const tires = db.get('inventory');
+        const t = sku ? tires.find(x => x.sk === sku) : null;
+        const body = `
+            <div class="grid-2">
+                <div class="fg"><label>Asset SKU</label><input id="f-sk" value="${t?t.sk:''}" ${t?'readonly':''}></div>
+                <div class="fg"><label>Storage Location</label><input id="f-lo" value="${t?t.lo:''}"></div>
+                <div class="fg"><label>Manufacturer/Brand</label><input id="f-br" value="${t?t.br:''}"></div>
+                <div class="fg"><label>Specifications/Size</label><input id="f-sz" value="${t?t.sz:''}"></div>
+                <div class="fg"><label>Current Quantity</label><input type="number" id="f-q" value="${t?t.q:0}"></div>
+                <div class="fg"><label>Acquisition Cost ($)</label><input type="number" step="0.01" id="f-co" value="${t?t.co:0}"></div>
+                <div class="fg"><label>Market Price ($)</label><input type="number" step="0.01" id="f-pr" value="${t?t.pr:0}"></div>
+            </div>
+            <div id="f-err" class="amsg er hide"></div>
+        `;
+        const foot = `
+            <button class="btn btn-outline" onclick="ui.closeModal()">Abort</button>
+            <button class="btn btn-primary" onclick="actions.saveItem('${sku}')">${sku?'Update Asset':'Initialize Asset'}</button>
+        `;
+        ui.openModal(sku ? 'Modify Asset' : 'Register New Asset', body, foot);
+    },
+
+    openSaleModal: () => {
+        const inv = db.get('inventory').filter(i => i.q > 0);
+        if(!inv.length) return ui.toast('No assets available for sale', true);
+
+        const options = inv.map(i => `<option value="${i.sk}" data-pr="${i.pr}">${i.sk} - ${i.br} (${i.q} available)</option>`).join('');
+        const body = `
+            <div class="fg">
+                <label>Select Asset</label>
+                <select id="s-sk" style="width:100%; padding:12px; border:1px solid var(--border); background:#000;" onchange="ui.updateSaleCalc()">
+                    ${options}
+                </select>
+            </div>
+            <div class="grid-2">
+                <div class="fg"><label>Quantity</label><input type="number" id="s-q" value="1" min="1" oninput="ui.updateSaleCalc()"></div>
+                <div class="fg"><label>Unit Price</label><input type="number" id="s-up" step="0.01" oninput="ui.updateSaleCalc()"></div>
+            </div>
+            <div style="background:#111; padding:20px; border:1px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px;"><span>Subtotal</span><span id="s-sub">$0.00</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold;"><span>Grand Total</span><span id="s-tot">$0.00</span></div>
+            </div>
+        `;
+        const foot = `<button class="btn btn-primary" onclick="actions.executeSale()">Finalize Transaction</button>`;
+        ui.openModal('Execute Sales Agreement', body, foot);
+        ui.updateSaleCalc();
+    },
+
+    updateSaleCalc: () => {
+        const sel = document.getElementById('s-sk');
+        const q = parseInt(document.getElementById('s-q').value) || 0;
+        const upInput = document.getElementById('s-up');
+        
+        // Initial set of unit price from data attr if input is empty/just opened
+        if(!upInput.value) upInput.value = sel.options[sel.selectedIndex].dataset.pr;
+        
+        const up = parseFloat(upInput.value) || 0;
+        const total = q * up;
+        document.getElementById('s-sub').textContent = '$' + total.toFixed(2);
+        document.getElementById('s-tot').textContent = '$' + total.toFixed(2);
+    },
+
+    openShipmentModal: () => {
+        const inv = db.get('inventory');
+        const options = inv.map(i => `<option value="${i.sk}">${i.sk} - ${i.br} ${i.sz}</option>`).join('');
+        const body = `
+            <div class="fg"><label>Target Asset</label><select id="sh-sk" style="width:100%; padding:12px; border:1px solid var(--border); background:#000;">${options}</select></div>
+            <div class="fg"><label>Received Quantity</label><input type="number" id="sh-q" value="1"></div>
+            <div class="fg"><label>Manifest Reference / Notes</label><input type="text" id="sh-nt" placeholder="e.g. PO #9921, Supplier: Titan Corp"></div>
+        `;
+        const foot = `<button class="btn btn-primary" onclick="actions.processInbound()">Accept Delivery</button>`;
+        ui.openModal('Process Inbound Shipment', body, foot);
+    },
+
+    openEmployeeModal: () => {
+        const body = `
+            <div class="fg"><label>Full Legal Name</label><input id="e-n"></div>
+            <div class="fg"><label>System ID (Username)</label><input id="e-u"></div>
+            <div class="fg"><label>Initial Security Key</label><input type="password" id="e-p"></div>
+            <div class="fg">
+                <label>Clearance Level</label>
+                <select id="e-r" style="width:100%; padding:12px; border:1px solid var(--border); background:#000;">
+                    <option value="Worker">Worker (Basic Access)</option>
+                    <option value="Manager">Manager (Operational Control)</option>
+                    <option value="Owner">Owner (Total Control)</option>
+                </select>
+            </div>
+        `;
+        const foot = `<button class="btn btn-primary" onclick="actions.saveEmployee()">Onboard Personnel</button>`;
+        ui.openModal('Recruit New Personnel', body, foot);
+    }
+};
+
+/**
+ * RENDERING ENGINE
+ */
+const render = {
+    dash: () => {
+        const inv = db.get('inventory');
+        const sales = db.get('sales');
+        const logs = db.get('logs');
+
+        const totalStock = inv.reduce((a, b) => a + b.q, 0);
+        const totalRev = sales.reduce((a, b) => a + b.tot, 0);
+        const totalProf = sales.reduce((a, b) => a + b.pr, 0);
+
+        document.getElementById('dash-stats').innerHTML = `
+            <div class="stat-card"><div class="stat-label">Stock Assets</div><div class="stat-value">${totalStock}</div><div class="stat-sub">${inv.length} unique SKUs</div></div>
+            <div class="stat-card"><div class="stat-label">System Revenue</div><div class="stat-value">$${Math.round(totalRev).toLocaleString()}</div><div class="stat-sub">Gross lifetime</div></div>
+            <div class="stat-card"><div class="stat-label">Net Profit</div><div class="stat-value">$${Math.round(totalProf).toLocaleString()}</div><div class="stat-sub">After acquisition costs</div></div>
+            <div class="stat-card"><div class="stat-label">Daily Trans</div><div class="stat-value">${sales.filter(s => s.at > Date.now() - 86400000).length}</div><div class="stat-sub">Last 24 hours</div></div>
+        `;
+
+        // Low stock list
+        const low = inv.filter(i => i.q <= 3).sort((a,b) => a.q - b.q).slice(0, 5);
+        document.getElementById('dash-low-stock').innerHTML = low.length 
+            ? low.map(i => `<tr><td style="padding:10px;">${i.sk}</td><td>${i.br}</td><td class="tr"><span class="badge ${i.q===0?'badge-out':'badge-low'}">${i.q} UNIT</span></td></tr>`).join('')
+            : '<tr><td class="nd" style="padding:40px;">Stock Levels Nominal</td></tr>';
+
+        // Recent logs
+        const recent = logs.slice(0, 5);
+        document.getElementById('dash-recent-log').innerHTML = recent.length
+            ? recent.map(l => `<tr><td style="padding:10px; font-size:10px; color:#444;">${new Date(l.at).toLocaleTimeString()}</td><td>${l.msg}</td></tr>`).join('')
+            : '<tr><td class="nd" style="padding:40px;">No Recent Telemetry</td></tr>';
+    },
+
+    inventory: () => {
+        const query = document.getElementById('inv-search').value.toLowerCase();
+        const filter = document.getElementById('inv-filter').value;
+        let data = db.get('inventory');
+
+        if (query) {
+            data = data.filter(i => i.sk.toLowerCase().includes(query) || i.br.toLowerCase().includes(query) || i.lo.toLowerCase().includes(query));
+        }
+        if (filter === 'low') data = data.filter(i => i.q > 0 && i.q <= 3);
+        if (filter === 'out') data = data.filter(i => i.q === 0);
+
+        const html = data.map(i => `
+            <tr>
+                <td style="font-weight:bold;">${i.sk}</td>
+                <td>${i.br}</td>
+                <td style="color:var(--text-mu); font-size:11px;">${i.sz}</td>
+                <td>${i.lo}</td>
+                <td style="text-align:right;">
+                    <span class="badge ${i.q===0?'badge-out':(i.q<=3?'badge-low':'badge-ok')}">${i.q}</span>
+                </td>
+                <td style="text-align:right; color:var(--text-mu);">$${i.co.toFixed(2)}</td>
+                <td style="text-align:right; font-weight:bold;">$${i.pr.toFixed(2)}</td>
+                <td style="text-align:center;">
+                    <button class="btn" style="padding:5px 8px;" onclick="ui.openItemModal('${i.sk}')">EDIT</button>
+                    <button class="btn" style="padding:5px 8px; color:var(--error);" onclick="actions.deleteItem('${i.sk}')">DEL</button>
+                </td>
+            </tr>
+        `).join('');
+
+        document.getElementById('inv-body').innerHTML = html || '<tr><td colspan="8" class="nd" style="padding:60px; text-align:center;">DATABASE EMPTY</td></tr>';
+    },
+
+    sales: () => {
+        const data = db.get('sales').reverse();
+        document.getElementById('sales-body').innerHTML = data.map(s => `
+            <tr>
+                <td style="color:var(--text-mu);">#${s.id}</td>
+                <td style="font-size:11px;">${new Date(s.at).toLocaleString()}</td>
+                <td><b>${s.sk}</b><br><small style="color:#555">${s.br}</small></td>
+                <td>@${s.by}</td>
+                <td style="text-align:right;">${s.q}</td>
+                <td style="text-align:right; font-weight:bold;">$${s.tot.toFixed(2)}</td>
+                <td style="text-align:right; color:var(--success);">$${s.pr.toFixed(2)}</td>
+            </tr>
+        `).join('');
+    },
+
+    ship: () => {
+        const data = db.get('shipments').reverse();
+        document.getElementById('ship-body').innerHTML = data.map(s => `
+            <tr>
+                <td style="color:var(--text-mu);">MN-${s.id}</td>
+                <td style="font-size:11px;">${new Date(s.at).toLocaleString()}</td>
+                <td><b>${s.sk}</b></td>
+                <td>@${s.by}</td>
+                <td style="text-align:right;">+${s.q}</td>
+                <td style="color:var(--text-mu); font-size:11px;">${s.nt || '—'}</td>
+            </tr>
+        `).join('');
+    },
+
+    emp: () => {
+        const data = db.get('users');
+        document.getElementById('emp-body').innerHTML = data.map(u => `
+            <tr>
+                <td style="color:var(--text-mu);">${u.id}</td>
+                <td><b>${u.u}</b></td>
+                <td>${u.n}</td>
+                <td><span class="badge badge-ok">${u.r}</span></td>
+                <td style="color:var(--text-mu);">${new Date(u.c).toLocaleDateString()}</td>
+                <td style="text-align:center;"><span style="color:var(--success);">● ACTIVE</span></td>
+            </tr>
+        `).join('');
+    },
+
+    log: () => {
+        const data = db.get('logs');
+        document.getElementById('log-body').innerHTML = data.map(l => `
+            <tr>
+                <td style="font-size:11px; color:var(--text-mu);">${new Date(l.at).toLocaleString()}</td>
+                <td><span style="font-size:10px; border:1px solid #333; padding:2px 5px;">${l.cat}</span></td>
+                <td>@${l.by}</td>
+                <td style="font-weight:bold;">${l.ref || '—'}</td>
+                <td style="color:#888;">${l.msg}</td>
+            </tr>
+        `).join('');
+    }
+};
+
+/**
+ * BUSINESS ACTIONS
+ */
+const actions = {
+    saveItem: (existingSku) => {
+        const sk = val('f-sk').toUpperCase();
+        const lo = val('f-lo');
+        const br = val('f-br');
+        const sz = val('f-sz');
+        const q = parseInt(val('f-q')) || 0;
+        const co = parseFloat(val('f-co')) || 0;
+        const pr = parseFloat(val('f-pr')) || 0;
+
+        if (!sk || !br) return ui.toast('SKU and Brand required', true);
+
+        const inv = db.get('inventory');
+        if (existingSku === 'null') { // New Item
+            if (inv.find(x => x.sk === sk)) return ui.toast('SKU already registered', true);
+            inv.push({ sk, lo, br, sz, q, co, pr });
+            logAction('INVENTORY', `Registered new asset: ${sk} (${br})`, sk);
+        } else {
+            const idx = inv.findIndex(x => x.sk === existingSku);
+            inv[idx] = { sk, lo, br, sz, q, co, pr };
+            logAction('INVENTORY', `Modified asset telemetry: ${sk}`, sk);
+        }
+
+        db.set('inventory', inv);
+        ui.toast('Asset Matrix Updated');
+        ui.closeModal();
+        render.inventory();
+    },
+
+    deleteItem: (sku) => {
+        if (!confirm(`CONFIRM: Permanent deletion of asset ${sku}?`)) return;
+        const inv = db.get('inventory').filter(i => i.sk !== sku);
+        db.set('inventory', inv);
+        logAction('INVENTORY', `Asset purged from database: ${sku}`, sku);
+        render.inventory();
+    },
+
+    executeSale: () => {
+        const sk = val('s-sk');
+        const q = parseInt(val('s-q')) || 0;
+        const up = parseFloat(val('s-up')) || 0;
+
+        const inv = db.get('inventory');
+        const item = inv.find(i => i.sk === sk);
+
+        if (!item || item.q < q) return ui.toast('Insufficient quantity available', true);
+
+        // Update Stock
+        item.q -= q;
+        db.set('inventory', inv);
+
+        // Record Sale
+        const sales = db.get('sales');
+        const profit = (up - item.co) * q;
+        const sale = {
+            id: Date.now().toString().slice(-6),
+            at: Date.now(),
+            sk: item.sk,
+            br: item.br,
+            q: q,
+            tot: q * up,
+            pr: profit,
+            by: currentUser.u
+        };
+        sales.push(sale);
+        db.set('sales', sales);
+
+        logAction('SALES', `Executed sale: ${q} units of ${sk}. Total: $${sale.tot.toFixed(2)}`, sk);
+        ui.toast('Transaction Complete');
+        ui.closeModal();
+        render.sales();
+    },
+
+    processInbound: () => {
+        const sk = val('sh-sk');
+        const q = parseInt(val('sh-q')) || 0;
+        const nt = val('sh-nt');
+
+        if (q <= 0) return ui.toast('Invalid quantity', true);
+
+        const inv = db.get('inventory');
+        const item = inv.find(i => i.sk === sk);
+        item.q += q;
+        db.set('inventory', inv);
+
+        const shipments = db.get('shipments');
+        shipments.push({
+            id: Date.now().toString().slice(-5),
+            at: Date.now(),
+            sk: sk,
+            q: q,
+            nt: nt,
+            by: currentUser.u
+        });
+        db.set('shipments', shipments);
+
+        logAction('LOGISTICS', `Inbound manifest processed: +${q} units for ${sk}`, sk);
+        ui.toast('Shipment Received');
+        ui.closeModal();
+        render.ship();
+    },
+
+    saveEmployee: () => {
+        const u = val('e-u').toLowerCase();
+        const n = val('e-n');
+        const p = val('e-p');
+        const r = val('e-r');
+
+        if (!u || !p || !n) return ui.toast('All fields required', true);
+
+        const users = db.get('users');
+        if (users.find(x => x.u === u)) return ui.toast('Identity ID already active', true);
+
+        users.push({ id: users.length + 1, u, n, p, r, c: Date.now() });
+        db.set('users', users);
+        
+        logAction('PERSONNEL', `New agent recruited: @${u} (${r})`, 'USER');
+        ui.toast('Recruitment Complete');
+        ui.closeModal();
+        render.emp();
+    }
+};
+
+/**
+ * AUTHENTICATION SYSTEM
+ */
+function switchAuth(mode) {
+    document.getElementById('form-login').classList.toggle('hide', mode !== 'login');
+    document.getElementById('form-signup').classList.toggle('hide', mode !== 'signup');
+    document.getElementById('tab-login').classList.toggle('on', mode === 'login');
+    document.getElementById('tab-signup').classList.toggle('on', mode === 'signup');
+}
+
+function handleSignup() {
+    const n = val('s-name'), u = val('s-user').toLowerCase(), p = val('s-pass'), p2 = val('s-pass2');
+    const msg = document.getElementById('auth-msg');
+
+    if (!n || !u || !p) return showAuthMsg('Missing registration data', 'er');
+    if (p.length < 6) return showAuthMsg('Key too short (Min 6)', 'er');
+    if (p !== p2) return showAuthMsg('Keys do not match', 'er');
+
+    const users = db.get('users');
+    if (users.find(x => x.u === u)) return showAuthMsg('Identity ID taken', 'er');
+
+    const role = users.length === 0 ? 'Owner' : 'Worker';
+    users.push({ id: 100 + users.length, n, u, p, r: role, c: Date.now() });
+    db.set('users', users);
+
+    showAuthMsg('Identity created. Initialize access.', 'ok');
+    setTimeout(() => switchAuth('login'), 1500);
+}
+
+function handleLogin() {
+    const u = val('l-user').toLowerCase(), p = val('l-pass');
+    const users = db.get('users');
+    const user = users.find(x => x.u === u && x.p === p);
+
+    if (!user) return showAuthMsg('Authorization failed', 'er');
+
+    db.session.set(user);
+    bootApp(user);
+}
+
+function logout() {
+    logAction('SESSION', `User ${currentUser.u} terminated session.`, 'AUTH');
+    db.session.clear();
+    location.reload();
+}
+
+/**
+ * UTILS & HELPERS
+ */
+function val(id) { return document.getElementById(id).value.trim(); }
+
+function showAuthMsg(t, type) {
+    const el = document.getElementById('auth-msg');
+    el.textContent = t;
+    el.className = 'amsg ' + type;
+}
+
+function logAction(cat, msg, ref) {
+    const logs = db.get('logs');
+    logs.unshift({
+        at: Date.now(),
+        cat: cat,
+        by: currentUser ? currentUser.u : 'SYS',
+        msg: msg,
+        ref: ref
     });
-  }
+    db.set('logs', logs.slice(0, 1000)); // Keep last 1000 logs
 }
 
-// --- Dashboard ---
-function renderDashboard() {
-  const T=tires();
-  const S=sales();
-  const totalQ=T.reduce((a,t)=>a+t.q,0);
-  const totalRev=S.reduce((a,s)=>a+s.tot,0);
-  const totalPr=S.reduce((a,s)=>a+s.pr,0);
-  const salesCount=S.length;
-  const container=document.getElementById('page-dashboard');
-  container.innerHTML=`<h2>Dashboard</h2>`;
-  // Canvas for chart
-  const ctx=document.createElement('canvas');
-  ctx.width=400; ctx.height=200;
-  container.appendChild(ctx);
-  // Create chart
-  if(window.dashboardChart) { window.dashboardChart.destroy(); } // destroy previous
-  window.dashboardChart=new Chart(ctx, {
-    type:'bar',
-    data:{
-      labels:['Tires','Stock','Sales','Revenue'],
-      datasets:[{
-        label:'Stats',
-        data:[T.length, totalQ, salesCount, totalRev],
-        backgroundColor:['#4caf50','#2196f3','#ff9800','#f44336']
-      }]
-    }
-  });
-  // alerts and recent activity
-  let alerts='';
-  const low=T.filter(t=>t.q<=2);
-  const out=T.filter(t=>t.q===0);
-  if(low.length>0)alerts+=`<div style="color:yellow;">Low stock: ${low.length}</div>`;
-  if(out.length>0)alerts+=`<div style="color:red;">Out of stock: ${out.length}</div>`;
-  // recent activity
-  const recent=logs().slice(-5).reverse();
-  let actHTML='';
-  recent.forEach(l=>{actHTML+=`<div>${new Date(l.at).toLocaleString()}: ${l.ac} (${l.sk})</div>`});
-  container.innerHTML+=`<div>${alerts}</div><h3>Recent Activity</h3><div>${actHTML}</div>`;
+function clearLogs() {
+    if(!confirm('Purge all telemetry logs?')) return;
+    db.set('logs', []);
+    render.log();
+    ui.toast('Logs Purged');
 }
 
-// --- Inventory ---
-function renderInventory() {
-  const container=document.getElementById('page-inventory');
-  container.innerHTML=`
-    <h2>Inventory</h2>
-    <input type="text" placeholder="Search..." oninput="showInventory()">
-    <button onclick="openTireForm()">+ Add Tire</button>
-    <div id="inventory-list" style="margin-top:10px; max-height:400px; overflow:auto;"></div>`;
-  showInventory();
-}
-function showInventory() {
-  const list=document.getElementById('inventory-list');
-  list.innerHTML='';
-  const q=document.querySelector('#page-inventory input').value.toLowerCase();
-  const T=tires().slice().sort((a,b)=>a.sk.localeCompare(b.sk));
-  T.forEach(t=>{
-    if(q&&!(`${t.sk} ${t.br} ${t.sz}`).toLowerCase().includes(q))return;
-    const out=t.q===0?'(Out)':'';
-    const low=t.q<=2?'(Low)':'';
-    list.innerHTML+=`<div style="border:1px solid #555;padding:8px;margin-bottom:4px;">
-      <b>${t.sk}</b> - ${t.br} ${t.sz} | Qty: ${t.q} ${low} ${out}
-      <button onclick="editTire(${t.id})">Edit</button>
-      <button onclick="deleteTire(${t.id})">Delete</button>
-    </div>`;
-  });
-}
-function openTireForm(id=null){
-  const T=tires();
-  const t= id ? T.find(x=>x.id===id):null;
-  const div=document.createElement('div');
-  div.style.position='fixed'; div.style.top='50%'; div.style.left='50%'; div.style.transform='translate(-50%, -50%)';
-  div.style.background='#222'; div.style.padding='20px'; div.style.borderRadius='8px'; div.style.zIndex='999';
-  div.innerHTML=`<h3>${t?'Edit Tire':'Add Tire'}</h3>
-    <label>SKU</label><input id="form-sk" value="${t?t.sk:''}">
-    <label>Brand</label><input id="form-br" value="${t?t.br:''}">
-    <label>Size</label><input id="form-sz" value="${t?t.sz:''}">
-    <label>Qty</label><input type="number" id="form-qty" value="${t?t.q:0}">
-    <label>Cost</label><input type="number" id="form-co" value="${t?t.co:0}">
-    <label>Price</label><input type="number" id="form-pr" value="${t?t.pr:0}">
-    <button onclick="saveTire(${t?t.id:'null'})">Save</button>
-    <button onclick="this.closest('div').remove()">Cancel</button>`;
-document.body.appendChild(div);
-}
-function saveTire(id){
-  const sk=document.getElementById('form-sk').value.trim();
-  const br=document.getElementById('form-br').value.trim();
-  const sz=document.getElementById('form-sz').value.trim();
-  const q=parseInt(document.getElementById('form-qty').value);
-  const co=parseFloat(document.getElementById('form-co').value);
-  const pr=parseFloat(document.getElementById('form-pr').value);
-  if(!sk||!br||!sz){alert('Fill all fields');return;}
-  const T=tires();
-  // Check SKU duplication
-  if(id===null && T.some(x=>x.sk===sk)){alert('SKU duplicate');return;}
-  if(id===null){
-    T.push({id:nextId(T),sk,br,sz,q,co,pr});
-    addLog(`Added tire ${sk}`);
-  }else{
-    const t=T.find(x=>x.id===id);
-    t.sk=sk;t.br=br;t.sz=sz;t.q=q;t.co=co;t.pr=pr;
-    addLog(`Edited tire ${sk}`);
-  }
-  sd('t',T);
-  showInventory();
-  document.querySelector('div[style*="position:fixed"]').remove();
-}
-function deleteTire(id){if(confirm('Delete?')){let T=tires();T=T.filter(x=>x.id!==id);sd('t',T);showInventory(); addLog(`Deleted tire`);}}
-function editTire(id){openTireForm(id);}
-
-// --- Sales ---
-function renderSales(){ 
-  const container=document.getElementById('page-sales');
-  container.innerHTML=`
-    <h2>Sales</h2>
-    <button onclick="recordSale()">Record Sale</button>
-    <button onclick="deleteSale()">Delete All Sales</button>
-    <div id="sales-list" style="margin-top:10px;"></div>`;
-  showSales();
-}
-function showSales(){ 
-  const list=document.getElementById('sales-list');
-  list.innerHTML=''; 
-  sales().forEach(s=>{ list.innerHTML+=`<div>${s.id}: ${s.sk} - Qty:${s.q} - Total:$${s.tot.toFixed(2)} - Prof:$${s.pr.toFixed(2)} (${new Date(s.at).toLocaleString()})</div>`; });
-}
-function recordSale(){
-  const T=tires();
-  if(T.length===0){alert('No tires');return;}
-  const sk=prompt('Enter SKU');
-  const t=T.find(x=>x.sk===sk);
-  if(!t){alert('Tire not found');return;}
-  const q=prompt('Qty');
-  const qty=parseInt(q);
-  if(qty>t.q){alert('Not enough stock');return;}
-  t.q-=qty;
-  const tot=qty*t.pr;
-  const pr=tot - qty*t.co;
-  const S=sales();
-  S.push({id:nextId(S),sk:t.sk,br:t.br,sz:t.sz,q:qty,tot,pr,at:Date.now()});
-  sd('s',S);
-  sd('t',T);
-  addLog(`Sale of ${qty} ${sk}`);
-  showSales();
-}
-function deleteSale(){if(confirm('Delete all sales?')){sd('s',[]); addLog('Deleted all sales'); showSales();}}
-
-// --- Shipments ---
-function renderShipment(){ 
-  const container=document.getElementById('page-shipment');
-  container.innerHTML=`
-    <h2>Shipments</h2>
-    <button onclick="receiveShipment()">Receive Shipment</button>
-    <button onclick="deleteShipment()">Delete All Shipments</button>
-    <div id="sh-list"></div>`;
-  showShipments();
-}
-function showShipments(){ 
-  const list=document.getElementById('sh-list'); 
-  list.innerHTML=''; 
-  shipments().forEach(s=>{ list.innerHTML+=`<div>${s.id}: ${s.sk} - Qty:${s.q} - Notes:${s.nt} (${new Date(s.at).toLocaleString()})</div>`; });
-}
-function receiveShipment(){
-  const sk=prompt('SKU');
-  const q=prompt('Qty');
-  const nt=prompt('Notes');
-  const qty=parseInt(q);
-  const T=tires();
-  const t=T.find(x=>x.sk===sk);
-  if(!t){alert('Tire not found');return;}
-  t.q+=qty;
-  const sh=shipments();
-  sh.push({id:nextId(sh),sk,br:t.br,sz:t.sz,q:qty,nt,at:Date.now()});
-  sd('sh',sh);
-  sd('t',T);
-  addLog(`Received shipment of ${qty} ${sk}`);
-  showShipments();
-}
-function deleteShipment(){if(confirm('Delete all shipments?')){sd('sh',[]); addLog('Deleted all shipments'); showShipments();}}
-
-// --- Activity ---
-function renderActivity(){ 
-  const container=document.getElementById('page-activity');
-  container.innerHTML='<h2>Activity Log</h2><div id="logs"></div>';
-  showLogs();
-}
-function showLogs(){ 
-  const el=document.getElementById('logs'); 
-  el.innerHTML=''; 
-  logs().slice(-20).reverse().forEach(l=>{el.innerHTML+=`<div>${new Date(l.at).toLocaleString()}: ${l.ac} (${l.sk})</div>`;});
-}
-function addLog(msg){ 
-  const a=logs(); 
-  a.push({id:nextId(a),ac:msg,sk:'',by:currentUser.u,at:Date.now()}); 
-  sd('l',a);
+function updateDashClock() {
+    const el = document.getElementById('dash-date');
+    if(el) el.textContent = new Date().toLocaleString() + ' // SYSTEM_STABLE';
 }
 
-// --- Employee management ---
-function renderEmployees() {
-  const container=document.getElementById('page-employees');
-  container.innerHTML=`<h2>Employees</h2>
-    <button onclick="addEmployee()">Add Employee</button>
-    <div id="employee-list"></div>`;
-  showEmployees();
-}
-function showEmployees() {
-  const list=document.getElementById('employee-list');
-  list.innerHTML='';
-  users().forEach(u=>{
-    list.innerHTML+=`<div>${u.u} - ${u.n} (${u.r}) 
-      <button onclick="editEmployee(${u.id})">Edit</button> 
-      <button onclick="removeEmployee(${u.id})">Remove</button></div>`;
-  });
-}
-function addEmployee() {
-  if(!checkRole('Owner')) return;
-  const u=prompt('Username');
-  const n=prompt('Name');
-  const r=prompt('Role (Owner/Manager/Worker)');
-  const p=prompt('Password');
-  if(!u||!n||!p){alert('Fill all');return;}
-  const all=users();
-  // prevent SKU duplicate (not employee, but for users, just for demo)
-  if(all.some(x=>x.u===u)){alert('Username duplicate');return;}
-  // Save employee with plain password (not secure, for demo only)
-  all.push({id:nextId(all), u, n, p, r, c:Date.now()});
-  sd('u',all);
-  showEmployees();
-}
-function editEmployee(id){
-  if(!checkRole('Owner')) return;
-  const U=users();
-  const u=U.find(x=>x.id===id);
-  if(!u){alert('Not found');return;}
-  u.u=prompt('Username',u.u);
-  u.n=prompt('Name',u.n);
-  u.r=prompt('Role',u.r);
-  const p=prompt('Password (leave blank to keep)');
-  if(p)u.p=p;
-  sd('u',U);
-  showEmployees();
-}
-function removeEmployee(id){
-  if(!checkRole('Owner')) return;
-  if(!confirm('Remove employee?'))return;
-  let U=users(); U=U.filter(x=>x.id!==id);
-  sd('u',U);
-  showEmployees();
+function exportData(type) {
+    const data = db.get(type);
+    if(!data.length) return ui.toast('No data to export', true);
+    
+    let csv = Object.keys(data[0]).join(',') + '\n';
+    data.forEach(row => {
+        csv += Object.values(row).map(v => `"${v}"`).join(',') + '\n';
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('href', url);
+    a.setAttribute('download', `obi_${type}_${new Date().toISOString().slice(0,10)}.csv`);
+    a.click();
 }
 
-// --- Theme toggle ---
-let darkTheme=false;
-function toggleTheme() {
-  darkTheme=!darkTheme;
-  document.body.style.background=darkTheme?'#222':'#fff';
-  document.body.style.color=darkTheme?'#fff':'#000';
-  document.querySelectorAll('button,input,select').forEach(el=>{
-    el.style.background=darkTheme?'#333':'#eee';
-    el.style.color=darkTheme?'#fff':'#000';
-  });
-}
-
-// --- Backup/Restore ---
-function backupData() {
-  const data={tires:tires(),sales:sales(),sh:shipments(),logs:logs(),users:users()};
-  const s=JSON.stringify(data);
-  const a=document.createElement('a');
-  a.href='data:text/json;charset=utf-8,'+encodeURIComponent(s);
-  a.download='backup-'+new Date().toISOString()+'.json';
-  a.click();
-}
-function restoreDataFile() {
-  const fi=document.createElement('input');
-  fi.type='file';
-  fi.accept='application/json';
-  fi.onchange=()=> {
-    const reader=new FileReader();
-    reader.onload=()=> {
-      try{
-        const data=JSON.parse(reader.result);
-        sd('t',data.tires);
-        sd('s',data.sales);
-        sd('sh',data.sh);
-        sd('l',data.logs);
-        sd('u',data.users);
-        alert('Restored');
-        location.reload();
-      }catch(e){alert('Invalid data');}
-    }
-    reader.readAsText(fi.files[0]);
-  }
-  fi.click();
-}
-
-// --- Password Reset ---
-function resetPassword() {
-  const u=prompt('Enter your username');
-  if(!u){alert('Invalid');return;}
-  const newp=prompt('Enter new password (6+ chars)');
-  if(!newp || newp.length<6){alert('Invalid');return;}
-  const all=users();
-  const user=all.find(x=>x.u===u);
-  if(!user){alert('User not found');return;}
-  // In real app, verify admin or security question here
-  user.p=newp;
-  sd('u',all);
-  addLog(`Password reset for ${u}`);
-  alert('Password updated');
-}
-
-// --- Role check ---
-function checkRole(role){
-  if(!currentUser){alert('Not logged in');return false;}
-  if(currentUser.r!==role && currentUser.r!=='Owner'){alert('No permission');return false;}
-  return true;
-}
-
-// --- Navigation ---
-const pages={
-  d:'page-dashboard',
-  i:'page-inventory',
-  s:'page-sales',
-  sh:'page-shipment',
-  a:'page-activity',
-  e:'page-employees'
-};
-function navigate(p){
-  for(let key in pages){document.getElementById(pages[key]).style.display='none';}
-  document.getElementById('page-'+p).style.display='block';
-  if(p==='d')renderDashboard();
-  if(p==='i')renderInventory();
-  if(p==='s')renderSales();
-  if(p==='sh')renderShipment();
-  if(p==='a')renderActivity();
-  if(p==='e')renderEmployees();
-}
-
-// --- Initialization ---
-(function(){
-  const sess=getSession();
-  if(sess){
-    const u=users().find(x=>x.id===sess.id&&x.u===sess.u);
-    if(u){boot(u);return;}
-  }
-  document.getElementById('auth').style.display='flex';
-})();
-
-// --- Utility ---
-function nextId(arr){return arr.length?Math.max(...arr.map(x=>x.id))+1:1;}
 </script>
 </body>
 </html>
