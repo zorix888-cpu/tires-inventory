@@ -1,211 +1,149 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OBI Inventory</title>
-<style>
-/* --- Your Existing Styles (unchanged) --- */
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#000;color:#fff;font-family:'Courier New',monospace;min-height:100vh}
-input,button,select{font-family:'Courier New',monospace}
-.hide{display:none!important}
-#auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-/* ... rest of your original CSS (unchanged) ... */
-</style>
-</head>
-<body>
-<div id="auth">
-  <div class="abox">
-    <div class="alogo"><h1>OBI</h1><p>Inventory System</p></div>
-    <div class="atabs">
-      <button class="atab on" id="tl" onclick="tab('l')">Login</button>
-      <button class="atab" id="ts" onclick="tab('s')">Sign Up</button>
-    </div>
-    <div class="acard">
-      <div id="fl">
-        <div id="lmsg" class="amsg hide"></div>
-        <div class="fg"><label>Username</label><input id="lu" type="text" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('lp').focus()"></div>
-        <div class="fg"><label>Password</label><input id="lp" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"></div>
-        <button class="abtn" onclick="login()">Login →</button>
-      </div>
-      <div id="fs" class="hide">
-        <div id="smsg" class="amsg hide"></div>
-        <div class="fg"><label>Your Name</label><input id="sn" type="text" placeholder="Full name"></div>
-        <div class="fg"><label>Username</label><input id="su" type="text" placeholder="Choose a username" autocomplete="username"></div>
-        <div class="fg"><label>Password</label><input id="sp" type="password" placeholder="At least 6 characters" autocomplete="new-password"></div>
-        <div class="fg"><label>Confirm Password</label><input id="sp2" type="password" autocomplete="new-password" onkeydown="if(event.key==='Enter')signup()"></div>
-        <button class="abtn" onclick="signup()">Create Account →</button>
-        <div class="ahint" id="sh"></div>
-      </div>
-    </div>
-  </div>
-</div>
+# OBI Inventory System – Description
 
-<div id="app" class="hide">
-  <!-- Your original app content (unchanged) -->
-</div>
+<p>This is a private tire inventory management web application built using HTML, CSS, and JavaScript with all data stored locally in the browser using LocalStorage.</p>
 
-<div class="mo hide" id="mo" onclick="bgClose(event)">
-  <!-- Your modal implementation (unchanged) -->
-</div>
+<p>The system is designed for tire shop employees to manage inventory, sales, shipments, and employee accounts through a clean black-and-white dashboard interface.</p>
 
-<script>
-// ── DATA STORAGE HELPERS ─────────────────────────────
-var K = 'obiv3_'; // Key prefix for localStorage
-function gd(k) { 
-  try { return JSON.parse(localStorage.getItem(K + k) || 'null'); } 
-  catch (e) { return null; } 
-}
-function sd(k, v) { localStorage.setItem(K + k, JSON.stringify(v)); }
-function users() { return gd('u') || []; }
-function nid(a) { return a.length ? Math.max.apply(null, a.map((x) => x.id)) + 1 : 1; }
+<h2>Main Features</h2>
 
-// ── AUTH FIXES ────────────────────────────────────────
-function tab(t) {
-  document.getElementById("fl").className = t === "l" ? "" : "hide";
-  document.getElementById("fs").className = t === "s" ? "" : "hide";
-  document.getElementById("tl").className = "atab" + (t === "l" ? " on" : "");
-  document.getElementById("ts").className = "atab" + (t === "s" ? " on" : "");
-  if (t === "s") {
-    var all = users();
-    document.getElementById("sh").textContent = all.length === 0 
-      ? "First account will be Owner." 
-      : "New accounts start as Worker.";
-  }
-  msg("lmsg", "");
-  msg("smsg", "");
-}
+<ul>
+    <li>🔐 User Authentication
+        <ul>
+            <li>Login and Sign Up system</li>
+            <li>First account automatically becomes Owner</li>
+            <li>Additional accounts become Workers</li>
+            <li>Role-based permissions:
+                <ul>
+                    <li>Owner</li>
+                    <li>Manager</li>
+                    <li>Worker</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    
+    <li>📊 Dashboard
+        <ul>
+            <li>Displays:
+                <ul>
+                    <li>Total stock quantity</li>
+                    <li>Total SKUs</li>
+                    <li>Units sold</li>
+                    <li>Revenue</li>
+                    <li>Profit</li>
+                </ul>
+            </li>
+            <li>Shows low-stock and out-of-stock alerts</li>
+            <li>Displays recent activity logs</li>
+        </ul>
+    </li>
+    
+    <li>🚗 Inventory Management
+        <ul>
+            <li>Add new tires</li>
+            <li>Edit tire information</li>
+            <li>Delete tires</li>
+            <li>Track:
+                <ul>
+                    <li>SKU</li>
+                    <li>Brand</li>
+                    <li>Size</li>
+                    <li>Location</li>
+                    <li>Quantity</li>
+                    <li>Cost</li>
+                    <li>Selling price</li>
+                </ul>
+            </li>
+            <li>Search inventory instantly</li>
+            <li>Filter low-stock and out-of-stock items</li>
+            <li>Export inventory to CSV files</li>
+        </ul>
+    </li>
+    
+    <li>💰 Sales Tracking
+        <ul>
+            <li>Record tire sales</li>
+            <li>Automatically reduces inventory quantity</li>
+            <li>Calculates:
+                <ul>
+                    <li>Sale total</li>
+                    <li>Profit</li>
+                </ul>
+            </li>
+            <li>Stores complete sales history</li>
+        </ul>
+    </li>
+    
+    <li>📦 Shipment Management
+        <ul>
+            <li>Receive incoming tire shipments</li>
+            <li>Increase stock automatically</li>
+            <li>Add notes for deliveries</li>
+            <li>Maintain shipment history</li>
+        </ul>
+    </li>
+    
+    <li>📜 Activity Logs
+        <ul>
+            <li>Records every important action:
+                <ul>
+                    <li>Tire added</li>
+                    <li>Tire edited</li>
+                    <li>Tire deleted</li>
+                    <li>Sales completed</li>
+                    <li>Shipments received</li>
+                </ul>
+            </li>
+            <li>Tracks:
+                <ul>
+                    <li>User</li>
+                    <li>Date</li>
+                    <li>SKU</li>
+                    <li>Action details</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    
+    <li>👥 Employee Management
+        <ul>
+            <li>Owner-only section</li>
+            <li>Create employee accounts</li>
+            <li>Edit employee information</li>
+            <li>Change user roles</li>
+            <li>Reset passwords</li>
+        </ul>
+    </li>
+</ul>
 
-function msg(id, txt, ok) {
-  var el = document.getElementById(id);
-  if (!txt) {
-    el.className = "amsg hide";
-    el.textContent = "";
-    return;
-  }
-  el.className = "amsg" + (ok ? " ok" : "");
-  el.textContent = txt;
-}
+<h2>Technical Details</h2>
 
-function signup() {
-  var name = document.getElementById("sn").value.trim();
-  var uname = document.getElementById("su").value.trim().toLowerCase().replace(/\s+/g, "");
-  var pass = document.getElementById("sp").value;
-  var pass2 = document.getElementById("sp2").value;
+<h3>Frontend</h3>
+<ul>
+    <li>Pure HTML</li>
+    <li>Pure CSS</li>
+    <li>Pure JavaScript</li>
+    <li>No frameworks used</li>
+</ul>
 
-  // Validation
-  if (!name) {
-    msg("smsg", "Enter your name");
-    return;
-  }
-  if (!uname) {
-    msg("smsg", "Choose a username");
-    return;
-  }
-  if (pass.length < 6) {
-    msg("smsg", "Password must be at least 6 characters");
-    return;
-  }
-  if (pass !== pass2) {
-    msg("smsg", "Passwords do not match");
-    return;
-  }
+<h3>Storage</h3>
+<ul>
+    <li>Browser LocalStorage</li>
+    <li>No database required</li>
+    <li>No server required</li>
+</ul>
 
-  var all = users();
-  if (all.find((user) => user.u === uname)) {
-    msg("smsg", "Username already taken — choose another");
-    return;
-  }
+<h3>Security Features</h3>
+<ul>
+    <li>User sessions</li>
+    <li>Input sanitization against HTML injection</li>
+    <li>Role-based access control</li>
+</ul>
 
-  var role = all.length === 0 ? "Owner" : "Worker";
-  var user = { id: nid(all), n: name, u: uname, p: pass, r: role, c: Date.now() };
-  all.push(user);
-  sd("u", all);
+<h2>Overall Purpose</h2>
+<p>The OBI Inventory System is a lightweight, private inventory platform built specifically for a tire business. It allows employees to manage stock, process sales, receive shipments, track activity, and manage staff without requiring internet access, servers, or external databases.</p>
 
-  // Success message:
-  msg("smsg", "Account created! You can now log in.", true);
-
-  // Clear signup fields:
-  document.getElementById("sn").value = "";
-  document.getElementById("su").value = "";
-  document.getElementById("sp").value = "";
-  document.getElementById("sp2").value = "";
-
-  setTimeout(() => {
-    tab("l");
-    document.getElementById("lu").value = uname;
-    document.getElementById("lp").focus();
-  }, 1500);
-}
-
-function login() {
-  var uname = document.getElementById("lu").value.trim().toLowerCase();
-  var pass = document.getElementById("lp").value;
-
-  if (!uname || !pass) {
-    msg("lmsg", "Enter username and password");
-    return;
-  }
-
-  var all = users();
-  if (!all.length) {
-    msg("lmsg", "No accounts exist. Please sign up first.");
-    return;
-  }
-
-  var user = all.find((u) => u.u === uname);
-  if (!user) {
-    msg("lmsg", "Username not found");
-    return;
-  }
-
-  if (user.p !== pass) {
-    msg("lmsg", "Incorrect password");
-    return;
-  }
-
-  sd("sess", { id: user.id, u: user.u, n: user.n, r: user.r });
-  boot(user);
-}
-
-function logout() {
-  localStorage.removeItem(K + "sess");
-  CU = null;
-  document.getElementById("app").className = "hide";
-  document.getElementById("auth").className = "";
-  document.getElementById("auth").style.display = "";
-  document.getElementById("lu").value = "";
-  document.getElementById("lp").value = "";
-  msg("lmsg", "");
-}
-
-var CU = null;
-function boot(user) {
-  CU = user;
-  document.getElementById("auth").className = "hide";
-  document.getElementById("app").className = "";
-  document.getElementById("snm").textContent = user.n;
-  document.getElementById("srl").textContent = user.r;
-  var canEdit = user.r === "Owner" || user.r === "Manager";
-  document.getElementById("ne").className = "ni" + (user.r === "Owner" ? "" : " hide");
-  document.getElementById("badd").style.display = canEdit ? "" : "none";
-  document.getElementById("thact").style.display = canEdit ? "" : "none";
-  go("d");
-}
-
-// ── INIT ──────────────────────────────────────────────
-(function () {
-  var sess = gd("sess");
-  if (sess) {
-    var u = users().find((x) => x.id === sess.id && x.u === sess.u);
-    if (u) {
-      boot(u);
-      return;
-    }
-  }
-  document.getElementById("auth").style.display = "";
-})();
-</script>
-</body>
-</html>
+<p>Project Type: Inventory Management System (IMS)</p>
+<p>Industry: Tire & Automotive Business</p>
+<p>Technology Stack: HTML, CSS, JavaScript, LocalStorage</p>
+<p>Deployment: Runs directly in a web browser as a standalone application.</p>
