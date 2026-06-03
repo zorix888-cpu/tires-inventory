@@ -3,205 +3,244 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OBI Inventory System</title>
+<title>OBI Inventory</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#000;color:#fff;font-family:'Courier New',monospace;min-height:100vh}
-input,button,select,textarea{font-family:'Courier New',monospace}
+input,button,select{font-family:'Courier New',monospace}
 .hidden{display:none!important}
+
+/* AUTH */
 #auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.auth-box{width:100%;max-width:420px}
-.auth-logo{text-align:center;margin-bottom:32px}
-.auth-logo .red-sq{width:48px;height:48px;background:#ef4444;margin:0 auto 16px}
-.auth-logo h1{font-size:36px;font-weight:700;letter-spacing:-2px}
-.auth-logo p{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:4px;margin-top:6px}
-.auth-tabs{display:flex;border:1px solid #222;margin-bottom:0}
-.auth-tab{flex:1;padding:10px;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:2px;cursor:pointer;color:#555;background:#0a0a0a;border:none;transition:all .15s}
-.auth-tab.active{background:#fff;color:#000;font-weight:700}
-.auth-card{border:1px solid #222;border-top:none;background:#0a0a0a;padding:28px}
-.form-group{margin-bottom:16px}
-.form-group label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#666;margin-bottom:7px}
-.form-group input{width:100%;padding:10px 12px;background:#000;border:1px solid #333;color:#fff;font-size:14px;outline:none}
+.auth-box{width:100%;max-width:400px}
+.auth-logo{text-align:center;margin-bottom:40px}
+.auth-logo h1{font-size:48px;font-weight:700;letter-spacing:-3px;color:#fff}
+.auth-logo p{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:5px;margin-top:6px}
+.auth-card{border:1px solid #fff;background:#000;padding:32px}
+.auth-card h2{font-size:13px;text-transform:uppercase;letter-spacing:3px;margin-bottom:6px}
+.auth-card p{font-size:12px;color:#555;margin-bottom:24px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:#888;margin-bottom:8px}
+.form-group input{width:100%;padding:12px;background:#000;border:1px solid #444;color:#fff;font-size:14px;outline:none}
 .form-group input:focus{border-color:#fff}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;cursor:pointer;border:none;transition:all .15s}
-.btn-white{background:#fff;color:#000}.btn-white:hover{background:#e5e5e5}
-.btn-full{width:100%;justify-content:center}
-.btn-outline{background:transparent;border:1px solid #333;color:#fff}.btn-outline:hover{border-color:#fff}
-.btn-ghost{background:transparent;border:none;color:#666;padding:6px 10px}.btn-ghost:hover{color:#fff}
-.btn-sm{padding:5px 10px;font-size:11px}
-.msg-error{background:#ef444420;border:1px solid #ef4444;color:#ef4444;padding:10px 12px;font-size:12px;margin-bottom:14px}
-.msg-ok{background:#22c55e20;border:1px solid #22c55e;color:#22c55e;padding:10px 12px;font-size:12px;margin-bottom:14px}
-.auth-footer{text-align:center;margin-top:20px;font-size:10px;color:#333;text-transform:uppercase;letter-spacing:3px}
-.hint{font-size:11px;color:#444;margin-top:8px;text-align:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:3px;cursor:pointer;border:none;width:100%;transition:all .1s}
+.btn-white{background:#fff;color:#000}.btn-white:hover{background:#ddd}
+.btn-outline{background:#000;border:1px solid #444;color:#fff}.btn-outline:hover{border-color:#fff}
+.btn-ghost{background:transparent;border:none;color:#555;cursor:pointer;font-size:11px;text-transform:uppercase;letter-spacing:2px;padding:8px 0;width:100%;text-align:center}.btn-ghost:hover{color:#fff}
+.btn-sm{padding:6px 12px;font-size:10px;width:auto}
+.btn-inline{width:auto}
+.msg{padding:10px 14px;font-size:12px;margin-bottom:16px;border:1px solid}
+.msg-error{border-color:#fff;color:#fff;background:#ffffff15}
+.msg-ok{border-color:#888;color:#888;background:transparent}
+.auth-back{text-align:center;margin-top:16px;font-size:11px;color:#444;cursor:pointer;text-transform:uppercase;letter-spacing:2px}.auth-back:hover{color:#fff}
+.auth-hint{font-size:11px;color:#444;text-align:center;margin-top:12px}
+
+/* APP LAYOUT */
 #app{display:flex;min-height:100vh}
-aside{width:240px;min-width:240px;background:#080808;border-right:1px solid #1a1a1a;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
-.sidebar-logo{padding:24px;border-bottom:1px solid #1a1a1a}
-.sidebar-logo .brand{display:flex;align-items:center;gap:8px;font-size:22px;font-weight:700;letter-spacing:-1px}
-.sidebar-logo .brand .dot{width:14px;height:14px;background:#ef4444;flex-shrink:0}
-.sidebar-logo .sub{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:3px;margin-top:4px}
-nav{flex:1;padding:16px;overflow-y:auto}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:13px;cursor:pointer;color:#555;transition:all .1s;margin-bottom:2px}
-.nav-item:hover{color:#fff;background:#ffffff10}.nav-item.active{background:#fff;color:#000}
-.nav-item svg{width:16px;height:16px;flex-shrink:0}
-.sidebar-user{padding:16px;border-top:1px solid #1a1a1a}
-.user-info{padding:8px 12px;margin-bottom:4px}
-.user-info .uname{font-size:13px;font-weight:700}
-.user-info .urole{font-size:11px;color:#555}
-.main{flex:1;margin-left:240px;overflow-y:auto}
+aside{width:220px;min-width:220px;background:#000;border-right:1px solid #222;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid #222}
+.sidebar-logo .brand{font-size:24px;font-weight:700;letter-spacing:-2px;color:#fff}
+.sidebar-logo .sub{font-size:9px;color:#444;text-transform:uppercase;letter-spacing:4px;margin-top:4px}
+nav{flex:1;padding:12px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:12px;cursor:pointer;color:#555;transition:all .1s;margin-bottom:1px;text-transform:uppercase;letter-spacing:1px}
+.nav-item:hover{color:#fff}.nav-item.active{background:#fff;color:#000}
+.nav-item svg{width:14px;height:14px;flex-shrink:0}
+.sidebar-user{padding:16px;border-top:1px solid #222}
+.user-name{font-size:12px;font-weight:700;margin-bottom:2px}
+.user-role{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.sidebar-logout{background:transparent;border:1px solid #222;color:#555;padding:8px;font-size:10px;text-transform:uppercase;letter-spacing:2px;cursor:pointer;width:100%}.sidebar-logout:hover{border-color:#fff;color:#fff}
+.main{flex:1;margin-left:220px;overflow-y:auto}
 .page{padding:40px;display:none;max-width:1400px}
 .page.active{display:block}
-.page-header{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #1a1a1a;padding-bottom:20px;margin-bottom:28px;gap:16px}
-.page-header h1{font-size:22px;font-weight:700;letter-spacing:-1px}
-.page-header p{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:2px;margin-top:4px}
+.page-header{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #222;padding-bottom:20px;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.page-header h1{font-size:20px;font-weight:700;letter-spacing:-1px}
+.page-header p{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:3px;margin-top:4px}
 .page-actions{display:flex;gap:8px;flex-shrink:0}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
-.stat-card{border:1px solid #1a1a1a;background:#0a0a0a;padding:20px}
-.stat-card .label{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#555;margin-bottom:8px}
-.stat-card .value{font-size:28px;font-weight:700;letter-spacing:-1px}
-.stat-card .sub{font-size:11px;color:#555;margin-top:4px}
-.table-wrap{border:1px solid #1a1a1a;background:#0a0a0a;overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{padding:10px 14px;text-align:left;font-weight:400;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#555;background:#000;border-bottom:1px solid #1a1a1a}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:#222;border:1px solid #222;margin-bottom:28px}
+.stat-card{background:#000;padding:24px 20px}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:3px;color:#555;margin-bottom:8px}
+.stat-value{font-size:32px;font-weight:700;letter-spacing:-2px}
+.stat-sub{font-size:11px;color:#555;margin-top:4px}
+
+/* TABLE */
+.table-wrap{border:1px solid #222;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:10px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#555;background:#000;border-bottom:1px solid #222;font-weight:400}
 td{padding:10px 14px;border-bottom:1px solid #111}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#ffffff05}
-.text-right{text-align:right}.text-muted{color:#555}
-.badge{display:inline-block;padding:2px 8px;font-size:11px}
-.badge-red{background:#ef444420;color:#ef4444}
-.badge-yellow{background:#eab30820;color:#eab308}
-.badge-blue{background:#3b82f620;color:#3b82f6}
-.badge-gray{background:#ffffff15;color:#aaa}
-.dot-red{display:inline-block;width:8px;height:8px;background:#ef4444;border-radius:50%;animation:pulse 1.5s infinite;margin-right:6px}
-.dot-yellow{display:inline-block;width:8px;height:8px;background:#eab308;border-radius:50%;animation:pulse 1.5s infinite;margin-right:6px}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.filters{display:flex;align-items:center;gap:12px;background:#0a0a0a;border:1px solid #1a1a1a;padding:14px;margin-bottom:16px;flex-wrap:wrap}
-.search-wrap{position:relative;flex:1;min-width:200px;max-width:360px}
-.search-wrap input{width:100%;padding:8px 12px 8px 36px;background:#000;border:1px solid #333;color:#fff;font-size:13px;outline:none}
-.search-wrap input:focus{border-color:#666}
-.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#555}
-.check-label{display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;color:#888}
+.text-right{text-align:right}
+.muted{color:#555}
+.bold{font-weight:700}
+.badge{display:inline-block;padding:2px 8px;font-size:10px;text-transform:uppercase;letter-spacing:1px}
+.badge-inv{border:1px solid #fff;color:#fff}
+.badge-dim{border:1px solid #444;color:#555}
+.badge-warn{background:#fff;color:#000}
+.blink{animation:blink .8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* FILTERS */
+.filters{display:flex;align-items:center;gap:12px;border:1px solid #222;border-bottom:none;padding:12px 14px;flex-wrap:wrap;background:#000}
+.search-wrap{position:relative;flex:1;min-width:180px}
+.search-wrap input{width:100%;padding:8px 12px 8px 34px;background:#000;border:1px solid #333;color:#fff;font-size:12px;outline:none}
+.search-wrap input:focus{border-color:#fff}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#555}
+.check-label{display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer;color:#666;text-transform:uppercase;letter-spacing:1px}
 .check-label input{accent-color:#fff}
-.modal-overlay{position:fixed;inset:0;background:#000000cc;display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
-.modal{background:#0a0a0a;border:1px solid #333;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
-.modal-lg{max-width:780px}
-.modal-header{padding:24px 24px 16px;border-bottom:1px solid #1a1a1a;display:flex;justify-content:space-between;align-items:center}
-.modal-header h2{font-size:18px;font-weight:700;letter-spacing:-0.5px;text-transform:uppercase}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:#000000ee;display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal{background:#000;border:1px solid #fff;width:100%;max-width:500px;max-height:90vh;overflow-y:auto}
+.modal-lg{max-width:760px}
+.modal-header{padding:20px 24px;border-bottom:1px solid #222;display:flex;justify-content:space-between;align-items:center}
+.modal-header h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:3px}
+.modal-close{background:none;border:none;color:#555;cursor:pointer;font-size:18px;line-height:1}.modal-close:hover{color:#fff}
 .modal-body{padding:24px}
-.modal-footer{padding:16px 24px;border-top:1px solid #1a1a1a;display:flex;gap:8px;justify-content:flex-end}
+.modal-footer{padding:16px 24px;border-top:1px solid #222;display:flex;gap:8px;justify-content:flex-end}
 .field{margin-bottom:16px}
-.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#666;margin-bottom:6px}
-.field input,.field select{width:100%;padding:9px 12px;background:#000;border:1px solid #333;color:#fff;font-size:13px;outline:none}
+.field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#666;margin-bottom:7px}
+.field input,.field select{width:100%;padding:10px 12px;background:#000;border:1px solid #333;color:#fff;font-size:13px;outline:none}
+.field input:focus,.field select:focus{border-color:#fff}
 .field select option{background:#111}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.field-error{font-size:11px;color:#ef4444;margin-top:4px}
-.alert-panel{border:1px solid #1a1a1a;background:#0a0a0a;margin-bottom:28px}
-.panel-header{padding:12px 16px;border-bottom:1px solid #1a1a1a;background:#000;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:8px}
-.alert-item{padding:14px 16px;border-bottom:1px solid #111;display:flex;justify-content:space-between;align-items:center}
+.field-err{font-size:11px;color:#fff;margin-top:4px;background:#ffffff15;padding:6px 10px;border-left:2px solid #fff}
+
+/* ALERTS PANEL */
+.two-col{display:grid;grid-template-columns:3fr 2fr;gap:24px;margin-bottom:28px}
+.panel{border:1px solid #222}
+.panel-hd{padding:10px 14px;border-bottom:1px solid #222;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:#555;background:#000}
+.alert-item{padding:12px 14px;border-bottom:1px solid #111;display:flex;justify-content:space-between;align-items:center}
 .alert-item:last-child{border-bottom:none}
-.section-label{padding:8px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
-.section-label-red{background:#ef444415;color:#ef4444}
-.section-label-yellow{background:#eab30815;color:#eab308}
-.no-data{padding:32px;text-align:center;color:#444;font-size:13px}
-.two-col{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:28px}
-.recent-panel{border:1px solid #1a1a1a;background:#0a0a0a}
-.recent-item{padding:14px 16px;border-bottom:1px solid #111}
+.sec-label{padding:6px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px}
+.sec-out{background:#fff;color:#000}
+.sec-low{background:#222;color:#fff}
+.no-data{padding:28px;text-align:center;color:#333;font-size:12px;text-transform:uppercase;letter-spacing:2px}
+.recent-item{padding:12px 14px;border-bottom:1px solid #111}
 .recent-item:last-child{border-bottom:none}
-.recent-action{display:inline-block;background:#ffffff10;padding:2px 8px;font-size:11px;font-weight:700;margin-bottom:6px}
-.recent-detail{font-size:13px}
-.recent-meta{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
-.tire-list-pick{height:260px;overflow-y:auto;border:1px solid #1a1a1a;background:#000}
+.recent-action{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;color:#888}
+.recent-detail{font-size:12px}
+.recent-meta{font-size:10px;color:#444;margin-top:3px}
+
+/* SHIPMENT MODAL */
+.tire-list-pick{height:240px;overflow-y:auto;border:1px solid #222}
 .tire-pick-item{padding:10px 12px;border-bottom:1px solid #111;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px}
 .tire-pick-item:hover{background:#ffffff08}
-.shipment-items{min-height:80px;border:1px solid #1a1a1a;background:#000;padding:8px}
-.shipment-item-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #111}
-.shipment-item-row:last-child{border-bottom:none}
-.btn-icon{background:transparent;border:none;color:#666;cursor:pointer;padding:4px;display:flex;align-items:center}
-.toast{position:fixed;bottom:24px;right:24px;background:#111;border:1px solid #333;padding:12px 20px;font-size:13px;z-index:9999;animation:slideIn .2s ease}
-.toast.success{border-color:#22c55e;color:#22c55e}
-.toast.error{border-color:#ef4444;color:#ef4444}
-@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ship-items{min-height:60px;border:1px solid #222;padding:8px}
+.ship-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #111}
+.ship-row:last-child{border-bottom:none}
+.rm-btn{background:none;border:none;color:#555;cursor:pointer;font-size:16px;line-height:1}.rm-btn:hover{color:#fff}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:#fff;color:#000;padding:12px 20px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;z-index:9999;animation:up .2s ease}
+.toast.err{background:#000;color:#fff;border:1px solid #fff}
+@keyframes up{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+
 @media(max-width:768px){aside{width:100%;height:auto;position:relative;min-width:unset}#app{flex-direction:column}.main{margin-left:0}.page{padding:20px}.two-col{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
+<!-- AUTH -->
 <div id="auth-page">
   <div class="auth-box">
     <div class="auth-logo">
-      <div class="red-sq"></div>
       <h1>OBI</h1>
       <p>Inventory System</p>
     </div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Login</button>
-      <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
-    </div>
-    <div class="auth-card">
-      <div id="form-login">
-        <div id="login-msg" class="hidden"></div>
-        <div class="form-group"><label>Username</label><input type="text" id="login-username" autocomplete="username"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="login-password" autocomplete="current-password"></div>
-        <button class="btn btn-white btn-full" onclick="doLogin()">Access System</button>
+
+    <!-- STEP 1: Email -->
+    <div id="step-email" class="auth-card">
+      <h2>Sign In</h2>
+      <p>Enter your email to continue</p>
+      <div id="email-msg" class="hidden msg"></div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="inp-email" placeholder="you@example.com" autocomplete="email">
       </div>
-      <div id="form-signup" class="hidden">
-        <div id="signup-msg" class="hidden"></div>
-        <div class="form-group"><label>Full Name</label><input type="text" id="su-name" placeholder="Your full name"></div>
-        <div class="form-group"><label>Username</label><input type="text" id="su-user" placeholder="Choose a username" autocomplete="username"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="su-pass" placeholder="Min 6 characters" autocomplete="new-password"></div>
-        <div class="form-group"><label>Confirm Password</label><input type="password" id="su-pass2" autocomplete="new-password"></div>
-        <button class="btn btn-white btn-full" onclick="doSignup()">Create Account</button>
-        <div class="hint">First account created becomes <strong style="color:#fff">Owner</strong></div>
-      </div>
+      <button class="btn btn-white" onclick="submitEmail()">Continue →</button>
     </div>
-    <div class="auth-footer">Authorized Personnel Only</div>
+
+    <!-- STEP 2A: New user — create account -->
+    <div id="step-new" class="auth-card hidden">
+      <h2>Create Account</h2>
+      <p id="new-sub">First time here. Set your username and password.</p>
+      <div id="new-msg" class="hidden msg"></div>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="inp-new-user" placeholder="Choose a username" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="inp-new-pass" placeholder="Min 6 characters" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="inp-new-pass2" autocomplete="new-password">
+      </div>
+      <button class="btn btn-white" onclick="submitNewUser()">Create Account →</button>
+      <div class="auth-back" onclick="goBack()">← Back</div>
+      <div class="auth-hint" id="new-owner-hint"></div>
+    </div>
+
+    <!-- STEP 2B: Existing user — password -->
+    <div id="step-login" class="auth-card hidden">
+      <h2>Welcome Back</h2>
+      <p id="login-sub">Enter your password to continue.</p>
+      <div id="login-msg" class="hidden msg"></div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="inp-pass" autocomplete="current-password">
+      </div>
+      <button class="btn btn-white" onclick="submitLogin()">Login →</button>
+      <div class="auth-back" onclick="goBack()">← Use different email</div>
+    </div>
   </div>
 </div>
 
+<!-- APP -->
 <div id="app" class="hidden">
   <aside>
     <div class="sidebar-logo">
-      <div class="brand"><div class="dot"></div>OBI</div>
-      <div class="sub">Inventory System</div>
+      <div class="brand">OBI</div>
+      <div class="sub">Inventory</div>
     </div>
     <nav>
-      <div class="nav-item active" onclick="navigate('dashboard')" id="nav-dashboard">
+      <div class="nav-item active" id="nav-dashboard" onclick="navigate('dashboard')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
       </div>
-      <div class="nav-item" onclick="navigate('inventory')" id="nav-inventory">
+      <div class="nav-item" id="nav-inventory" onclick="navigate('inventory')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Inventory
       </div>
-      <div class="nav-item" onclick="navigate('sales')" id="nav-sales">
+      <div class="nav-item" id="nav-sales" onclick="navigate('sales')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Sales
       </div>
-      <div class="nav-item" onclick="navigate('shipments')" id="nav-shipments">
+      <div class="nav-item" id="nav-shipments" onclick="navigate('shipments')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Shipments
       </div>
-      <div class="nav-item" onclick="navigate('activity')" id="nav-activity">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Activity Log
+      <div class="nav-item" id="nav-activity" onclick="navigate('activity')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Activity
       </div>
-      <div class="nav-item hidden" onclick="navigate('employees')" id="nav-employees">
+      <div class="nav-item hidden" id="nav-employees" onclick="navigate('employees')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Employees
       </div>
     </nav>
     <div class="sidebar-user">
-      <div class="user-info">
-        <div class="uname" id="sidebar-name">—</div>
-        <div class="urole" id="sidebar-role">—</div>
-      </div>
-      <button class="btn btn-ghost btn-full" style="justify-content:flex-start;gap:8px" onclick="doLogout()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout
-      </button>
+      <div class="user-name" id="sb-name">—</div>
+      <div class="user-role" id="sb-role">—</div>
+      <button class="sidebar-logout" onclick="doLogout()">↩ Logout</button>
     </div>
   </aside>
 
   <main class="main">
     <div class="page active" id="page-dashboard">
-      <div class="page-header"><div><h1>SYSTEM_STATUS</h1><p>Real-time overview</p></div></div>
+      <div class="page-header"><div><h1>DASHBOARD</h1><p>System overview</p></div></div>
       <div class="stats-grid" id="stats-grid"></div>
       <div class="two-col">
-        <div class="alert-panel" id="alerts-panel"></div>
-        <div class="recent-panel">
-          <div class="panel-header"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Recent Activity</div>
+        <div class="panel" id="alerts-panel"></div>
+        <div class="panel">
+          <div class="panel-hd">Recent Activity</div>
           <div id="recent-activity"></div>
         </div>
       </div>
@@ -209,84 +248,84 @@ tr:hover td{background:#ffffff05}
 
     <div class="page" id="page-inventory">
       <div class="page-header">
-        <div><h1>INVENTORY</h1><p>Master Database</p></div>
+        <div><h1>INVENTORY</h1><p>Master database</p></div>
         <div class="page-actions">
-          <button class="btn btn-outline btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
-          <button class="btn btn-white btn-sm" id="btn-add-tire" onclick="openTireModal()">+ Add Tire</button>
+          <button class="btn btn-outline btn-sm btn-inline" onclick="exportCSV()">↓ CSV</button>
+          <button class="btn btn-white btn-sm btn-inline" id="btn-add" onclick="openTireModal()">+ Add</button>
         </div>
       </div>
       <div class="filters">
         <div class="search-wrap">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="inv-search" placeholder="Search SKU, brand or size..." oninput="renderInventory()">
+          <span class="search-icon">⌕</span>
+          <input type="text" id="inv-search" placeholder="Search SKU, brand, size..." oninput="renderInventory()">
         </div>
-        <label class="check-label"><input type="checkbox" id="inv-low" onchange="renderInventory()"> Low Stock (≤2)</label>
-        <label class="check-label"><input type="checkbox" id="inv-out" onchange="renderInventory()"> Out of Stock</label>
+        <label class="check-label"><input type="checkbox" id="inv-low" onchange="renderInventory()"> Low stock</label>
+        <label class="check-label"><input type="checkbox" id="inv-out" onchange="renderInventory()"> Out of stock</label>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>SKU</th><th>Brand</th><th>Size</th><th>Location</th><th class="text-right">Qty</th><th class="text-right">Cost</th><th class="text-right">Price</th><th class="text-right" id="th-actions">Actions</th></tr></thead>
-          <tbody id="inv-tbody"></tbody>
+          <thead><tr><th>SKU</th><th>Brand</th><th>Size</th><th>Location</th><th class="text-right">Qty</th><th class="text-right">Cost</th><th class="text-right">Price</th><th class="text-right" id="th-act">Actions</th></tr></thead>
+          <tbody id="inv-body"></tbody>
         </table>
       </div>
     </div>
 
     <div class="page" id="page-sales">
       <div class="page-header">
-        <div><h1>SALES_LEDGER</h1><p>Transaction History</p></div>
-        <div class="page-actions"><button class="btn btn-white btn-sm" onclick="openSaleModal()">+ Record Sale</button></div>
+        <div><h1>SALES</h1><p>Transaction ledger</p></div>
+        <div class="page-actions"><button class="btn btn-white btn-sm btn-inline" onclick="openSaleModal()">+ Sale</button></div>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>ID</th><th>Date</th><th>Item</th><th>Agent</th><th class="text-right">Qty</th><th class="text-right">Total</th><th class="text-right">Profit</th></tr></thead>
-          <tbody id="sales-tbody"></tbody>
+          <thead><tr><th>#</th><th>Date</th><th>Tire</th><th>By</th><th class="text-right">Qty</th><th class="text-right">Total</th><th class="text-right">Profit</th></tr></thead>
+          <tbody id="sales-body"></tbody>
         </table>
       </div>
     </div>
 
     <div class="page" id="page-shipments">
       <div class="page-header">
-        <div><h1>INBOUND_SHIPMENTS</h1><p>Receiving Log</p></div>
-        <div class="page-actions"><button class="btn btn-white btn-sm" onclick="openShipmentModal()">+ Receive Shipment</button></div>
+        <div><h1>SHIPMENTS</h1><p>Inbound receiving</p></div>
+        <div class="page-actions"><button class="btn btn-white btn-sm btn-inline" onclick="openShipModal()">+ Receive</button></div>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>ID</th><th>Date</th><th>Item</th><th>Receiver</th><th class="text-right">Qty</th><th>Notes</th></tr></thead>
-          <tbody id="ship-tbody"></tbody>
+          <thead><tr><th>#</th><th>Date</th><th>Tire</th><th>By</th><th class="text-right">Qty</th><th>Notes</th></tr></thead>
+          <tbody id="ship-body"></tbody>
         </table>
       </div>
     </div>
 
     <div class="page" id="page-activity">
-      <div class="page-header"><div><h1>SYSTEM_LOGS</h1><p>Audit Trail</p></div></div>
+      <div class="page-header"><div><h1>ACTIVITY LOG</h1><p>Audit trail</p></div></div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Timestamp</th><th>Action</th><th>Agent</th><th>SKU</th><th>Details</th></tr></thead>
-          <tbody id="activity-tbody"></tbody>
+          <thead><tr><th>Time</th><th>Action</th><th>Agent</th><th>SKU</th><th>Detail</th></tr></thead>
+          <tbody id="act-body"></tbody>
         </table>
       </div>
     </div>
 
     <div class="page" id="page-employees">
       <div class="page-header">
-        <div><h1>PERSONNEL</h1><p>Access Management</p></div>
-        <div class="page-actions"><button class="btn btn-white btn-sm" onclick="openEmployeeModal()">+ Add Employee</button></div>
+        <div><h1>EMPLOYEES</h1><p>Access management</p></div>
+        <div class="page-actions"><button class="btn btn-white btn-sm btn-inline" onclick="openEmpModal()">+ Add</button></div>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>ID</th><th>Username</th><th>Name</th><th>Role</th><th>Created</th><th class="text-right">Actions</th></tr></thead>
-          <tbody id="emp-tbody"></tbody>
+          <thead><tr><th>#</th><th>Username</th><th>Name</th><th>Email</th><th>Role</th><th class="text-right">Actions</th></tr></thead>
+          <tbody id="emp-body"></tbody>
         </table>
       </div>
     </div>
   </main>
 </div>
 
-<div class="modal-overlay hidden" id="modal-overlay" onclick="handleOverlayClick(event)">
+<div class="modal-overlay hidden" id="modal-overlay" onclick="overlayClick(event)">
   <div class="modal" id="modal-box">
     <div class="modal-header">
       <h2 id="modal-title"></h2>
-      <button class="btn-icon" onclick="closeModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body" id="modal-body"></div>
     <div class="modal-footer" id="modal-footer"></div>
@@ -295,302 +334,359 @@ tr:hover td{background:#ffffff05}
 
 <script>
 const DB={
-  get(k){try{return JSON.parse(localStorage.getItem('obi_'+k)||'null')}catch{return null}},
-  set(k,v){localStorage.setItem('obi_'+k,JSON.stringify(v))},
-  users(){return DB.get('users')||[]},
-  tires(){return DB.get('tires')||[]},
-  sales(){return DB.get('sales')||[]},
-  shipments(){return DB.get('shipments')||[]},
-  activity(){return DB.get('activity')||[]},
-  session(){return DB.get('session')},
-  nextId(arr){return arr.length?Math.max(...arr.map(x=>x.id))+1:1}
+  g(k){try{return JSON.parse(localStorage.getItem('obi2_'+k)||'null')}catch{return null}},
+  s(k,v){localStorage.setItem('obi2_'+k,JSON.stringify(v))},
+  users(){return DB.g('users')||[]},
+  tires(){return DB.g('tires')||[]},
+  sales(){return DB.g('sales')||[]},
+  ships(){return DB.g('ships')||[]},
+  logs(){return DB.g('logs')||[]},
+  session(){return DB.g('session')},
+  id(a){return a.length?Math.max(...a.map(x=>x.id))+1:1}
 };
 
-function switchTab(t){
-  document.getElementById('form-login').classList.toggle('hidden',t!=='login');
-  document.getElementById('form-signup').classList.toggle('hidden',t!=='signup');
-  document.getElementById('tab-login').classList.toggle('active',t==='login');
-  document.getElementById('tab-signup').classList.toggle('active',t==='signup');
-}
-function showMsg(id,msg,type){
+// ── AUTH ─────────────────────────────────────────────
+let authEmail='';
+
+function setMsg(id,txt,ok){
   const el=document.getElementById(id);
-  el.className=type==='ok'?'msg-ok':'msg-error';
-  el.textContent=msg;el.classList.remove('hidden');
+  if(!txt){el.classList.add('hidden');return}
+  el.className='msg '+(ok?'msg-ok':'msg-error');
+  el.textContent=txt;el.classList.remove('hidden');
 }
-function doSignup(){
-  const name=document.getElementById('su-name').value.trim();
-  const user=document.getElementById('su-user').value.trim().toLowerCase();
-  const pass=document.getElementById('su-pass').value;
-  const pass2=document.getElementById('su-pass2').value;
-  if(!name||!user||!pass){showMsg('signup-msg','All fields are required');return}
-  if(pass.length<6){showMsg('signup-msg','Password must be at least 6 characters');return}
-  if(pass!==pass2){showMsg('signup-msg','Passwords do not match');return}
+
+function showStep(s){
+  ['step-email','step-new','step-login'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  document.getElementById('step-'+s).classList.remove('hidden');
+}
+
+function goBack(){showStep('email');authEmail=''}
+
+function submitEmail(){
+  const email=document.getElementById('inp-email').value.trim().toLowerCase();
+  if(!email||!email.includes('@')){setMsg('email-msg','Enter a valid email address');return}
+  setMsg('email-msg','');
+  authEmail=email;
   const users=DB.users();
-  if(users.find(u=>u.username===user)){showMsg('signup-msg','Username already taken');return}
+  const existing=users.find(u=>u.email===email);
+  if(existing){
+    document.getElementById('login-sub').textContent=`Logging in as @${existing.username}`;
+    setMsg('login-msg','');
+    document.getElementById('inp-pass').value='';
+    showStep('login');
+    setTimeout(()=>document.getElementById('inp-pass').focus(),50);
+  }else{
+    const isFirst=users.length===0;
+    document.getElementById('new-owner-hint').textContent=isFirst?'You will be assigned the Owner role (first account).':'You will be assigned the Worker role. An Owner can upgrade you.';
+    setMsg('new-msg','');
+    document.getElementById('inp-new-user').value='';
+    document.getElementById('inp-new-pass').value='';
+    document.getElementById('inp-new-pass2').value='';
+    showStep('new');
+    setTimeout(()=>document.getElementById('inp-new-user').focus(),50);
+  }
+}
+
+function submitNewUser(){
+  const username=document.getElementById('inp-new-user').value.trim().toLowerCase().replace(/\s+/g,'');
+  const pass=document.getElementById('inp-new-pass').value;
+  const pass2=document.getElementById('inp-new-pass2').value;
+  if(!username){setMsg('new-msg','Choose a username');return}
+  if(pass.length<6){setMsg('new-msg','Password must be at least 6 characters');return}
+  if(pass!==pass2){setMsg('new-msg','Passwords do not match');return}
+  const users=DB.users();
+  if(users.find(u=>u.username===username)){setMsg('new-msg','Username already taken, choose another');return}
   const role=users.length===0?'Owner':'Worker';
-  users.push({id:DB.nextId(users),username:user,passwordHash:user+':'+pass,name,role,createdAt:new Date().toISOString()});
-  DB.set('users',users);
-  showMsg('signup-msg',`Account created! You are ${role}. Please login.`,'ok');
-  ['su-name','su-user','su-pass','su-pass2'].forEach(id=>document.getElementById(id).value='');
-  setTimeout(()=>switchTab('login'),1800);
+  const user={id:DB.id(users),email:authEmail,username,pass,name:username,role,createdAt:new Date().toISOString()};
+  users.push(user);DB.s('users',users);
+  loginAs(user);
 }
-function doLogin(){
-  const u=document.getElementById('login-username').value.trim();
-  const p=document.getElementById('login-password').value;
-  if(!u||!p){showMsg('login-msg','Enter username and password');return}
-  const users=DB.users();
-  if(!users.length){showMsg('login-msg','No accounts yet — click Sign Up first');return}
-  const user=users.find(x=>x.username===u.toLowerCase());
-  if(!user||user.passwordHash!==user.username+':'+p){showMsg('login-msg','Invalid username or password');return}
-  DB.set('session',{id:user.id,username:user.username,name:user.name,role:user.role});
+
+function submitLogin(){
+  const pass=document.getElementById('inp-pass').value;
+  const user=DB.users().find(u=>u.email===authEmail);
+  if(!user){setMsg('login-msg','Account not found');return}
+  if(user.pass!==pass){setMsg('login-msg','Incorrect password');return}
+  loginAs(user);
+}
+
+function loginAs(user){
+  DB.s('session',{id:user.id,email:user.email,username:user.username,name:user.name,role:user.role});
   bootApp(user);
 }
-document.getElementById('login-password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
-document.getElementById('login-username').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('login-password').focus()});
-document.getElementById('su-pass2').addEventListener('keydown',e=>{if(e.key==='Enter')doSignup()});
+
 function doLogout(){
-  localStorage.removeItem('obi_session');
+  localStorage.removeItem('obi2_session');
+  currentUser=null;
   document.getElementById('app').classList.add('hidden');
   document.getElementById('auth-page').classList.remove('hidden');
-  document.getElementById('login-username').value='';
-  document.getElementById('login-password').value='';
+  showStep('email');
+  document.getElementById('inp-email').value='';
 }
+
+document.getElementById('inp-email').addEventListener('keydown',e=>{if(e.key==='Enter')submitEmail()});
+document.getElementById('inp-pass').addEventListener('keydown',e=>{if(e.key==='Enter')submitLogin()});
+document.getElementById('inp-new-pass2').addEventListener('keydown',e=>{if(e.key==='Enter')submitNewUser()});
+
+// ── BOOT ─────────────────────────────────────────────
 let currentUser=null;
 function bootApp(user){
   currentUser=user;
   document.getElementById('auth-page').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
-  document.getElementById('sidebar-name').textContent=user.name;
-  document.getElementById('sidebar-role').textContent=user.role;
-  if(user.role==='Owner')document.getElementById('nav-employees').classList.remove('hidden');
-  else document.getElementById('nav-employees').classList.add('hidden');
-  const canEdit=user.role==='Owner'||user.role==='Manager';
-  document.getElementById('btn-add-tire').style.display=canEdit?'':'none';
-  document.getElementById('th-actions').style.display=canEdit?'':'none';
+  document.getElementById('sb-name').textContent='@'+user.username;
+  document.getElementById('sb-role').textContent=user.role;
+  const isOwner=user.role==='Owner';
+  const canEdit=isOwner||user.role==='Manager';
+  document.getElementById('nav-employees').classList.toggle('hidden',!isOwner);
+  document.getElementById('btn-add').style.display=canEdit?'':'none';
+  document.getElementById('th-act').style.display=canEdit?'':'none';
   navigate('dashboard');
 }
-function navigate(page){
+
+// ── NAVIGATION ────────────────────────────────────────
+function navigate(pg){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.getElementById('nav-'+page).classList.add('active');
-  ({dashboard:renderDashboard,inventory:renderInventory,sales:renderSales,shipments:renderShipments,activity:renderActivity,employees:renderEmployees})[page]?.();
-}
-function logActivity(action,detail,tireId,tireSku){
-  const a=DB.activity();
-  a.unshift({id:DB.nextId(a),action,detail,employeeName:currentUser.name,tireId:tireId||null,tireSku:tireSku||null,createdAt:new Date().toISOString()});
-  DB.set('activity',a.slice(0,500));
+  document.getElementById('page-'+pg).classList.add('active');
+  document.getElementById('nav-'+pg).classList.add('active');
+  ({dashboard:renderDash,inventory:renderInventory,sales:renderSales,shipments:renderShips,activity:renderActivity,employees:renderEmployees})[pg]?.();
 }
 
-// DASHBOARD
-function renderDashboard(){
-  const tires=DB.tires(),sales=DB.sales();
-  const ts=tires.reduce((a,t)=>a+t.qty,0);
-  const rev=sales.reduce((a,s)=>a+s.totalAmount,0);
-  const prof=sales.reduce((a,s)=>a+s.profit,0);
-  const sold=sales.reduce((a,s)=>a+s.qty,0);
+function addLog(action,detail,tireId,sku){
+  const a=DB.logs();
+  a.unshift({id:DB.id(a),action,detail,by:currentUser.username,tireId:tireId||null,sku:sku||null,at:new Date().toISOString()});
+  DB.s('logs',a.slice(0,500));
+}
+
+// ── DASHBOARD ─────────────────────────────────────────
+function renderDash(){
+  const T=DB.tires(),S=DB.sales();
+  const totalQty=T.reduce((a,t)=>a+t.qty,0);
+  const rev=S.reduce((a,s)=>a+s.total,0);
+  const prof=S.reduce((a,s)=>a+s.profit,0);
+  const sold=S.reduce((a,s)=>a+s.qty,0);
   document.getElementById('stats-grid').innerHTML=`
-    <div class="stat-card"><div class="label">Total Stock</div><div class="value">${ts}</div></div>
-    <div class="stat-card"><div class="label">Active SKUs</div><div class="value">${tires.length}</div></div>
-    <div class="stat-card"><div class="label">Units Sold</div><div class="value">${sold}</div></div>
-    <div class="stat-card"><div class="label">Revenue</div><div class="value">$${rev.toLocaleString('en',{maximumFractionDigits:0})}</div><div class="sub">Profit: $${prof.toLocaleString('en',{maximumFractionDigits:0})}</div></div>`;
-  const out=tires.filter(t=>t.qty===0),low=tires.filter(t=>t.qty>0&&t.qty<=2);
-  let ah=`<div class="panel-header"><span style="display:inline-block;width:10px;height:10px;background:#ef4444;margin-right:8px"></span>Alerts & Warnings</div>`;
-  if(out.length){ah+=`<div class="section-label section-label-red">Out of Stock (${out.length})</div>`;out.forEach(t=>{ah+=`<div class="alert-item"><div><div style="font-weight:700;font-size:13px">${esc(t.sku)}</div><div class="text-muted" style="font-size:12px">${esc(t.brand)} ${esc(t.size)}</div></div><span class="text-muted" style="font-size:11px">${esc(t.location)}</span></div>`})}
-  if(low.length){ah+=`<div class="section-label section-label-yellow">Low Stock (${low.length})</div>`;low.forEach(t=>{ah+=`<div class="alert-item"><div><div style="font-weight:700;font-size:13px">${esc(t.sku)}</div><div class="text-muted" style="font-size:12px">${esc(t.brand)} ${esc(t.size)}</div></div><span class="badge badge-yellow">QTY: ${t.qty}</span></div>`})}
-  if(!out.length&&!low.length)ah+='<div class="no-data">No alerts. All stock optimal.</div>';
+    <div class="stat-card"><div class="stat-label">Total Stock</div><div class="stat-value">${totalQty}</div></div>
+    <div class="stat-card"><div class="stat-label">SKUs</div><div class="stat-value">${T.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Units Sold</div><div class="stat-value">${sold}</div></div>
+    <div class="stat-card"><div class="stat-label">Revenue</div><div class="stat-value">$${Math.round(rev).toLocaleString()}</div><div class="stat-sub">Profit $${Math.round(prof).toLocaleString()}</div></div>`;
+  const out=T.filter(t=>t.qty===0),low=T.filter(t=>t.qty>0&&t.qty<=2);
+  let ah=`<div class="panel-hd">Alerts</div>`;
+  if(!out.length&&!low.length){ah+='<div class="no-data">All stock levels OK</div>';}
+  if(out.length){ah+=`<div class="sec-label sec-out">● Out of Stock — ${out.length}</div>`;out.forEach(t=>{ah+=`<div class="alert-item"><div><div class="bold">${esc(t.sku)}</div><div class="muted" style="font-size:11px">${esc(t.brand)} ${esc(t.size)}</div></div><span class="muted">${esc(t.location)}</span></div>`})}
+  if(low.length){ah+=`<div class="sec-label sec-low">▲ Low Stock — ${low.length}</div>`;low.forEach(t=>{ah+=`<div class="alert-item"><div><div class="bold">${esc(t.sku)}</div><div class="muted" style="font-size:11px">${esc(t.brand)} ${esc(t.size)}</div></div><span class="badge badge-warn">QTY ${t.qty}</span></div>`})}
   document.getElementById('alerts-panel').innerHTML=ah;
-  const act=DB.activity().slice(0,8);
-  let rh='<div class="panel-header">Recent Activity</div>';
-  if(!act.length)rh+='<div class="no-data">No recent activity</div>';
-  act.forEach(l=>{rh+=`<div class="recent-item"><div class="recent-action">${esc(l.action)}</div><div class="recent-detail">${esc(l.detail)}</div><div class="recent-meta">By ${esc(l.employeeName)} · ${fmtDate(l.createdAt)}</div></div>`});
+  const logs=DB.logs().slice(0,8);
+  let rh='';
+  if(!logs.length)rh='<div class="no-data">No activity yet</div>';
+  logs.forEach(l=>{rh+=`<div class="recent-item"><div class="recent-action">${esc(l.action)}</div><div class="recent-detail">${esc(l.detail)}</div><div class="recent-meta">@${esc(l.by)} · ${fmt(l.at)}</div></div>`});
   document.getElementById('recent-activity').innerHTML=rh;
 }
 
-// INVENTORY
+// ── INVENTORY ─────────────────────────────────────────
 function renderInventory(){
   const canEdit=currentUser.role==='Owner'||currentUser.role==='Manager';
-  const s=document.getElementById('inv-search').value.toLowerCase();
-  const low=document.getElementById('inv-low').checked,out=document.getElementById('inv-out').checked;
-  const tires=DB.tires().filter(t=>{
-    if(s&&!`${t.sku} ${t.brand} ${t.size} ${t.location}`.toLowerCase().includes(s))return false;
-    if(out&&t.qty!==0)return false;
-    if(!out&&low&&t.qty>2)return false;
+  const q=document.getElementById('inv-search').value.toLowerCase();
+  const showLow=document.getElementById('inv-low').checked;
+  const showOut=document.getElementById('inv-out').checked;
+  let tires=DB.tires().filter(t=>{
+    if(q&&!`${t.sku} ${t.brand} ${t.size} ${t.location}`.toLowerCase().includes(q))return false;
+    if(showOut&&t.qty!==0)return false;
+    if(!showOut&&showLow&&t.qty>2)return false;
     return true;
   });
   let html='';
-  if(!tires.length)html=`<tr><td colspan="${canEdit?8:7}" style="padding:32px;text-align:center;color:#444">NO RECORDS FOUND</td></tr>`;
+  if(!tires.length){html=`<tr><td colspan="${canEdit?8:7}" style="padding:32px;text-align:center;color:#333;text-transform:uppercase;letter-spacing:2px">No records</td></tr>`}
   tires.forEach(t=>{
-    const dot=t.qty===0?'<span class="dot-red"></span>':t.qty<=2?'<span class="dot-yellow"></span>':'';
-    const qb=t.qty===0?`<span class="badge badge-red">${t.qty}</span>`:t.qty<=2?`<span class="badge badge-yellow">${t.qty}</span>`:t.qty;
-    const ac=canEdit?`<td class="text-right"><button class="btn btn-ghost btn-sm" onclick="openTireModal(${t.id})">✎</button><button class="btn btn-ghost btn-sm" style="color:#ef4444" onclick="deleteTire(${t.id})">✕</button></td>`:'';
-    html+=`<tr><td style="font-weight:700">${dot}${esc(t.sku)}</td><td>${esc(t.brand)}</td><td>${esc(t.size)}</td><td class="text-muted">${esc(t.location)}</td><td class="text-right">${qb}</td><td class="text-right text-muted">$${num(t.costPrice)}</td><td class="text-right">$${num(t.sellingPrice)}</td>${ac}</tr>`;
+    const qLabel=t.qty===0?`<span class="badge badge-inv blink">OUT</span>`:t.qty<=2?`<span class="badge badge-warn">${t.qty}</span>`:t.qty;
+    const acts=canEdit?`<td class="text-right"><button class="btn btn-outline btn-sm btn-inline" onclick="openTireModal(${t.id})">Edit</button> <button class="btn btn-sm btn-inline" style="background:#fff;color:#000" onclick="delTire(${t.id})">Del</button></td>`:'';
+    html+=`<tr><td class="bold">${esc(t.sku)}</td><td>${esc(t.brand)}</td><td>${esc(t.size)}</td><td class="muted">${esc(t.location)}</td><td class="text-right">${qLabel}</td><td class="text-right muted">$${n2(t.cost)}</td><td class="text-right">$${n2(t.price)}</td>${acts}</tr>`;
   });
-  document.getElementById('inv-tbody').innerHTML=html;
+  document.getElementById('inv-body').innerHTML=html;
 }
+
 function openTireModal(id){
   const t=id?DB.tires().find(x=>x.id===id):null;
-  document.getElementById('modal-title').textContent=t?'Edit Tire':'Add New Tire';
+  document.getElementById('modal-title').textContent=t?'Edit Tire':'Add Tire';
   document.getElementById('modal-box').classList.remove('modal-lg');
   document.getElementById('modal-body').innerHTML=`
     <div class="grid2">
-      <div class="field"><label>SKU</label><input id="f-sku" value="${esc(t?.sku||'')}" ${t?'disabled':''}></div>
+      <div class="field"><label>SKU</label><input id="f-sku" value="${esc(t?.sku||'')}" ${t?'readonly':''}></div>
       <div class="field"><label>Location</label><input id="f-loc" value="${esc(t?.location||'')}"></div>
       <div class="field"><label>Brand</label><input id="f-brand" value="${esc(t?.brand||'')}"></div>
       <div class="field"><label>Size</label><input id="f-size" value="${esc(t?.size||'')}"></div>
       <div class="field"><label>Quantity</label><input id="f-qty" type="number" min="0" value="${t?.qty??0}"></div>
-      <div class="field"><label>Cost Price ($)</label><input id="f-cost" type="number" step="0.01" min="0" value="${t?.costPrice??0}"></div>
-      <div class="field"><label>Selling Price ($)</label><input id="f-price" type="number" step="0.01" min="0" value="${t?.sellingPrice??0}"></div>
+      <div class="field"><label>Cost ($)</label><input id="f-cost" type="number" step="0.01" value="${t?.cost??0}"></div>
+      <div class="field"><label>Sell Price ($)</label><input id="f-price" type="number" step="0.01" value="${t?.price??0}"></div>
     </div>
-    <div id="tire-err" class="field-error hidden"></div>`;
-  document.getElementById('modal-footer').innerHTML=`<button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-white btn-sm" onclick="saveTire(${id||'null'})">${t?'Save Changes':'Create Tire'}</button>`;
-  showModal();
-}
-function saveTire(id){
-  const sku=document.getElementById('f-sku').value.trim();
-  const brand=document.getElementById('f-brand').value.trim();
-  const size=document.getElementById('f-size').value.trim();
-  const qty=parseInt(document.getElementById('f-qty').value)||0;
-  const loc=document.getElementById('f-loc').value.trim();
-  const cost=parseFloat(document.getElementById('f-cost').value)||0;
-  const price=parseFloat(document.getElementById('f-price').value)||0;
-  const errEl=document.getElementById('tire-err');
-  if(!sku||!brand||!size||!loc){errEl.textContent='SKU, brand, size and location required';errEl.classList.remove('hidden');return}
-  const tires=DB.tires();
-  if(!id&&tires.find(t=>t.sku===sku)){errEl.textContent=`SKU "${sku}" already exists`;errEl.classList.remove('hidden');return}
-  errEl.classList.add('hidden');
-  if(id){
-    const idx=tires.findIndex(t=>t.id===id);
-    tires[idx]={...tires[idx],brand,size,qty,location:loc,costPrice:cost,sellingPrice:price,updatedAt:new Date().toISOString()};
-    logActivity('EDIT_TIRE',`Updated ${brand} ${size} (SKU: ${sku})`,id,sku);toast('Tire updated');
-  }else{
-    const nt={id:DB.nextId(tires),sku,brand,size,qty,location:loc,costPrice:cost,sellingPrice:price,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
-    tires.push(nt);logActivity('ADD_TIRE',`Added ${brand} ${size} (SKU: ${sku}) qty:${qty}`,nt.id,sku);toast('Tire added');
-  }
-  DB.set('tires',tires);closeModal();renderInventory();
-}
-function deleteTire(id){
-  if(!confirm('Delete this tire?'))return;
-  const tires=DB.tires(),t=tires.find(x=>x.id===id);
-  DB.set('tires',tires.filter(x=>x.id!==id));
-  logActivity('DELETE_TIRE',`Deleted ${t.brand} ${t.size} (SKU: ${t.sku})`,null,t.sku);
-  toast('Tire deleted','error');renderInventory();
+    <div id="t-err" class="field-err hidden"></div>`;
+  document.getElementById('modal-footer').innerHTML=`<button class="btn btn-outline btn-sm btn-inline" onclick="closeModal()">Cancel</button><button class="btn btn-white btn-sm btn-inline" onclick="saveTire(${id||'null'})">${t?'Save':'Create'}</button>`;
+  openModal();
 }
 
-// SALES
+function saveTire(id){
+  const sku=v('f-sku'),brand=v('f-brand'),size=v('f-size'),loc=v('f-loc');
+  const qty=parseInt(v('f-qty'))||0,cost=parseFloat(v('f-cost'))||0,price=parseFloat(v('f-price'))||0;
+  if(!sku||!brand||!size||!loc){showErr('t-err','SKU, brand, size and location required');return}
+  const tires=DB.tires();
+  if(!id&&tires.find(t=>t.sku===sku)){showErr('t-err','SKU already exists');return}
+  document.getElementById('t-err').classList.add('hidden');
+  if(id){
+    const i=tires.findIndex(t=>t.id===id);
+    tires[i]={...tires[i],brand,size,qty,location:loc,cost,price,upd:new Date().toISOString()};
+    addLog('EDIT',`Updated ${brand} ${size} (${sku})`,id,sku);toast('Updated');
+  }else{
+    const nt={id:DB.id(tires),sku,brand,size,qty,location:loc,cost,price,created:new Date().toISOString()};
+    tires.push(nt);addLog('ADD',`Added ${brand} ${size} (${sku}) qty:${qty}`,nt.id,sku);toast('Tire added');
+  }
+  DB.s('tires',tires);closeModal();renderInventory();
+}
+
+function delTire(id){
+  if(!confirm('Delete this tire record?'))return;
+  const tires=DB.tires(),t=tires.find(x=>x.id===id);
+  DB.s('tires',tires.filter(x=>x.id!==id));
+  addLog('DELETE',`Deleted ${t.brand} ${t.size} (${t.sku})`);
+  toast('Deleted','err');renderInventory();
+}
+
+function exportCSV(){
+  const rows=[['SKU','Brand','Size','Qty','Location','Cost','Price']];
+  DB.tires().forEach(t=>rows.push([t.sku,t.brand,t.size,t.qty,t.location,t.cost,t.price]));
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`obi-${new Date().toISOString().slice(0,10)}.csv`;a.click();
+}
+
+// ── SALES ─────────────────────────────────────────────
 function renderSales(){
   const sales=DB.sales().slice().reverse();
   let html='';
-  if(!sales.length)html='<tr><td colspan="7" style="padding:32px;text-align:center;color:#444">NO SALES RECORDED</td></tr>';
-  sales.forEach(s=>{html+=`<tr><td class="text-muted">#${s.id}</td><td>${fmtDate(s.soldAt)}</td><td><div style="font-weight:700">${esc(s.tireSku)}</div><div class="text-muted" style="font-size:11px">${esc(s.tireBrand)} ${esc(s.tireSize)}</div></td><td>${esc(s.soldBy)}</td><td class="text-right">${s.qty}</td><td class="text-right">$${num(s.totalAmount)}</td><td class="text-right" style="color:#22c55e">$${num(s.profit)}</td></tr>`});
-  document.getElementById('sales-tbody').innerHTML=html;
+  if(!sales.length)html='<tr><td colspan="7" style="padding:32px;text-align:center;color:#333;text-transform:uppercase;letter-spacing:2px">No sales yet</td></tr>';
+  sales.forEach(s=>{html+=`<tr><td class="muted">${s.id}</td><td style="font-size:11px">${fmt(s.at)}</td><td><div class="bold">${esc(s.sku)}</div><div class="muted" style="font-size:10px">${esc(s.brand)} ${esc(s.size)}</div></td><td>@${esc(s.by)}</td><td class="text-right">${s.qty}</td><td class="text-right">$${n2(s.total)}</td><td class="text-right bold">$${n2(s.profit)}</td></tr>`});
+  document.getElementById('sales-body').innerHTML=html;
 }
+
 function openSaleModal(){
+  const tires=DB.tires().filter(t=>t.qty>0);
+  let opts=tires.map(t=>`<option value="${t.id}" data-p="${t.price}" data-c="${t.cost}">${esc(t.sku)} — ${esc(t.brand)} ${esc(t.size)} (${t.qty} in stock)</option>`).join('');
+  if(!opts)opts='<option>No tires in stock</option>';
   document.getElementById('modal-title').textContent='Record Sale';
   document.getElementById('modal-box').classList.remove('modal-lg');
-  const tires=DB.tires().filter(t=>t.qty>0);
-  let opts=tires.map(t=>`<option value="${t.id}" data-price="${t.sellingPrice}" data-cost="${t.costPrice}">${esc(t.sku)} — ${esc(t.brand)} ${esc(t.size)} (Qty:${t.qty}, $${num(t.sellingPrice)})</option>`).join('');
-  if(!opts)opts='<option value="">No tires in stock</option>';
   document.getElementById('modal-body').innerHTML=`
-    <div class="field"><label>Select Tire</label><select id="s-tire" onchange="updateSaleTotal()">${opts}</select></div>
+    <div class="field"><label>Tire</label><select id="s-tire" onchange="calcSale()">${opts}</select></div>
     <div class="grid2">
-      <div class="field"><label>Quantity</label><input id="s-qty" type="number" min="1" value="1" oninput="updateSaleTotal()"></div>
-      <div class="field"><label>Total Amount ($)</label><input id="s-total" type="number" step="0.01" value="0"></div>
+      <div class="field"><label>Qty</label><input id="s-qty" type="number" min="1" value="1" oninput="calcSale()"></div>
+      <div class="field"><label>Total ($)</label><input id="s-total" type="number" step="0.01"></div>
     </div>
-    <div id="sale-err" class="field-error hidden"></div>`;
-  document.getElementById('modal-footer').innerHTML=`<button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-white btn-sm" onclick="saveSale()">Complete Sale</button>`;
-  showModal();updateSaleTotal();
+    <div id="s-err" class="field-err hidden"></div>`;
+  document.getElementById('modal-footer').innerHTML=`<button class="btn btn-outline btn-sm btn-inline" onclick="closeModal()">Cancel</button><button class="btn btn-white btn-sm btn-inline" onclick="saveSale()">Complete</button>`;
+  openModal();calcSale();
 }
-function updateSaleTotal(){
+
+function calcSale(){
   const sel=document.getElementById('s-tire');
-  const price=parseFloat(sel.options[sel.selectedIndex]?.dataset?.price||0);
-  document.getElementById('s-total').value=(price*(parseInt(document.getElementById('s-qty').value)||1)).toFixed(2);
+  const p=parseFloat(sel.options[sel.selectedIndex]?.dataset?.p||0);
+  document.getElementById('s-total').value=(p*(parseInt(v('s-qty'))||1)).toFixed(2);
 }
+
 function saveSale(){
-  const tireId=parseInt(document.getElementById('s-tire').value);
-  const qty=parseInt(document.getElementById('s-qty').value)||1;
-  const total=parseFloat(document.getElementById('s-total').value)||0;
-  const errEl=document.getElementById('sale-err');
-  if(!tireId){errEl.textContent='Select a tire';errEl.classList.remove('hidden');return}
+  const tireId=parseInt(v('s-tire'));
+  const qty=parseInt(v('s-qty'))||1;
+  const total=parseFloat(v('s-total'))||0;
   const tires=DB.tires(),t=tires.find(x=>x.id===tireId);
-  if(!t){errEl.textContent='Tire not found';errEl.classList.remove('hidden');return}
-  if(t.qty<qty){errEl.textContent=`Only ${t.qty} in stock`;errEl.classList.remove('hidden');return}
-  errEl.classList.add('hidden');
-  const profit=total-t.costPrice*qty;
+  if(!t){showErr('s-err','Select a tire');return}
+  if(t.qty<qty){showErr('s-err',`Only ${t.qty} in stock`);return}
+  document.getElementById('s-err').classList.add('hidden');
+  const profit=total-t.cost*qty;
   const sales=DB.sales();
-  sales.push({id:DB.nextId(sales),tireId,tireSku:t.sku,tireBrand:t.brand,tireSize:t.size,qty,totalAmount:total,profit,soldAt:new Date().toISOString(),soldBy:currentUser.name});
-  DB.set('sales',sales);
-  const idx=tires.findIndex(x=>x.id===tireId);
-  tires[idx]={...tires[idx],qty:tires[idx].qty-qty,updatedAt:new Date().toISOString()};
-  DB.set('tires',tires);
-  logActivity('SALE',`Sold ${qty}x ${t.brand} ${t.size} (SKU:${t.sku}) for $${total.toFixed(2)}`,t.id,t.sku);
+  sales.push({id:DB.id(sales),tireId,sku:t.sku,brand:t.brand,size:t.size,qty,total,profit,at:new Date().toISOString(),by:currentUser.username});
+  DB.s('sales',sales);
+  const i=tires.findIndex(x=>x.id===tireId);
+  tires[i]={...tires[i],qty:tires[i].qty-qty};
+  DB.s('tires',tires);
+  addLog('SALE',`Sold ${qty}x ${t.brand} ${t.size} (${t.sku}) $${total.toFixed(2)}`,t.id,t.sku);
   toast('Sale recorded');closeModal();renderSales();
 }
 
-// SHIPMENTS
-function renderShipments(){
-  const ships=DB.shipments().slice().reverse();
+// ── SHIPMENTS ─────────────────────────────────────────
+function renderShips(){
+  const ships=DB.ships().slice().reverse();
   let html='';
-  if(!ships.length)html='<tr><td colspan="6" style="padding:32px;text-align:center;color:#444">NO SHIPMENTS FOUND</td></tr>';
-  ships.forEach(s=>{html+=`<tr><td class="text-muted">#${s.id}</td><td>${fmtDate(s.receivedAt)}</td><td><div style="font-weight:700">${esc(s.tireSku)}</div><div class="text-muted" style="font-size:11px">${esc(s.tireBrand)} ${esc(s.tireSize)}</div></td><td>${esc(s.receivedBy)}</td><td class="text-right">${s.qty}</td><td class="text-muted">${esc(s.notes||'—')}</td></tr>`});
-  document.getElementById('ship-tbody').innerHTML=html;
+  if(!ships.length)html='<tr><td colspan="6" style="padding:32px;text-align:center;color:#333;text-transform:uppercase;letter-spacing:2px">No shipments</td></tr>';
+  ships.forEach(s=>{html+=`<tr><td class="muted">${s.id}</td><td style="font-size:11px">${fmt(s.at)}</td><td><div class="bold">${esc(s.sku)}</div><div class="muted" style="font-size:10px">${esc(s.brand)} ${esc(s.size)}</div></td><td>@${esc(s.by)}</td><td class="text-right">${s.qty}</td><td class="muted">${esc(s.notes||'—')}</td></tr>`});
+  document.getElementById('ship-body').innerHTML=html;
 }
+
 let shipItems=[];
-function openShipmentModal(){
+function openShipModal(){
   shipItems=[];
   document.getElementById('modal-title').textContent='Receive Shipment';
   document.getElementById('modal-box').classList.add('modal-lg');
-  renderShipmentModal();showModal();
+  drawShipModal();openModal();
 }
-function renderShipmentModal(){
+function drawShipModal(){
   const tires=DB.tires();
-  const ph=tires.map(t=>`<div class="tire-pick-item" onclick="addShipItem(${t.id})"><div><div style="font-weight:700;font-size:12px">${esc(t.sku)}</div><div class="text-muted" style="font-size:11px">${esc(t.brand)} ${esc(t.size)}</div></div><span>+</span></div>`).join('')||'<div class="no-data">No tires found</div>';
-  const ih=shipItems.length?shipItems.map((item,i)=>{
+  const left=tires.map(t=>`<div class="tire-pick-item" onclick="addShipItem(${t.id})"><div><div class="bold" style="font-size:12px">${esc(t.sku)}</div><div class="muted" style="font-size:10px">${esc(t.brand)} ${esc(t.size)}</div></div><span>+</span></div>`).join('')||'<div class="no-data">No tires</div>';
+  const right=shipItems.length?shipItems.map((item,i)=>{
     const t=tires.find(x=>x.id===item.tireId);
-    return`<div class="shipment-item-row"><div style="flex:1;font-size:12px;font-weight:700">${t?esc(t.sku):'?'}</div><input type="number" min="1" value="${item.qty}" onchange="updateShipQty(${i},this.value)" style="width:70px;padding:4px 8px;background:#111;border:1px solid #333;color:#fff;font-size:12px"><button class="btn-icon" onclick="removeShipItem(${i})"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`;
-  }).join(''):'<div class="text-muted" style="font-size:12px;padding:16px;text-align:center">Click tires to add</div>';
+    return`<div class="ship-row"><div style="flex:1;font-size:12px;font-weight:700">${t?esc(t.sku):'?'}</div><input type="number" min="1" value="${item.qty}" onchange="setShipQty(${i},this.value)" style="width:60px;padding:4px 8px;background:#000;border:1px solid #444;color:#fff;font-size:12px"><button class="rm-btn" onclick="rmShipItem(${i})">✕</button></div>`;
+  }).join(''):'<div class="muted" style="padding:16px;text-align:center;font-size:12px">← Click tires to add</div>';
   document.getElementById('modal-body').innerHTML=`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
-      <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#666;margin-bottom:8px">Inventory Lookup</div><div class="tire-list-pick">${ph}</div></div>
-      <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#666;margin-bottom:8px">Shipment Items</div><div class="shipment-items">${ih}</div><div class="field" style="margin-top:12px"><label>Notes</label><input id="ship-notes"></div></div>
-    </div><div id="ship-err" class="field-error hidden"></div>`;
-  document.getElementById('modal-footer').innerHTML=`<button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-white btn-sm" onclick="saveShipment()">Process Receipt</button>`;
+      <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#555;margin-bottom:8px">Select Tires</div><div class="tire-list-pick">${left}</div></div>
+      <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#555;margin-bottom:8px">Items to Receive</div><div class="ship-items">${right}</div><div class="field" style="margin-top:12px"><label>Notes</label><input id="ship-notes"></div></div>
+    </div><div id="sh-err" class="field-err hidden" style="margin-top:8px"></div>`;
+  document.getElementById('modal-footer').innerHTML=`<button class="btn btn-outline btn-sm btn-inline" onclick="closeModal()">Cancel</button><button class="btn btn-white btn-sm btn-inline" onclick="saveShip()">Process</button>`;
 }
-function addShipItem(tid){if(!shipItems.find(x=>x.tireId===tid))shipItems.push({tireId:tid,qty:1});renderShipmentModal()}
-function removeShipItem(i){shipItems.splice(i,1);renderShipmentModal()}
-function updateShipQty(i,v){shipItems[i].qty=Math.max(1,parseInt(v)||1)}
-function saveShipment(){
-  if(!shipItems.length){document.getElementById('ship-err').textContent='Add at least one item';document.getElementById('ship-err').classList.remove('hidden');return}
+function addShipItem(tid){if(!shipItems.find(x=>x.tireId===tid))shipItems.push({tireId:tid,qty:1});drawShipModal()}
+function rmShipItem(i){shipItems.splice(i,1);drawShipModal()}
+function setShipQty(i,val){shipItems[i].qty=Math.max(1,parseInt(val)||1)}
+function saveShip(){
+  if(!shipItems.length){showErr('sh-err','Add at least one tire');return}
   const notes=document.getElementById('ship-notes')?.value.trim()||'';
-  const tires=DB.tires(),ships=DB.shipments();
+  const tires=DB.tires(),ships=DB.ships();
   shipItems.forEach(item=>{
     const t=tires.find(x=>x.id===item.tireId);if(!t)return;
-    const idx=tires.findIndex(x=>x.id===item.tireId);
-    tires[idx]={...tires[idx],qty:tires[idx].qty+item.qty,updatedAt:new Date().toISOString()};
-    ships.push({id:DB.nextId(ships),tireId:t.id,tireSku:t.sku,tireBrand:t.brand,tireSize:t.size,qty:item.qty,notes,receivedAt:new Date().toISOString(),receivedBy:currentUser.name});
-    logActivity('SHIPMENT',`Received ${item.qty}x ${t.brand} ${t.size} (SKU:${t.sku})`,t.id,t.sku);
+    const i=tires.findIndex(x=>x.id===item.tireId);
+    tires[i]={...tires[i],qty:tires[i].qty+item.qty};
+    ships.push({id:DB.id(ships),tireId:t.id,sku:t.sku,brand:t.brand,size:t.size,qty:item.qty,notes,at:new Date().toISOString(),by:currentUser.username});
+    addLog('SHIPMENT',`Received ${item.qty}x ${t.brand} ${t.size} (${t.sku})`,t.id,t.sku);
   });
-  DB.set('tires',tires);DB.set('shipments',ships);
-  toast('Shipment received');closeModal();renderShipments();
+  DB.s('tires',tires);DB.s('ships',ships);
+  toast('Shipment received');closeModal();renderShips();
 }
 
-// ACTIVITY
+// ── ACTIVITY ──────────────────────────────────────────
 function renderActivity(){
-  const logs=DB.activity();
+  const logs=DB.logs();
   let html='';
-  if(!logs.length)html='<tr><td colspan="5" style="padding:32px;text-align:center;color:#444">NO ACTIVITY</td></tr>';
-  logs.forEach(l=>{html+=`<tr><td class="text-muted" style="font-size:12px">${fmtDate(l.createdAt)}</td><td><span class="badge badge-gray">${esc(l.action)}</span></td><td>${esc(l.employeeName)}</td><td style="font-weight:700">${esc(l.tireSku||'—')}</td><td class="text-muted" style="font-size:12px">${esc(l.detail)}</td></tr>`});
-  document.getElementById('activity-tbody').innerHTML=html;
+  if(!logs.length)html='<tr><td colspan="5" style="padding:32px;text-align:center;color:#333;text-transform:uppercase;letter-spacing:2px">No activity</td></tr>';
+  logs.forEach(l=>{html+=`<tr><td class="muted" style="font-size:11px">${fmt(l.at)}</td><td><span class="badge badge-dim">${esc(l.action)}</span></td><td>@${esc(l.by)}</td><td class="bold">${esc(l.sku||'—')}</td><td class="muted">${esc(l.detail)}</td></tr>`});
+  document.getElementById('act-body').innerHTML=html;
 }
 
-// EMPLOYEES
+// ── EMPLOYEES ─────────────────────────────────────────
 function renderEmployees(){
   if(currentUser.role!=='Owner')return;
   const users=DB.users();
   let html='';
-  if(!users.length)html='<tr><td colspan="6" style="padding:32px;text-align:center;color:#444">NO EMPLOYEES</td></tr>';
+  if(!users.length)html='<tr><td colspan="6" style="padding:32px;text-align:center;color:#333">No employees</td></tr>';
   users.forEach(u=>{
-    const rb=u.role==='Owner'?'badge-red':u.role==='Manager'?'badge-blue':'badge-gray';
-    html+= **...**
+    const rb=u.role==='Owner'?'badge-inv':u.role==='Manager'?'badge-warn':'badge-dim';
+    html+=`<tr><td class="muted">${u.id}</td><td class="bold">@${esc(u.username)}</td><td>${esc(u.name)}</td><td class="muted">${esc(u.email)}</td><td><span class="badge ${rb}">${u.role}</span></td><td class="text-right"><button class="btn btn-outline btn-sm btn-inline" onclick="openEmpModal(${u.id})">Edit</button></td></tr>`;
+  });
+  document.getElementById('emp-body').innerHTML=html;
+}
+
+function openEmpModal(id){
+  const u=id?DB.users().find(x=>x.id===id):null;
+  document.getElementById('modal-title').textContent=u?'Edit Employee':'Add Employee';
+  document.getElementById('modal-box').classList.remove('modal-lg');
+  document.getElementById('modal-body').innerHTML=`
+    <div class="field"><label>Username</label><input id="e-user" value="${esc(u?.username||'')}" ${u?'readonly':''}></div>
+    <div class="field"><label>Display Name</label><input id="e-name" value="${esc(u?.name||'')}"></div>
+    <div class="field"><label>Role</label><select id="e-role"><option value="Worker" ${u?.role==='Worker'?'selected':''}>Worker</option><option value="Manager" ${u?.role==='Manager'?'selected':''}>Manager</option><option value="Owner" ${u?.role==='Owner'?'selected':''}>Owner</option></sel **...**
 
 _This response is too long to display in full._
