@@ -1,149 +1,576 @@
-# OBI Inventory System – Description
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OBI Tire Inventory</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body {
+  background:#000; color:#fff; font-family:'Arial'; display:flex; flex-direction:column; min-height:100vh; margin:0;
+}
+#auth {
+  position:fixed; inset:0; background:#000; display:flex; align-items:center; justify-content:center; z-index:1000;
+}
+#auth > div {
+  background:#111; padding:20px; border-radius:8px; width:300px;
+}
+aside {
+  width:200px; background:#222; position:fixed; top:0; bottom:0; left:0; padding-top:20px; display:flex; flex-direction:column; overflow-y:auto;
+}
+nav {margin-top:20px; display:flex; flex-direction:column;}
+.nav-item {
+  padding:10px; cursor:pointer; text-align:center; color:#ccc;
+}
+.nav-item:hover, .nav-item.active {background:#444; color:#fff;}
+aside #user-info {
+  padding:10px; border-top:1px solid #555; margin-top:auto; font-size:14px; text-align:center;
+}
+main {
+  margin-left:200px; padding:20px; flex:1; display:flex; flex-direction:column; overflow:auto;
+}
+.page {display:none;}
+.page.active {display:block;}
+button {
+  margin-top:8px; padding:8px 12px; border:none; cursor:pointer; background:#555; color:#fff; border-radius:4px;
+}
+button:hover {background:#777;}
+input[type=text],input[type=password],input[type=number],select {
+  width:100%; padding:8px; background:#222; border:1px solid #555; color:#fff; border-radius:4px; margin-top:4px;
+}
+/* Theme toggle button style */
+#theme-toggle {margin:10px auto; display:block;}
+</style>
+</head>
+<body>
 
-<p>This is a private tire inventory management web application built using HTML, CSS, and JavaScript with all data stored locally in the browser using LocalStorage.</p>
+<!-- Auth overlay -->
+<div id="auth">
+  <div>
+    <h2 style="text-align:center;">Welcome</h2>
+    <div style="display:flex; justify-content:space-around; margin-bottom:10px;">
+      <button onclick="showLogin()">Login</button>
+      <button onclick="showSignup()">Sign Up</button>
+    </div>
+    <div id="loginDiv">
+      <h3>Login</h3>
+      <input id="login-username" placeholder="Username" onkeydown="if(event.key==='Enter'){login();}">
+      <input id="login-password" placeholder="Password" type="password" onkeydown="if(event.key==='Enter'){login();}">
+      <button onclick="login()">Login</button>
+      <div id="login-msg" style="color:red;margin-top:8px;"></div>
+    </div>
+    <div id="signupDiv" style="display:none;">
+      <h3>Sign Up</h3>
+      <input id="signup-fullname" placeholder="Full Name">
+      <input id="signup-username" placeholder="Username" onkeydown="if(event.key==='Enter'){signup();}">
+      <input id="signup-password" placeholder="Password (6+)" type="password">
+      <input id="signup-password2" placeholder="Confirm Password" type="password" onkeydown="if(event.key==='Enter'){signup();}">
+      <button onclick="signup()">Create Account</button>
+      <div id="signup-msg" style="color:red;margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
 
-<p>The system is designed for tire shop employees to manage inventory, sales, shipments, and employee accounts through a clean black-and-white dashboard interface.</p>
+<!-- Main app -->
+<div id="app" style="display:none; flex:1; min-height:100vh; flex-direction:row;">
+  <aside>
+    <div id="user-info"></div>
+    <nav>
+      <div class="nav-item active" onclick="navigate('d')">Dashboard</div>
+      <div class="nav-item" onclick="navigate('i')">Inventory</div>
+      <div class="nav-item" onclick="navigate('s')">Sales</div>
+      <div class="nav-item" onclick="navigate('sh')">Shipments</div>
+      <div class="nav-item" onclick="navigate('a')">Activity</div>
+      <div class="nav-item" onclick="navigate('e')">Employees</div>
+    </nav>
+    <div style="padding:10px;">
+      <button onclick="logout()">Logout</button>
+      <button onclick="backupData()">Backup</button>
+      <button onclick="restoreDataFile()">Restore</button>
+      <button onclick="resetPassword()">Reset Password</button>
+      <button onclick="toggleTheme()">Toggle Theme</button>
+    </div>
+  </aside>
+  <main>
+    <div id="page-dashboard" class="page"></div>
+    <div id="page-inventory" class="page"></div>
+    <div id="page-sales" class="page"></div>
+    <div id="page-shipment" class="page"></div>
+    <div id="page-activity" class="page"></div>
+    <div id="page-employees" class="page"></div>
+  </main>
+</div>
 
-<h2>Main Features</h2>
+<script>
+// --- Data ---
+const STORAGE='obiv3_';
+function gd(k){try{return JSON.parse(localStorage.getItem(STORAGE+k)||'null')}catch(e){return null}}
+function sd(k,v){localStorage.setItem(STORAGE+k,JSON.stringify(v))}
+function users(){return gd('u')||[]}
+function tires(){return gd('t')||[]}
+function sales(){return gd('s')||[]}
+function shipments(){return gd('sh')||[]}
+function logs(){return gd('l')||[]}
+function nextId(arr){return arr.length?Math.max(...arr.map(x=>x.id))+1:1}
 
-<ul>
-    <li>🔐 User Authentication
-        <ul>
-            <li>Login and Sign Up system</li>
-            <li>First account automatically becomes Owner</li>
-            <li>Additional accounts become Workers</li>
-            <li>Role-based permissions:
-                <ul>
-                    <li>Owner</li>
-                    <li>Manager</li>
-                    <li>Worker</li>
-                </ul>
-            </li>
-        </ul>
-    </li>
-    
-    <li>📊 Dashboard
-        <ul>
-            <li>Displays:
-                <ul>
-                    <li>Total stock quantity</li>
-                    <li>Total SKUs</li>
-                    <li>Units sold</li>
-                    <li>Revenue</li>
-                    <li>Profit</li>
-                </ul>
-            </li>
-            <li>Shows low-stock and out-of-stock alerts</li>
-            <li>Displays recent activity logs</li>
-        </ul>
-    </li>
-    
-    <li>🚗 Inventory Management
-        <ul>
-            <li>Add new tires</li>
-            <li>Edit tire information</li>
-            <li>Delete tires</li>
-            <li>Track:
-                <ul>
-                    <li>SKU</li>
-                    <li>Brand</li>
-                    <li>Size</li>
-                    <li>Location</li>
-                    <li>Quantity</li>
-                    <li>Cost</li>
-                    <li>Selling price</li>
-                </ul>
-            </li>
-            <li>Search inventory instantly</li>
-            <li>Filter low-stock and out-of-stock items</li>
-            <li>Export inventory to CSV files</li>
-        </ul>
-    </li>
-    
-    <li>💰 Sales Tracking
-        <ul>
-            <li>Record tire sales</li>
-            <li>Automatically reduces inventory quantity</li>
-            <li>Calculates:
-                <ul>
-                    <li>Sale total</li>
-                    <li>Profit</li>
-                </ul>
-            </li>
-            <li>Stores complete sales history</li>
-        </ul>
-    </li>
-    
-    <li>📦 Shipment Management
-        <ul>
-            <li>Receive incoming tire shipments</li>
-            <li>Increase stock automatically</li>
-            <li>Add notes for deliveries</li>
-            <li>Maintain shipment history</li>
-        </ul>
-    </li>
-    
-    <li>📜 Activity Logs
-        <ul>
-            <li>Records every important action:
-                <ul>
-                    <li>Tire added</li>
-                    <li>Tire edited</li>
-                    <li>Tire deleted</li>
-                    <li>Sales completed</li>
-                    <li>Shipments received</li>
-                </ul>
-            </li>
-            <li>Tracks:
-                <ul>
-                    <li>User</li>
-                    <li>Date</li>
-                    <li>SKU</li>
-                    <li>Action details</li>
-                </ul>
-            </li>
-        </ul>
-    </li>
-    
-    <li>👥 Employee Management
-        <ul>
-            <li>Owner-only section</li>
-            <li>Create employee accounts</li>
-            <li>Edit employee information</li>
-            <li>Change user roles</li>
-            <li>Reset passwords</li>
-        </ul>
-    </li>
-</ul>
+// --- Session ---
+let currentUser=null;
+function getSession(){return gd('sess')}
+function setSession(sess){sd('sess',sess)}
+function clearSession(){localStorage.removeItem(STORAGE+'sess')}
 
-<h2>Technical Details</h2>
+// --- Boot ---
+function boot(user){
+  currentUser=user;
+  document.getElementById('auth').style.display='none';
+  document.getElementById('app').style.display='flex';
+  showUserInfo();
+  enforcePermissions();
+  // Initialize dashboard chart
+  renderDashboard();
+}
+function logout(){
+  currentUser=null;
+  clearSession();
+  document.getElementById('auth').style.display='flex';
+  document.getElementById('app').style.display='none';
+}
 
-<h3>Frontend</h3>
-<ul>
-    <li>Pure HTML</li>
-    <li>Pure CSS</li>
-    <li>Pure JavaScript</li>
-    <li>No frameworks used</li>
-</ul>
+// --- Show user info ---
+function showUserInfo(){
+  document.getElementById('user-info').innerHTML=`
+    <div style="text-align:center;padding:10px;">
+      <h3>${currentUser.n}</h3>
+      <p>Role: ${currentUser.r}</p>
+    </div>`;
+}
 
-<h3>Storage</h3>
-<ul>
-    <li>Browser LocalStorage</li>
-    <li>No database required</li>
-    <li>No server required</li>
-</ul>
+// --- UI toggles ---
+function showLogin(){document.getElementById('loginDiv').style.display='block';document.getElementById('signupDiv').style.display='none';}
+function showSignup(){document.getElementById('loginDiv').style.display='none';document.getElementById('signupDiv').style.display='block';}
 
-<h3>Security Features</h3>
-<ul>
-    <li>User sessions</li>
-    <li>Input sanitization against HTML injection</li>
-    <li>Role-based access control</li>
-</ul>
+// --- Login & Signup ---
+function login(){
+  const u=document.getElementById('login-username').value.trim().toLowerCase();
+  const p=document.getElementById('login-password').value;
+  const all=users();
+  const user=all.find(x=>x.u===u);
+  if(!user){showMsg('login-msg','User not found');return;}
+  if(user.p!==p){showMsg('login-msg','Wrong password');return;}
+  setSession({id:user.id,u:user.u,n:user.n,r:user.r});
+  boot(user);
+}
+function signup(){
+  const n=document.getElementById('signup-fullname').value.trim();
+  const u=document.getElementById('signup-username').value.trim().toLowerCase();
+  const p=document.getElementById('signup-password').value;
+  const p2=document.getElementById('signup-password2').value;
+  if(!n||!u||!p||!p2){showMsg('signup-msg','Fill all fields');return;}
+  if(p.length<6){showMsg('signup-msg','Password too short');return;}
+  if(p!==p2){showMsg('signup-msg','Passwords do not match');return;}
+  const all=users();
+  if(all.find(x=>x.u===u)){showMsg('signup-msg','Username exists');return;}
+  const r=all.length===0?'Owner':'Worker';
+  // Correct object creation
+  const newUser={id:nextId(all), u, n, p, r, c:Date.now()};
+  all.push(newUser);
+  sd('u',all);
+  showMsg('signup-msg','Account created! Please login.');
+  showLogin();
+}
 
-<h2>Overall Purpose</h2>
-<p>The OBI Inventory System is a lightweight, private inventory platform built specifically for a tire business. It allows employees to manage stock, process sales, receive shipments, track activity, and manage staff without requiring internet access, servers, or external databases.</p>
+// --- Navigation ---
+const pages={
+  d:'page-dashboard',
+  i:'page-inventory',
+  s:'page-sales',
+  sh:'page-shipment',
+  a:'page-activity',
+  e:'page-employees'
+};
+function navigate(p){
+  for(let key in pages){document.getElementById(pages[key]).style.display='none';}
+  document.getElementById('page-'+p).style.display='block';
+  if(p==='d')renderDashboard();
+  if(p==='i')renderInventory();
+  if(p==='s')renderSales();
+  if(p==='sh')renderShipment();
+  if(p==='a')renderActivity();
+  if(p==='e')renderEmployees();
+}
 
-<p>Project Type: Inventory Management System (IMS)</p>
-<p>Industry: Tire & Automotive Business</p>
-<p>Technology Stack: HTML, CSS, JavaScript, LocalStorage</p>
-<p>Deployment: Runs directly in a web browser as a standalone application.</p>
+// --- initialize ---
+(function(){
+  const sess=getSession();
+  if(sess){
+    const u=users().find(x=>x.id===sess.id&&x.u===sess.u);
+    if(u){boot(u);return;}
+  }
+  showLogin();
+})();
+
+// --- Permissions ---
+function checkRole(role){
+  if(!currentUser){alert('Not logged in');return false;}
+  if(currentUser.r!==role && currentUser.r!=='Owner'){alert('No permission');return false;}
+  return true;
+}
+function enforcePermissions(){
+  // hide employee menu if not owner
+  if(currentUser.r!=='Owner'){
+    document.querySelectorAll('.nav-item').forEach(n=>{
+      if(n.textContent==='Employees') n.style.display='none';
+    });
+  }
+}
+
+// --- Dashboard ---
+function renderDashboard() {
+  const T=tires();
+  const S=sales();
+  const totalQ=T.reduce((a,t)=>a+t.q,0);
+  const totalRev=S.reduce((a,s)=>a+s.tot,0);
+  const totalPr=S.reduce((a,s)=>a+s.pr,0);
+  const salesCount=S.length;
+  const container=document.getElementById('page-dashboard');
+  container.innerHTML=`<h2>Dashboard</h2>`;
+  // Canvas for chart
+  const ctx=document.createElement('canvas');
+  ctx.width=400; ctx.height=200;
+  container.appendChild(ctx);
+  // Create chart
+  if(window.dashboardChart) { window.dashboardChart.destroy(); } // destroy previous
+  window.dashboardChart=new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:['Tires','Stock','Sales','Revenue'],
+      datasets:[{
+        label:'Stats',
+        data:[T.length, totalQ, salesCount, totalRev],
+        backgroundColor:['#4caf50','#2196f3','#ff9800','#f44336']
+      }]
+    }
+  });
+  // alerts and recent activity
+  let alerts='';
+  const low=T.filter(t=>t.q<=2);
+  const out=T.filter(t=>t.q===0);
+  if(low.length>0)alerts+=`<div style="color:yellow;">Low stock: ${low.length}</div>`;
+  if(out.length>0)alerts+=`<div style="color:red;">Out of stock: ${out.length}</div>`;
+  // recent activity
+  const recent=logs().slice(-5).reverse();
+  let actHTML='';
+  recent.forEach(l=>{actHTML+=`<div>${new Date(l.at).toLocaleString()}: ${l.ac} (${l.sk})</div>`});
+  container.innerHTML+=`<div>${alerts}</div><h3>Recent Activity</h3><div>${actHTML}</div>`;
+}
+
+// --- Inventory ---
+function renderInventory() {
+  const container=document.getElementById('page-inventory');
+  container.innerHTML=`
+    <h2>Inventory</h2>
+    <input type="text" placeholder="Search..." oninput="showInventory()">
+    <button onclick="openTireForm()">+ Add Tire</button>
+    <div id="inventory-list" style="margin-top:10px; max-height:400px; overflow:auto;"></div>`;
+  showInventory();
+}
+function showInventory() {
+  const list=document.getElementById('inventory-list');
+  list.innerHTML='';
+  const q=document.querySelector('#page-inventory input').value.toLowerCase();
+  const T=tires().slice().sort((a,b)=>a.sk.localeCompare(b.sk));
+  T.forEach(t=>{
+    if(q&&!(`${t.sk} ${t.br} ${t.sz}`).toLowerCase().includes(q))return;
+    const out=t.q===0?'(Out)':'';
+    const low=t.q<=2?'(Low)':'';
+    list.innerHTML+=`<div style="border:1px solid #555;padding:8px;margin-bottom:4px;">
+      <b>${t.sk}</b> - ${t.br} ${t.sz} | Qty: ${t.q} ${low} ${out}
+      <button onclick="editTire(${t.id})">Edit</button>
+      <button onclick="deleteTire(${t.id})">Delete</button>
+    </div>`;
+  });
+}
+function openTireForm(id=null){
+  const T=tires();
+  const t= id ? T.find(x=>x.id===id):null;
+  const div=document.createElement('div');
+  div.style.position='fixed'; div.style.top='50%'; div.style.left='50%'; div.style.transform='translate(-50%, -50%)';
+  div.style.background='#222'; div.style.padding='20px'; div.style.borderRadius='8px'; div.style.zIndex='999';
+  div.innerHTML=`<h3>${t?'Edit Tire':'Add Tire'}</h3>
+    <label>SKU</label><input id="form-sk" value="${t?t.sk:''}">
+    <label>Brand</label><input id="form-br" value="${t?t.br:''}">
+    <label>Size</label><input id="form-sz" value="${t?t.sz:''}">
+    <label>Qty</label><input type="number" id="form-qty" value="${t?t.q:0}">
+    <label>Cost</label><input type="number" id="form-co" value="${t?t.co:0}">
+    <label>Price</label><input type="number" id="form-pr" value="${t?t.pr:0}">
+    <button onclick="saveTire(${t?t.id:'null'})">Save</button>
+    <button onclick="this.closest('div').remove()">Cancel</button>`;
+document.body.appendChild(div);
+}
+function saveTire(id){
+  const sk=document.getElementById('form-sk').value.trim();
+  const br=document.getElementById('form-br').value.trim();
+  const sz=document.getElementById('form-sz').value.trim();
+  const q=parseInt(document.getElementById('form-qty').value);
+  const co=parseFloat(document.getElementById('form-co').value);
+  const pr=parseFloat(document.getElementById('form-pr').value);
+  if(!sk||!br||!sz){alert('Fill all fields');return;}
+  const T=tires();
+  // Check SKU duplication
+  if(id===null && T.some(x=>x.sk===sk)){alert('SKU duplicate');return;}
+  if(id===null){
+    T.push({id:nextId(T),sk,br,sz,q,co,pr});
+    addLog(`Added tire ${sk}`);
+  }else{
+    const t=T.find(x=>x.id===id);
+    t.sk=sk;t.br=br;t.sz=sz;t.q=q;t.co=co;t.pr=pr;
+    addLog(`Edited tire ${sk}`);
+  }
+  sd('t',T);
+  showInventory();
+  document.querySelector('div[style*="position:fixed"]').remove();
+}
+function deleteTire(id){if(confirm('Delete?')){let T=tires();T=T.filter(x=>x.id!==id);sd('t',T);showInventory(); addLog(`Deleted tire`);}}
+function editTire(id){openTireForm(id);}
+
+// --- Sales ---
+function renderSales(){ 
+  const container=document.getElementById('page-sales');
+  container.innerHTML=`
+    <h2>Sales</h2>
+    <button onclick="recordSale()">Record Sale</button>
+    <button onclick="deleteSale()">Delete All Sales</button>
+    <div id="sales-list" style="margin-top:10px;"></div>`;
+  showSales();
+}
+function showSales(){ 
+  const list=document.getElementById('sales-list');
+  list.innerHTML=''; 
+  sales().forEach(s=>{ list.innerHTML+=`<div>${s.id}: ${s.sk} - Qty:${s.q} - Total:$${s.tot.toFixed(2)} - Prof:$${s.pr.toFixed(2)} (${new Date(s.at).toLocaleString()})</div>`; });
+}
+function recordSale(){
+  const T=tires();
+  if(T.length===0){alert('No tires');return;}
+  const sk=prompt('Enter SKU');
+  const t=T.find(x=>x.sk===sk);
+  if(!t){alert('Tire not found');return;}
+  const q=prompt('Qty');
+  const qty=parseInt(q);
+  if(qty>t.q){alert('Not enough stock');return;}
+  t.q-=qty;
+  const tot=qty*t.pr;
+  const pr=tot - qty*t.co;
+  const S=sales();
+  S.push({id:nextId(S),sk:t.sk,br:t.br,sz:t.sz,q:qty,tot,pr,at:Date.now()});
+  sd('s',S);
+  sd('t',T);
+  addLog(`Sale of ${qty} ${sk}`);
+  showSales();
+}
+function deleteSale(){if(confirm('Delete all sales?')){sd('s',[]); addLog('Deleted all sales'); showSales();}}
+
+// --- Shipments ---
+function renderShipment(){ 
+  const container=document.getElementById('page-shipment');
+  container.innerHTML=`
+    <h2>Shipments</h2>
+    <button onclick="receiveShipment()">Receive Shipment</button>
+    <button onclick="deleteShipment()">Delete All Shipments</button>
+    <div id="sh-list"></div>`;
+  showShipments();
+}
+function showShipments(){ 
+  const list=document.getElementById('sh-list'); 
+  list.innerHTML=''; 
+  shipments().forEach(s=>{ list.innerHTML+=`<div>${s.id}: ${s.sk} - Qty:${s.q} - Notes:${s.nt} (${new Date(s.at).toLocaleString()})</div>`; });
+}
+function receiveShipment(){
+  const sk=prompt('SKU');
+  const q=prompt('Qty');
+  const nt=prompt('Notes');
+  const qty=parseInt(q);
+  const T=tires();
+  const t=T.find(x=>x.sk===sk);
+  if(!t){alert('Tire not found');return;}
+  t.q+=qty;
+  const sh=shipments();
+  sh.push({id:nextId(sh),sk,br:t.br,sz:t.sz,q:qty,nt,at:Date.now()});
+  sd('sh',sh);
+  sd('t',T);
+  addLog(`Received shipment of ${qty} ${sk}`);
+  showShipments();
+}
+function deleteShipment(){if(confirm('Delete all shipments?')){sd('sh',[]); addLog('Deleted all shipments'); showShipments();}}
+
+// --- Activity ---
+function renderActivity(){ 
+  const container=document.getElementById('page-activity');
+  container.innerHTML='<h2>Activity Log</h2><div id="logs"></div>';
+  showLogs();
+}
+function showLogs(){ 
+  const el=document.getElementById('logs'); 
+  el.innerHTML=''; 
+  logs().slice(-20).reverse().forEach(l=>{el.innerHTML+=`<div>${new Date(l.at).toLocaleString()}: ${l.ac} (${l.sk})</div>`;});
+}
+function addLog(msg){ 
+  const a=logs(); 
+  a.push({id:nextId(a),ac:msg,sk:'',by:currentUser.u,at:Date.now()}); 
+  sd('l',a);
+}
+
+// --- Employee management ---
+function renderEmployees() {
+  const container=document.getElementById('page-employees');
+  container.innerHTML=`<h2>Employees</h2>
+    <button onclick="addEmployee()">Add Employee</button>
+    <div id="employee-list"></div>`;
+  showEmployees();
+}
+function showEmployees() {
+  const list=document.getElementById('employee-list');
+  list.innerHTML='';
+  users().forEach(u=>{
+    list.innerHTML+=`<div>${u.u} - ${u.n} (${u.r}) 
+      <button onclick="editEmployee(${u.id})">Edit</button> 
+      <button onclick="removeEmployee(${u.id})">Remove</button></div>`;
+  });
+}
+function addEmployee() {
+  if(!checkRole('Owner')) return;
+  const u=prompt('Username');
+  const n=prompt('Name');
+  const r=prompt('Role (Owner/Manager/Worker)');
+  const p=prompt('Password');
+  if(!u||!n||!p){alert('Fill all');return;}
+  const all=users();
+  // prevent SKU duplicate (not employee, but for users, just for demo)
+  if(all.some(x=>x.u===u)){alert('Username duplicate');return;}
+  // Save employee with plain password (not secure, for demo only)
+  all.push({id:nextId(all), u, n, p, r, c:Date.now()});
+  sd('u',all);
+  showEmployees();
+}
+function editEmployee(id){
+  if(!checkRole('Owner')) return;
+  const U=users();
+  const u=U.find(x=>x.id===id);
+  if(!u){alert('Not found');return;}
+  u.u=prompt('Username',u.u);
+  u.n=prompt('Name',u.n);
+  u.r=prompt('Role',u.r);
+  const p=prompt('Password (leave blank to keep)');
+  if(p)u.p=p;
+  sd('u',U);
+  showEmployees();
+}
+function removeEmployee(id){
+  if(!checkRole('Owner')) return;
+  if(!confirm('Remove employee?'))return;
+  let U=users(); U=U.filter(x=>x.id!==id);
+  sd('u',U);
+  showEmployees();
+}
+
+// --- Theme toggle ---
+let darkTheme=false;
+function toggleTheme() {
+  darkTheme=!darkTheme;
+  document.body.style.background=darkTheme?'#222':'#fff';
+  document.body.style.color=darkTheme?'#fff':'#000';
+  document.querySelectorAll('button,input,select').forEach(el=>{
+    el.style.background=darkTheme?'#333':'#eee';
+    el.style.color=darkTheme?'#fff':'#000';
+  });
+}
+
+// --- Backup/Restore ---
+function backupData() {
+  const data={tires:tires(),sales:sales(),sh:shipments(),logs:logs(),users:users()};
+  const s=JSON.stringify(data);
+  const a=document.createElement('a');
+  a.href='data:text/json;charset=utf-8,'+encodeURIComponent(s);
+  a.download='backup-'+new Date().toISOString()+'.json';
+  a.click();
+}
+function restoreDataFile() {
+  const fi=document.createElement('input');
+  fi.type='file';
+  fi.accept='application/json';
+  fi.onchange=()=> {
+    const reader=new FileReader();
+    reader.onload=()=> {
+      try{
+        const data=JSON.parse(reader.result);
+        sd('t',data.tires);
+        sd('s',data.sales);
+        sd('sh',data.sh);
+        sd('l',data.logs);
+        sd('u',data.users);
+        alert('Restored');
+        location.reload();
+      }catch(e){alert('Invalid data');}
+    }
+    reader.readAsText(fi.files[0]);
+  }
+  fi.click();
+}
+
+// --- Password Reset ---
+function resetPassword() {
+  const u=prompt('Enter your username');
+  if(!u){alert('Invalid');return;}
+  const newp=prompt('Enter new password (6+ chars)');
+  if(!newp || newp.length<6){alert('Invalid');return;}
+  const all=users();
+  const user=all.find(x=>x.u===u);
+  if(!user){alert('User not found');return;}
+  // In real app, verify admin or security question here
+  user.p=newp;
+  sd('u',all);
+  addLog(`Password reset for ${u}`);
+  alert('Password updated');
+}
+
+// --- Role check ---
+function checkRole(role){
+  if(!currentUser){alert('Not logged in');return false;}
+  if(currentUser.r!==role && currentUser.r!=='Owner'){alert('No permission');return false;}
+  return true;
+}
+
+// --- Navigation ---
+const pages={
+  d:'page-dashboard',
+  i:'page-inventory',
+  s:'page-sales',
+  sh:'page-shipment',
+  a:'page-activity',
+  e:'page-employees'
+};
+function navigate(p){
+  for(let key in pages){document.getElementById(pages[key]).style.display='none';}
+  document.getElementById('page-'+p).style.display='block';
+  if(p==='d')renderDashboard();
+  if(p==='i')renderInventory();
+  if(p==='s')renderSales();
+  if(p==='sh')renderShipment();
+  if(p==='a')renderActivity();
+  if(p==='e')renderEmployees();
+}
+
+// --- Initialization ---
+(function(){
+  const sess=getSession();
+  if(sess){
+    const u=users().find(x=>x.id===sess.id&&x.u===sess.u);
+    if(u){boot(u);return;}
+  }
+  document.getElementById('auth').style.display='flex';
+})();
+
+// --- Utility ---
+function nextId(arr){return arr.length?Math.max(...arr.map(x=>x.id))+1:1;}
+</script>
+</body>
+</html>
