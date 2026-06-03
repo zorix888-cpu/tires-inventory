@@ -247,6 +247,10 @@ tr:hover td { background: #ffffff03; }
                     <input type="text" id="s-user" placeholder="Username">
                 </div>
                 <div class="fg">
+                    <label>Employee Access Code</label>
+                    <input type="text" id="s-code" placeholder="Enter Obi Code">
+                </div>
+                <div class="fg">
                     <label>Set Key</label>
                     <input type="password" id="s-pass" placeholder="Min 6 characters">
                 </div>
@@ -480,6 +484,8 @@ tr:hover td { background: #ffffff03; }
  * Persistent storage via LocalStorage with versioning
  */
 const STORAGE_PREFIX = 'obi_v3_';
+const EMPLOYEE_CODE = 'ObiTires0011'; // GLOBAL ACCESS CODE
+
 const db = {
     get: (key) => {
         try { return JSON.parse(localStorage.getItem(STORAGE_PREFIX + key) || '[]'); } 
@@ -920,10 +926,19 @@ function switchAuth(mode) {
 }
 
 function handleSignup() {
-    const n = val('s-name'), u = val('s-user').toLowerCase(), p = val('s-pass'), p2 = val('s-pass2');
+    const n = val('s-name'), 
+          u = val('s-user').toLowerCase(), 
+          code = val('s-code'),
+          p = val('s-pass'), 
+          p2 = val('s-pass2');
+    
     const msg = document.getElementById('auth-msg');
 
-    if (!n || !u || !p) return showAuthMsg('Missing registration data', 'er');
+    if (!n || !u || !p || !code) return showAuthMsg('Missing registration data', 'er');
+    
+    // --- ACCESS CODE VALIDATION ---
+    if (code !== EMPLOYEE_CODE) return showAuthMsg('Invalid Access Code', 'er');
+    
     if (p.length < 6) return showAuthMsg('Key too short (Min 6)', 'er');
     if (p !== p2) return showAuthMsg('Keys do not match', 'er');
 
@@ -964,6 +979,7 @@ function showAuthMsg(t, type) {
     const el = document.getElementById('auth-msg');
     el.textContent = t;
     el.className = 'amsg ' + type;
+    el.classList.remove('hide');
 }
 
 function logAction(cat, msg, ref) {
