@@ -3,807 +3,763 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IX-CORE | LUNA OPERATING SYSTEM v7.0</title>
+    <title>INVENTORY | LUNA OS v10.0</title>
     <style>
         /* ──────────────────────────────────────────────────────────────────────────
-           LUNA DESIGN SYSTEM - MOONLIGHT ETHEREAL UI
+           LUNA DESIGN SYSTEM - THE ULTIMATE MOONLIGHT GLASS ARCHITECTURE
            ────────────────────────────────────────────────────────────────────────── */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@300;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
 
         :root {
-            --bg-deep: #020408;
-            --bg-mid: #0a0e14;
-            --surface-glass: rgba(16, 22, 32, 0.6);
-            --accent-luna: #a5b4fc;
-            --accent-glow: rgba(165, 180, 252, 0.15);
-            --text-bright: #f8fafc;
-            --text-soft: #94a3b8;
-            --text-dim: #475569;
-            --border-luna: rgba(165, 180, 252, 0.1);
-            --border-active: rgba(165, 180, 252, 0.4);
-            
-            --font-main: 'Inter', sans-serif;
+            --m-bg: #020617;
+            --m-glass: rgba(15, 23, 42, 0.4);
+            --m-glass-heavy: rgba(15, 23, 42, 0.85);
+            --m-border: rgba(148, 163, 184, 0.1);
+            --m-accent: #c7d2fe;
+            --m-glow: rgba(199, 210, 254, 0.1);
+            --m-text: #f1f5f9;
+            --m-text-dim: #64748b;
+            --m-error: #fb7185;
+            --m-success: #34d399;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
-            --ease: cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow-luna: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            --blur-std: blur(25px);
+            --blur-heavy: blur(60px);
+            --trans-slow: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            --trans-fast: 0.2s ease;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         
         body {
-            background: var(--bg-deep);
+            background: var(--m-bg);
             background-image: 
-                radial-gradient(circle at 50% -20%, #1e293b 0%, transparent 50%),
-                radial-gradient(circle at 0% 100%, #0f172a 0%, transparent 30%);
-            color: var(--text-soft);
+                radial-gradient(circle at 50% -20%, #1e1b4b 0%, transparent 45%),
+                radial-gradient(circle at 10% 100%, #0f172a 0%, transparent 30%);
+            color: var(--m-text);
             font-family: var(--font-main);
             height: 100vh;
             overflow: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- ANIMATIONS --- */
-        @keyframes lunaFadeIn {
-            from { opacity: 0; filter: blur(10px); transform: translateY(15px); }
-            to { opacity: 1; filter: blur(0); transform: translateY(0); }
-        }
-        @keyframes glowPulse {
-            0% { box-shadow: 0 0 5px var(--accent-glow); }
-            50% { box-shadow: 0 0 20px var(--accent-glow); }
-            100% { box-shadow: 0 0 5px var(--accent-glow); }
-        }
-        .animate { animation: lunaFadeIn 0.6s var(--ease) forwards; }
+        /* --- GLOBAL ANIMATIONS --- */
+        @keyframes driftUp { from { opacity: 0; transform: translateY(30px); filter: blur(10px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+        @keyframes driftIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes aura { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+        .anim-up { animation: driftUp 0.8s var(--trans-slow) forwards; }
+        .anim-in { animation: driftIn 0.5s var(--trans-slow) forwards; }
         .hide { display: none !important; }
 
-        /* --- UI ELEMENTS --- */
+        /* --- CORE UI COMPONENTS --- */
         input, select, button, textarea {
-            background: var(--surface-glass);
-            border: 1px solid var(--border-luna);
-            color: var(--text-bright);
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            backdrop-filter: blur(12px);
-            transition: all 0.3s var(--ease);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--m-border);
+            color: var(--m-text);
+            padding: 14px 20px;
+            border-radius: 16px;
+            font-size: 14px;
+            backdrop-filter: var(--blur-std);
+            transition: var(--trans-fast);
         }
-        input:focus, select:focus {
-            border-color: var(--accent-luna);
-            background: rgba(165, 180, 252, 0.05);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-        button { cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-        button:hover { border-color: var(--accent-luna); color: var(--accent-luna); transform: translateY(-1px); }
-        .btn-primary { background: var(--accent-luna); color: var(--bg-deep); border: none; }
-        .btn-primary:hover { background: #fff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
 
-        /* --- AUTH LAYER --- */
+        input:focus, select:focus {
+            border-color: var(--m-accent);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 0 25px var(--m-glow);
+        }
+
+        button { cursor: pointer; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; font-size: 10px; }
+        button:hover { border-color: var(--m-accent); color: var(--m-accent); transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+
+        .btn-luna { background: var(--m-accent); color: var(--m-bg); border: none; }
+        .btn-luna:hover { background: #fff; box-shadow: 0 0 30px var(--m-glow); }
+        .btn-ghost { background: transparent; border: 1px solid var(--m-border); }
+        .btn-danger { color: var(--m-error); border-color: var(--m-error); }
+        .btn-danger:hover { background: var(--m-error); color: #fff; }
+
+        /* --- AUTHENTICATION INTERFACE --- */
         #auth-layer {
             position: fixed;
             inset: 0;
-            background: var(--bg-deep);
+            background: var(--m-bg);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 10000;
+            transition: 1s var(--trans-slow);
         }
-        .auth-card {
-            width: 440px;
-            background: var(--surface-glass);
-            border: 1px solid var(--border-luna);
-            padding: 60px 50px;
-            border-radius: 32px;
-            backdrop-filter: blur(30px);
-            text-align: center;
-            box-shadow: var(--shadow-luna);
-        }
-        .auth-logo { font-size: 52px; font-weight: 800; color: var(--text-bright); letter-spacing: -3px; margin-bottom: 8px; }
-        .auth-tag { font-size: 10px; text-transform: uppercase; letter-spacing: 6px; color: var(--accent-luna); margin-bottom: 40px; }
-        .auth-mode-switch { display: flex; gap: 25px; justify-content: center; margin-bottom: 35px; font-size: 12px; font-weight: 800; cursor: pointer; }
-        .auth-mode-switch span { opacity: 0.3; transition: 0.3s; }
-        .auth-mode-switch span.active { opacity: 1; color: #fff; border-bottom: 2px solid var(--accent-luna); }
 
-        /* --- SHELL STRUCTURE --- */
-        #ix-shell {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            height: 100vh;
+        .auth-glass {
+            width: 480px;
+            background: var(--m-glass);
+            border: 1px solid var(--m-border);
+            padding: 80px 60px;
+            border-radius: 48px;
+            backdrop-filter: var(--blur-heavy);
+            text-align: center;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
         }
+
+        .auth-logo { font-size: 64px; font-weight: 800; color: #fff; letter-spacing: -4px; margin-bottom: 5px; text-shadow: 0 0 40px var(--m-glow); }
+        .auth-sub { font-size: 9px; text-transform: uppercase; letter-spacing: 10px; color: var(--m-accent); margin-bottom: 50px; opacity: 0.6; }
+
+        .auth-toggle { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; font-size: 11px; font-weight: 800; }
+        .auth-toggle span { opacity: 0.3; cursor: pointer; transition: 0.3s; }
+        .auth-toggle span.active { opacity: 1; border-bottom: 2px solid var(--m-accent); padding-bottom: 6px; }
+
+        /* --- SYSTEM LAYOUT --- */
+        #luna-shell { display: grid; grid-template-columns: 320px 1fr; height: 100vh; transition: 1s ease; }
+        
         aside {
-            background: rgba(2, 4, 8, 0.4);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid var(--border-luna);
+            background: rgba(2, 6, 23, 0.4);
+            backdrop-filter: var(--blur-heavy);
+            border-right: 1px solid var(--m-border);
             display: flex;
             flex-direction: column;
-            padding: 40px 0;
+            padding: 60px 0;
+            z-index: 100;
         }
+
+        .side-brand { padding: 0 50px 60px; font-weight: 800; font-size: 32px; color: #fff; letter-spacing: -2px; }
+        
+        .nav-list { flex: 1; }
         .nav-item {
-            padding: 16px 30px;
+            padding: 20px 50px;
             font-size: 12px;
-            color: var(--text-soft);
+            color: var(--m-text-dim);
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 15px;
-            transition: 0.3s var(--ease);
-            border-left: 4px solid transparent;
+            transition: var(--trans-fast);
+            border-left: 6px solid transparent;
         }
-        .nav-item:hover { color: var(--text-bright); background: linear-gradient(90deg, var(--accent-glow), transparent); }
-        .nav-item.active { color: var(--accent-luna); background: linear-gradient(90deg, var(--accent-glow), transparent); border-left: 4px solid var(--accent-luna); }
+        .nav-item:hover { color: #fff; background: linear-gradient(90deg, var(--m-glow), transparent); }
+        .nav-item.active { color: var(--m-accent); background: linear-gradient(90deg, var(--m-glow), transparent); border-left: 6px solid var(--m-accent); }
 
-        .user-anchor { margin-top: auto; padding: 30px; border-top: 1px solid var(--border-luna); }
-        .rank-pill { font-size: 9px; font-weight: 800; color: var(--bg-deep); background: var(--accent-luna); padding: 3px 10px; border-radius: 20px; display: inline-block; margin-bottom: 10px; }
+        .user-hub { padding: 50px; border-top: 1px solid var(--m-border); }
+        .rank-badge { font-size: 9px; font-weight: 800; background: var(--m-accent); color: var(--m-bg); padding: 5px 14px; border-radius: 100px; display: inline-block; margin-bottom: 15px; }
+        .user-title { font-weight: 800; font-size: 20px; color: #fff; margin-bottom: 5px; }
 
-        main { overflow-y: auto; padding: 60px; scrollbar-width: none; }
+        main { overflow-y: auto; padding: 80px; scrollbar-width: none; position: relative; }
         main::-webkit-scrollbar { display: none; }
 
-        .header-luna { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 50px; border-bottom: 1px solid var(--border-luna); padding-bottom: 30px; }
-        .header-luna h1 { font-size: 36px; color: var(--text-bright); font-weight: 800; letter-spacing: -1.5px; }
+        .view-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; }
+        .view-head h1 { font-size: 42px; font-weight: 800; color: #fff; letter-spacing: -2px; }
 
-        /* --- DASHBOARD CARDS --- */
-        .grid-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 40px; }
-        .luna-card {
-            background: var(--surface-glass);
-            border: 1px solid var(--border-luna);
-            border-radius: 20px;
-            padding: 30px;
-            transition: 0.3s var(--ease);
+        /* --- DATA VISUALS --- */
+        .card-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-bottom: 60px; }
+        .glass-card {
+            background: var(--m-glass);
+            border: 1px solid var(--m-border);
+            padding: 40px;
+            border-radius: 32px;
+            backdrop-filter: var(--blur-std);
+            transition: var(--trans-slow);
         }
-        .luna-card:hover { transform: translateY(-5px); border-color: var(--border-active); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5); }
-        .stat-val { font-size: 36px; color: #fff; font-weight: 800; margin-top: 5px; font-family: var(--font-mono); }
-        .stat-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        .glass-card:hover { transform: translateY(-10px); border-color: var(--m-accent); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--m-text-dim); margin-bottom: 12px; }
+        .card-value { font-size: 38px; font-weight: 800; color: #fff; font-family: var(--font-mono); }
 
-        /* --- TABLES --- */
-        .luna-table-wrap { background: var(--surface-glass); border: 1px solid var(--border-luna); border-radius: 24px; overflow: hidden; margin-top: 20px; }
-        .luna-table { width: 100%; border-collapse: collapse; }
-        .luna-table th { text-align: left; padding: 22px; font-size: 11px; text-transform: uppercase; color: var(--accent-luna); background: rgba(255,255,255,0.03); letter-spacing: 1px; }
-        .luna-table td { padding: 20px; font-size: 14px; color: var(--text-soft); border-bottom: 1px solid var(--border-luna); }
+        /* --- TABLE ARCHITECTURE --- */
+        .table-glass-wrap { background: var(--m-glass); border: 1px solid var(--m-border); border-radius: 32px; overflow: hidden; margin-top: 20px; }
+        .luna-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .luna-table th { padding: 25px 30px; font-size: 11px; text-transform: uppercase; color: var(--m-accent); background: rgba(255,255,255,0.02); letter-spacing: 1px; }
+        .luna-table td { padding: 22px 30px; font-size: 15px; border-bottom: 1px solid var(--m-border); }
         .luna-table tr:last-child td { border: none; }
-        .luna-table tr:hover td { color: var(--text-bright); background: rgba(165,180,252,0.04); }
+        .luna-table tr:hover td { background: rgba(199, 210, 254, 0.04); color: #fff; }
 
-        /* --- MODALS --- */
-        .modal-wrap {
+        /* --- MODAL SYSTEM --- */
+        .modal-shade {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(15px);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: var(--blur-heavy);
             z-index: 20000;
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
             pointer-events: none;
-            transition: 0.4s var(--ease);
+            transition: 0.5s var(--trans-slow);
         }
-        .modal-wrap.on { opacity: 1; pointer-events: auto; }
-        .modal-inner { background: var(--bg-mid); border: 1px solid var(--border-luna); width: 600px; padding: 50px; border-radius: 32px; box-shadow: var(--shadow-luna); transform: scale(0.9); transition: 0.4s var(--ease); }
-        .modal-wrap.on .modal-inner { transform: scale(1); }
+        .modal-shade.on { opacity: 1; pointer-events: auto; }
+        .modal-body {
+            background: var(--m-bg);
+            border: 1px solid var(--m-border);
+            width: 100%;
+            max-width: 750px;
+            padding: 70px;
+            border-radius: 48px;
+            transform: scale(0.9);
+            transition: 0.5s var(--trans-slow);
+            box-shadow: 0 0 100px rgba(0,0,0,0.9);
+            position: relative;
+        }
+        .modal-shade.on .modal-body { transform: scale(1); }
 
-        /* --- FORMS --- */
-        .fg-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .f-unit { margin-bottom: 25px; }
-        .f-unit label { display: block; font-size: 11px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; letter-spacing: 1px; }
-        .f-unit input, .f-unit select { width: 100%; }
+        /* --- ANALYTICS BARS --- */
+        .bar-group { display: flex; align-items: flex-end; gap: 8px; height: 120px; margin-top: 30px; }
+        .bar { flex: 1; background: var(--m-accent); opacity: 0.2; border-radius: 4px; transition: 1s ease; }
+        .bar:hover { opacity: 1; box-shadow: 0 0 20px var(--m-accent); }
 
-        /* --- LOGS --- */
-        .audit-term { background: #010204; border: 1px solid var(--border-luna); border-radius: 16px; padding: 25px; font-family: var(--font-mono); font-size: 12px; height: 500px; overflow-y: auto; }
-        .log-row { margin-bottom: 10px; display: flex; gap: 20px; border-bottom: 1px solid #111; padding-bottom: 10px; }
-        .log-row:last-child { border: none; }
-        .log-ts { color: var(--text-dim); }
-        .log-tag { color: var(--accent-luna); font-weight: 800; min-width: 120px; }
+        /* --- PRINT PROTOCOL --- */
+        @media print {
+            body * { visibility: hidden; }
+            #receipt-output, #receipt-output * { visibility: visible; }
+            #receipt-output {
+                position: absolute; left: 0; top: 0; width: 100%; 
+                background: white !important; color: black !important;
+                padding: 50px; font-family: 'JetBrains Mono', monospace;
+            }
+            .no-print { display: none !important; }
+        }
+
+        #receipt-output { display: none; }
+
+        /* --- UTILS --- */
+        .flex-bet { display: flex; justify-content: space-between; align-items: center; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .spacer { height: 30px; }
 
     </style>
 </head>
 <body>
 
     <!-- ──────────────────────────────────────────────────────────────────────────
-         MOONLIGHT AUTHENTICATION
+         SYSTEM AUTHENTICATION LAYER
          ────────────────────────────────────────────────────────────────────────── -->
     <section id="auth-layer">
-        <div class="auth-card animate">
-            <div class="auth-logo">IX-CORE</div>
-            <div class="auth-tag">Terminal Authentication</div>
+        <div class="auth-glass anim-up">
+            <div class="auth-logo">INVENTORY</div>
+            <div class="auth-sub">Luna Operating System</div>
             
-            <div class="auth-mode-switch">
-                <span id="sw-login" class="active" onclick="Core.setMode('login')">OPERATOR LOGIN</span>
-                <span id="sw-reg" onclick="Core.setMode('reg')">INITIALIZE ID</span>
+            <div class="auth-toggle">
+                <span id="t-login" class="active" onclick="App.setAuth('login')">LOGIN</span>
+                <span id="t-init" onclick="App.setAuth('init')">INITIALIZE</span>
             </div>
 
-            <div id="reg-fields" class="hide animate">
-                <div class="f-unit"><input type="text" id="a-name" placeholder="Legal Name"></div>
-                <!-- SECRET EMPLOYEE CODE -->
-                <div class="f-unit"><input type="password" id="a-secret" placeholder="System Access Code"></div>
+            <div id="init-fields" class="hide anim-up">
+                <div style="margin-bottom:15px"><input type="text" id="reg-name" style="width:100%" placeholder="Full Legal Name"></div>
+                <div style="margin-bottom:15px"><input type="password" id="reg-secret" style="width:100%" placeholder="Access Code (ObiTires...)"></div>
             </div>
             
-            <div class="f-unit"><input type="text" id="a-user" placeholder="Assign ID"></div>
-            <div class="f-unit"><input type="password" id="a-pass" placeholder="Security Key"></div>
+            <div style="margin-bottom:15px"><input type="text" id="log-user" style="width:100%" placeholder="Operator ID"></div>
+            <div style="margin-bottom:35px"><input type="password" id="log-pass" style="width:100%" placeholder="Security Key"></div>
 
-            <button class="btn-primary" style="width:100%; padding:16px" onclick="Core.authenticate()">Request Authorization</button>
-            <p id="auth-err" style="color:#f87171; font-size:11px; margin-top:20px" class="hide"></p>
+            <button class="btn-luna" style="width:100%; padding:20px" onclick="App.runAuth()">Request Authorization</button>
+            <p id="auth-msg" style="color:var(--m-error); font-size:12px; margin-top:25px" class="hide"></p>
         </div>
     </section>
 
     <!-- ──────────────────────────────────────────────────────────────────────────
-         APP INTERFACE
+         LUNA OS PRIMARY SHELL
          ────────────────────────────────────────────────────────────────────────── -->
-    <section id="ix-shell" class="hide">
+    <section id="luna-shell" class="hide">
         <aside>
-            <div style="padding:0 35px 50px">
-                <div style="font-weight:800; font-size:28px; color:#fff; letter-spacing:-1.5px">IX <span style="font-weight:200; opacity:0.3; font-size:14px">LUNA</span></div>
-            </div>
-            
-            <nav id="sidebar">
+            <div class="side-brand">LUNA <span style="font-weight:200; opacity:0.3; font-size:14px">OS</span></div>
+            <nav class="nav-list">
                 <div class="nav-item active" onclick="Router.go('dash', this)">DASHBOARD</div>
-                <div class="nav-item" onclick="Router.go('inv', this)">ASSET MATRIX</div>
-                <div class="nav-item" onclick="Router.go('logi', this)">LOGISTICS</div>
-                <div class="nav-item" onclick="Router.go('staff', this)">PERSONNEL</div>
-                <div class="nav-item" onclick="Router.go('ledger', this)">FINANCIALS</div>
+                <div class="nav-item" onclick="Router.go('inv', this)">TIRE MATRIX</div>
+                <div class="nav-item" onclick="Router.go('ledger', this)">LEDGER</div>
+                <div class="nav-item" onclick="Router.go('personnel', this)">PERSONNEL</div>
                 <div class="nav-item" onclick="Router.go('audit', this)">AUDIT TRAIL</div>
-                <div class="nav-item" onclick="Router.go('sys', this)">DIAGNOSTICS</div>
+                <div class="nav-item" onclick="Router.go('diag', this)">DIAGNOSTICS</div>
             </nav>
-
-            <div class="user-anchor">
-                <div class="rank-pill" id="u-rank">TRAINEE</div>
-                <div id="u-name" style="font-weight:800; font-size:16px; color:#fff">OPERATOR</div>
-                <button onclick="Core.logout()" style="background:none; border:none; padding:0; margin-top:15px; color:var(--text-dim); font-size:9px; text-align:left">TERMINATE_SESSION</button>
+            <div class="user-hub">
+                <div class="rank-badge" id="u-rank">TRAINEE</div>
+                <div class="user-title" id="u-name">OPERATOR</div>
+                <button onclick="App.shutdown()" style="background:none; border:none; margin-top:15px; color:var(--m-text-dim); font-size:10px; text-align:left; padding:0">TERMINATE_SESSION</button>
             </div>
         </aside>
 
         <main>
             <!-- View: Dashboard -->
-            <section id="v-dash" class="view animate">
-                <div class="header-luna">
-                    <div><h1>Central Intelligence</h1><p id="luna-ts" style="font-family:var(--font-mono); font-size:12px; margin-top:5px; color:var(--accent-luna)"></p></div>
-                    <button onclick="Core.exportData()">Generate Snapshot</button>
+            <section id="v-dash" class="view anim-up">
+                <div class="view-head">
+                    <div><h1>Command Center</h1><p id="luna-clock" style="color:var(--m-accent); font-family:var(--font-mono); margin-top:10px"></p></div>
+                    <button class="btn-ghost" onclick="App.exportData()">Generate Snapshot</button>
                 </div>
                 
-                <div class="grid-stats">
-                    <div class="luna-card"><div class="stat-lbl">Capital Reserve</div><div id="s-val" class="stat-val">$0</div></div>
-                    <div class="luna-card"><div class="stat-lbl">Active Assets</div><div id="s-inv" class="stat-val">0</div></div>
-                    <div class="luna-card"><div class="stat-lbl">Total Agents</div><div id="s-staff" class="stat-val">0</div></div>
-                    <div class="luna-card"><div class="stat-lbl">System Uptime</div><div class="stat-val">99.9%</div></div>
+                <div class="card-row">
+                    <div class="glass-card"><div class="card-label">Total Value</div><div id="s-val" class="card-value">$0</div></div>
+                    <div class="glass-card"><div class="card-label">Units in Stock</div><div id="s-inv" class="card-value">0</div></div>
+                    <div class="glass-card"><div class="card-label">Staff Count</div><div id="s-staff" class="card-value">0</div></div>
+                    <div class="glass-card"><div class="card-label">System Health</div><div class="card-value" style="color:var(--m-success)">99%</div></div>
                 </div>
 
-                <div class="fg-2">
-                    <div class="luna-card">
-                        <div class="stat-lbl" style="margin-bottom:20px">Resource Flow Analytics</div>
-                        <div id="viz-perf" style="height:120px; display:flex; align-items:flex-end; gap:6px"></div>
+                <div class="grid-2">
+                    <div class="glass-card">
+                        <div class="card-label">Activity Metrics</div>
+                        <div class="bar-group" id="dash-bars"></div>
                     </div>
-                    <div class="luna-card">
-                        <div class="stat-lbl" style="margin-bottom:20px">Clearance Distribution</div>
-                        <div id="viz-ranks" style="font-size:12px; line-height:2"></div>
+                    <div class="glass-card">
+                        <div class="card-label">Session Telemetry</div>
+                        <div id="session-info" style="font-size:13px; line-height:2.5; color:var(--m-text-dim)"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- View: Inventory -->
-            <section id="v-inv" class="view hide animate">
-                <div class="header-luna">
-                    <h1>Asset Matrix</h1>
-                    <button class="btn-primary" onclick="UI.openModal('asset')">+ New Asset</button>
+            <!-- View: Tire Matrix -->
+            <section id="v-inv" class="view hide anim-up">
+                <div class="view-head">
+                    <h1>Tire Matrix</h1>
+                    <button class="btn-luna" onclick="Modal.open('asset')">+ Register Tire</button>
                 </div>
-                <div class="luna-table-wrap">
+                <div class="table-glass-wrap">
                     <table class="luna-table">
-                        <thead><tr><th>SKU</th><th>Description</th><th>Qty</th><th>Cost</th><th>Value</th><th>Rank Req</th></tr></thead>
+                        <thead><tr><th>SKU</th><th>Description</th><th>Qty</th><th>Cost</th><th>Price</th><th>Control</th></tr></thead>
                         <tbody id="inv-body"></tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- View: Personnel -->
-            <section id="v-staff" class="view hide animate">
-                <div class="header-luna">
-                    <h1>Clearance Directory</h1>
-                    <button class="btn-primary" id="btn-recruit" onclick="UI.openModal('staff')">+ Recruit Agent</button>
-                </div>
-                <div class="luna-table-wrap">
+            <!-- View: Financial Ledger -->
+            <section id="v-ledger" class="view hide anim-up">
+                <div class="view-head"><h1>Financial Ledger</h1></div>
+                <div class="table-glass-wrap">
                     <table class="luna-table">
-                        <thead><tr><th>Agent ID</th><th>Full Name</th><th>Rank</th><th>Clearance</th><th>Status</th></tr></thead>
-                        <tbody id="staff-body"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- View: Logistics -->
-            <section id="v-logi" class="view hide animate">
-                <div class="header-luna">
-                    <h1>Supply Chain</h1>
-                    <button class="btn-primary" onclick="UI.openModal('manifest')">+ New Manifest</button>
-                </div>
-                <div class="luna-table-wrap">
-                    <table class="luna-table">
-                        <thead><tr><th>Manifest ID</th><th>Type</th><th>SKU</th><th>Quantity</th><th>Origin/Dest</th><th>Time</th></tr></thead>
-                        <tbody id="logi-body"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- View: Finance -->
-            <section id="v-ledger" class="view hide animate">
-                <div class="header-luna">
-                    <h1>Financial Ledger</h1>
-                    <button class="btn-primary" onclick="UI.openModal('tx')">+ Entry</button>
-                </div>
-                <div class="luna-table-wrap">
-                    <table class="luna-table">
-                        <thead><tr><th>TXN ID</th><th>Description</th><th>Debit</th><th>Credit</th><th>Net Balance</th><th>Auth</th></tr></thead>
+                        <thead><tr><th>TXN ID</th><th>Description</th><th>SKU</th><th>Debit</th><th>Credit</th><th>Action</th></tr></thead>
                         <tbody id="ledger-body"></tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- View: Audit Trail -->
-            <section id="v-audit" class="view hide animate">
-                <div class="header-luna">
-                    <h1>Audit Trail</h1>
-                    <button onclick="Core.wipeAudit()">Purge Logs</button>
+            <!-- View: Personnel -->
+            <section id="v-personnel" class="view hide anim-up">
+                <div class="view-head">
+                    <h1>Clearance Personnel</h1>
+                    <button class="btn-luna" id="promote-btn" onclick="Modal.open('staff')">+ Promote Agent</button>
                 </div>
-                <div id="audit-body" class="audit-term"></div>
+                <div class="table-glass-wrap">
+                    <table class="luna-table">
+                        <thead><tr><th>Agent ID</th><th>Name</th><th>Rank</th><th>Joined</th><th>Control</th></tr></thead>
+                        <tbody id="staff-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- View: Audit Trail -->
+            <section id="v-audit" class="view hide anim-up">
+                <div class="view-head">
+                    <h1>Audit Trail</h1>
+                    <button class="btn-danger" onclick="App.wipeLogs()">Wipe Telemetry</button>
+                </div>
+                <div id="audit-body" style="font-family:var(--font-mono); font-size:12px; line-height:2.8; color:var(--m-text-dim)"></div>
             </section>
 
             <!-- View: Diagnostics -->
-            <section id="v-sys" class="view hide animate">
-                <div class="header-luna"><h1>Diagnostics</h1></div>
-                <div class="luna-card">
-                    <div class="stat-lbl">Local Database Health</div>
-                    <div id="diag-size" class="stat-val" style="font-size:24px; margin:15px 0">0 KB</div>
-                    <div style="height:6px; background:#111; width:100%; border-radius:10px">
-                        <div id="diag-bar" style="height:100%; background:var(--accent-luna); width:0%; border-radius:10px; transition:1s"></div>
+            <section id="v-diag" class="view hide anim-up">
+                <div class="view-head"><h1>Diagnostics</h1></div>
+                <div class="glass-card">
+                    <div class="card-label">LocalStorage Usage</div>
+                    <div id="diag-size" class="card-value" style="font-size:32px; margin:20px 0">0 KB</div>
+                    <div style="height:10px; background:rgba(255,255,255,0.05); width:100%; border-radius:20px">
+                        <div id="diag-bar" style="height:100%; background:var(--m-accent); width:0%; border-radius:20px; transition:1s ease"></div>
                     </div>
-                    <p style="font-size:11px; margin-top:15px; color:var(--text-dim)">SYSTEM_STABLE // STORAGE_OPTIMIZED // LATENCY: 0.02ms</p>
                 </div>
             </section>
         </main>
     </section>
 
-    <!-- Modal Layer -->
-    <div id="modal-layer" class="modal-wrap" onclick="UI.closeModal()">
-        <div class="modal-inner" onclick="event.stopPropagation()">
-            <div id="modal-target"></div>
-        </div>
+    <!-- Global Modal Overlay -->
+    <div id="modal-shade" class="modal-shade" onclick="Modal.close()">
+        <div class="modal-body" onclick="event.stopPropagation()" id="modal-mount"></div>
     </div>
 
-    <!-- ──────────────────────────────────────────────────────────────────────────
-         CORE LOGIC ENGINE
-         ────────────────────────────────────────────────────────────────────────── -->
+    <!-- Hidden Printable Area -->
+    <div id="receipt-output"></div>
+
     <script>
         /**
-         * GLOBAL CONFIGURATION
+         * LUNA OS v10.0 ENGINE
          */
-        const SECRET_AUTH_CODE = "ObiTires0011"; // REQUIRED FOR INITIALIZATION
+        const SECRET_KEY = "ObiTires0011";
         const RANKS = [
             "Trainee", "Junior Operator", "Operator", "Senior Operator", "Specialist",
             "Supervisor", "Manager", "Senior Manager", "Director", "Executive Director",
             "Vice President", "President", "CEO", "Owner"
         ];
 
-        let DB = {
+        let STATE = {
             users: [],
             inventory: [],
-            manifests: [],
-            transactions: [],
-            logs: []
+            ledger: [],
+            logs: [],
+            activeUser: null,
+            authMode: 'login'
         };
 
-        let CURRENT_USER = null;
-        let AUTH_MODE = 'login';
-
-        /**
-         * CORE APP OPERATIONS
-         */
-        const Core = {
+        const App = {
             init() {
-                this.load();
-                this.checkSession();
-                this.startClock();
+                const saved = localStorage.getItem('LUNA_V10_STORAGE');
+                if(saved) STATE = JSON.parse(saved);
+                this.updateClock();
                 this.runDiagnostics();
-                console.log("IX-CORE v7.0 LUNA SECURED");
-            },
-
-            load() {
-                const raw = localStorage.getItem('IX_LUNA_PRO');
-                if (raw) DB = JSON.parse(raw);
-                else this.save();
+                console.log("LUNA OS V10 BOOTED SUCCESSFULLY");
             },
 
             save() {
-                localStorage.setItem('IX_LUNA_PRO', JSON.stringify(DB));
+                localStorage.setItem('LUNA_V10_STORAGE', JSON.stringify(STATE));
+                this.render();
                 this.runDiagnostics();
             },
 
-            setMode(m) {
-                AUTH_MODE = m;
-                document.getElementById('sw-login').classList.toggle('active', m === 'login');
-                document.getElementById('sw-reg').classList.toggle('active', m === 'reg');
-                document.getElementById('reg-fields').classList.toggle('hide', m !== 'reg');
+            setAuth(mode) {
+                STATE.authMode = mode;
+                document.getElementById('t-login').className = mode==='login' ? 'active' : '';
+                document.getElementById('t-init').className = mode==='init' ? 'active' : '';
+                document.getElementById('init-fields').classList.toggle('hide', mode!=='init');
             },
 
-            authenticate() {
-                const u = document.getElementById('a-user').value;
-                const p = document.getElementById('a-pass').value;
+            runAuth() {
+                const u = document.getElementById('log-user').value;
+                const p = document.getElementById('log-pass').value;
 
-                if (AUTH_MODE === 'reg') {
-                    const n = document.getElementById('a-name').value;
-                    const sec = document.getElementById('a-secret').value;
+                if(STATE.authMode === 'init') {
+                    const n = document.getElementById('reg-name').value;
+                    const s = document.getElementById('reg-secret').value;
                     
-                    if (sec !== SECRET_AUTH_CODE) return this.err("INVALID_AUTHORIZATION_CODE");
-                    if (!u || !p || !n) return this.err("MISSING_DATA_FIELDS");
+                    if(s !== SECRET_KEY) return this.notify("INVALID_AUTHORIZATION_CODE");
+                    if(!u || !p || !n) return this.notify("DATA_MISSING");
 
-                    const rank = DB.users.length === 0 ? "Owner" : "Trainee";
-                    DB.users.push({
-                        id: 'IX-' + Math.random().toString(16).slice(2,6).toUpperCase(),
-                        u, p, n, r: rank, c: new Date().toISOString().slice(0,10)
-                    });
+                    const rank = STATE.users.length === 0 ? "Owner" : "Trainee";
+                    const newAgent = {
+                        u, p, n, r: rank, 
+                        id: 'AG-'+Math.random().toString(36).slice(2,6).toUpperCase(),
+                        since: new Date().toLocaleDateString()
+                    };
+                    
+                    STATE.users.push(newAgent);
                     this.save();
-                    this.log("SEC_INIT", `Identity established for ${n} as ${rank}`);
-                    alert("System ID Authorized. Proceed to Login.");
-                    this.setMode('login');
+                    this.log("SEC_INIT", `New Identity established for ${n}`);
+                    alert("System ID Created. Please login.");
+                    this.setAuth('login');
                 } else {
-                    const match = DB.users.find(x => x.u === u && x.p === p);
-                    if (match) {
-                        CURRENT_USER = match;
-                        sessionStorage.setItem('IX_LUNA_SESSION', JSON.stringify(match));
-                        this.boot();
+                    const match = STATE.users.find(x => x.u === u && x.p === p);
+                    if(match) {
+                        STATE.activeUser = match;
+                        this.bootSystem();
                     } else {
-                        this.err("AUTHORIZATION_DENIED");
+                        this.notify("ACCESS_DENIED");
                     }
                 }
             },
 
-            boot() {
-                document.getElementById('auth-layer').classList.add('hide');
-                document.getElementById('ix-shell').classList.remove('hide');
-                document.getElementById('u-name').innerText = CURRENT_USER.n;
-                document.getElementById('u-rank').innerText = CURRENT_USER.r;
-                
-                // Rank-based Permissions
-                if (RANKS.indexOf(CURRENT_USER.r) < 6) {
-                    document.getElementById('btn-recruit').classList.add('hide');
-                }
+            bootSystem() {
+                document.getElementById('auth-layer').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('auth-layer').classList.add('hide');
+                    document.getElementById('luna-shell').classList.remove('hide');
+                    document.getElementById('u-name').innerText = STATE.activeUser.n;
+                    document.getElementById('u-rank').innerText = STATE.activeUser.r;
+                    
+                    // Permission Lock
+                    if(RANKS.indexOf(STATE.activeUser.r) < 6) {
+                        document.getElementById('promote-btn').classList.add('hide');
+                    }
 
-                Router.go('dash', document.querySelector('.nav-item'));
-                this.log("SESSION_START", `Operator ${CURRENT_USER.id} connected.`);
-                UI.renderAll();
-            },
-
-            logout() {
-                this.log("SESSION_END", `Operator terminated session.`);
-                sessionStorage.removeItem('IX_LUNA_SESSION');
-                location.reload();
-            },
-
-            checkSession() {
-                const s = sessionStorage.getItem('IX_LUNA_SESSION');
-                if (s) {
-                    CURRENT_USER = JSON.parse(s);
-                    this.boot();
-                }
-            },
-
-            log(tag, msg) {
-                DB.logs.unshift({
-                    t: new Date().toISOString(),
-                    tag: tag,
-                    m: msg,
-                    by: CURRENT_USER ? CURRENT_USER.u : 'SYS'
-                });
-                if (DB.logs.length > 1000) DB.logs.pop();
-                this.save();
-                UI.renderAudit();
-            },
-
-            wipeAudit() {
-                if (RANKS.indexOf(CURRENT_USER.r) < 13) return alert("OWNER CLEARANCE REQUIRED");
-                if (confirm("PURGE ALL SYSTEM TELEMETRY?")) {
-                    DB.logs = [];
-                    this.save();
-                    this.log("AUDIT_PURGE", "Database telemetry wiped by Owner.");
-                    UI.renderAudit();
-                }
-            },
-
-            err(msg) {
-                const e = document.getElementById('auth-err');
-                e.innerText = msg; e.classList.remove('hide');
-                setTimeout(() => e.classList.add('hide'), 3000);
-            },
-
-            startClock() {
-                setInterval(() => {
-                    const el = document.getElementById('luna-ts');
-                    if (el) el.innerText = new Date().toLocaleString() + " // SYSTEM_READY";
+                    Router.go('dash', document.querySelector('.nav-item'));
+                    this.log("AUTH_LOGIN", `Session initialized by ${STATE.activeUser.n}`);
+                    this.render();
                 }, 1000);
             },
 
-            runDiagnostics() {
-                const size = (JSON.stringify(DB).length / 1024).toFixed(2);
-                const perc = Math.min((size / 5120) * 100, 100);
-                const bar = document.getElementById('diag-bar');
-                const txt = document.getElementById('diag-size');
-                if (bar) bar.style.width = perc + "%";
-                if (txt) txt.innerText = size + " KB";
-            },
+            render() {
+                const totalValue = STATE.inventory.reduce((a,c) => a + (c.q * c.cost), 0);
+                document.getElementById('s-val').innerText = '$'+totalValue.toLocaleString();
+                document.getElementById('s-inv').innerText = STATE.inventory.reduce((a,c) => a+parseInt(c.q), 0);
+                document.getElementById('s-staff').innerText = STATE.users.length;
 
-            exportData() {
-                const blob = new Blob([JSON.stringify(DB, null, 2)], {type: 'application/json'});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url; a.download = `IX_LUNA_SNAP_${Date.now()}.json`;
-                a.click();
-            }
-        };
-
-        /**
-         * ROUTER LOGIC
-         */
-        const Router = {
-            go(v, el) {
-                document.querySelectorAll('.view').forEach(x => x.classList.add('hide'));
-                document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+                this.renderInventory();
+                this.renderLedger();
+                this.renderPersonnel();
+                this.renderLogs();
+                this.renderDashBars();
                 
-                const target = document.getElementById('v-' + v);
-                if (target) {
-                    target.classList.remove('hide');
-                    el.classList.add('active');
-                    UI.render(v);
-                }
-            }
-        };
-
-        /**
-         * UI RENDERER
-         */
-        const UI = {
-            render(v) {
-                switch(v) {
-                    case 'dash': this.renderDash(); break;
-                    case 'inv': this.renderInv(); break;
-                    case 'staff': this.renderStaff(); break;
-                    case 'logi': this.renderLogi(); break;
-                    case 'ledger': this.renderLedger(); break;
-                    case 'audit': this.renderAudit(); break;
-                }
-            },
-
-            renderAll() {
-                ['dash', 'inv', 'staff', 'logi', 'ledger', 'audit'].forEach(v => this.render(v));
-            },
-
-            renderDash() {
-                const valuation = DB.inventory.reduce((acc, curr) => acc + (curr.q * curr.c), 0);
-                document.getElementById('s-val').innerText = '$' + valuation.toLocaleString();
-                document.getElementById('s-inv').innerText = DB.inventory.length;
-                document.getElementById('s-staff').innerText = DB.users.length;
-
-                const viz = document.getElementById('viz-perf');
-                viz.innerHTML = '';
-                for(let i=0; i<30; i++) {
-                    const h = Math.random() * 85 + 15;
-                    viz.innerHTML += `<div style="flex:1; background:var(--accent-glow); height:${h}%"></div>`;
-                }
-
-                document.getElementById('viz-ranks').innerHTML = `
-                    DATABASE_ENTRIES: ${DB.inventory.length + DB.manifests.length + DB.transactions.length} <br>
-                    ACTIVE_SESSION_AGENT: ${CURRENT_USER.u} <br>
-                    CLEARANCE_LEVEL: ${RANKS.indexOf(CURRENT_USER.r)} / 13
+                document.getElementById('session-info').innerHTML = `
+                    OPERATOR_HANDLE: ${STATE.activeUser.u} <br>
+                    CLEARANCE_LEVEL: ${RANKS.indexOf(STATE.activeUser.r)} <br>
+                    DATABASE_ENTRIES: ${STATE.inventory.length + STATE.ledger.length} <br>
+                    CONNECTION_STABLE: 100%
                 `;
             },
 
-            renderInv() {
+            renderInventory() {
                 const b = document.getElementById('inv-body');
-                b.innerHTML = DB.inventory.map(a => `
+                b.innerHTML = STATE.inventory.map(t => `
                     <tr>
-                        <td style="font-family:var(--font-mono); color:var(--accent-luna)">${a.s}</td>
-                        <td><b>${a.n}</b></td>
-                        <td>${a.q}</td>
-                        <td>$${parseFloat(a.c).toFixed(2)}</td>
-                        <td style="color:#fff; font-weight:800">$${(a.q * a.c).toLocaleString()}</td>
-                        <td><span class="rank-pill" style="background:rgba(255,255,255,0.05); color:var(--accent-luna)">${a.r}</span></td>
+                        <td style="color:var(--m-accent); font-family:var(--font-mono)">${t.sku}</td>
+                        <td><b>${t.name}</b></td>
+                        <td>${t.q}</td>
+                        <td>$${t.cost}</td>
+                        <td style="color:#fff; font-weight:800">$${t.price}</td>
+                        <td>
+                            <button onclick="Modal.viewTire('${t.sku}')" style="padding:6px 12px">INTEL</button>
+                            <button class="btn-danger" onclick="Logic.purge('tire', '${t.sku}')" style="padding:6px 12px">DEL</button>
+                        </td>
                     </tr>
-                `).join('') || '<tr><td colspan="6" style="text-align:center; padding:50px; opacity:0.3">MATRIX_EMPTY</td></tr>';
-            },
-
-            renderStaff() {
-                const b = document.getElementById('staff-body');
-                b.innerHTML = DB.users.map(u => `
-                    <tr>
-                        <td style="font-family:var(--font-mono)">${u.id}</td>
-                        <td><b>${u.n}</b></td>
-                        <td><span class="rank-pill">${u.r}</span></td>
-                        <td>LVL ${RANKS.indexOf(u.r)}</td>
-                        <td><span style="color:#4ade80">● ACTIVE</span></td>
-                    </tr>
-                `).join('');
-            },
-
-            renderLogi() {
-                const b = document.getElementById('logi-body');
-                b.innerHTML = DB.manifests.map(m => `
-                    <tr>
-                        <td style="font-family:var(--font-mono)">${m.id}</td>
-                        <td style="font-weight:800; color:${m.t==='INBOUND'?'#4ade80':'#f87171'}">${m.t}</td>
-                        <td>${m.s}</td>
-                        <td>${m.q}</td>
-                        <td>${m.l}</td>
-                        <td>${m.at.slice(11,16)}</td>
-                    </tr>
-                `).join('') || '<tr><td colspan="6" style="text-align:center; padding:50px; opacity:0.3">NO_MANIFESTS</td></tr>';
+                `).join('') || '<tr><td colspan="6" style="text-align:center; padding:50px; opacity:0.2">MATRIX_EMPTY</td></tr>';
             },
 
             renderLedger() {
                 const b = document.getElementById('ledger-body');
-                let bal = 0;
-                b.innerHTML = DB.transactions.map(t => {
-                    bal += (parseFloat(t.cr) || 0) - (parseFloat(t.dr) || 0);
-                    return `
-                        <tr>
-                            <td>#${t.id}</td>
-                            <td>${t.d}</td>
-                            <td style="color:#f87171">${t.dr ? '-$'+t.dr : ''}</td>
-                            <td style="color:#4ade80">${t.cr ? '+$'+t.cr : ''}</td>
-                            <td style="color:#fff; font-weight:bold">$${bal.toLocaleString()}</td>
-                            <td>@${t.by}</td>
-                        </tr>
-                    `;
-                }).join('');
-            },
-
-            renderAudit() {
-                const b = document.getElementById('audit-body');
-                if(!b) return;
-                b.innerHTML = DB.logs.map(l => `
-                    <div class="log-row">
-                        <span class="log-ts">${l.t.slice(11,19)}</span>
-                        <span class="log-tag">[${l.tag}]</span>
-                        <span class="log-m">${l.m}</span>
-                        <span style="margin-left:auto; opacity:0.2">@${l.by}</span>
-                    </div>
+                b.innerHTML = STATE.ledger.map(tx => `
+                    <tr>
+                        <td style="font-size:11px">#${tx.id}</td>
+                        <td>${tx.desc}</td>
+                        <td>${tx.sku || '--'}</td>
+                        <td style="color:var(--m-error)">${tx.dr?'-$'+tx.dr:''}</td>
+                        <td style="color:var(--m-success)">${tx.cr?'+$'+tx.cr:''}</td>
+                        <td><button onclick="Logic.printReceipt('${tx.id}')">RECEIPT</button></td>
+                    </tr>
                 `).join('');
             },
 
-            /**
-             * MODAL FORMS
-             */
-            openModal(type) {
-                const t = document.getElementById('modal-target');
-                let h = '';
-                
-                switch(type) {
-                    case 'asset':
-                        h = `
-                            <h2 style="margin-bottom:35px; color:#fff; letter-spacing:-1px">Initialize Asset</h2>
-                            <div class="fg-2">
-                                <div class="f-unit"><label>Asset Name</label><input id="mi-n"></div>
-                                <div class="f-unit"><label>SKU Code</label><input id="mi-s"></div>
-                            </div>
-                            <div class="fg-2">
-                                <div class="f-unit"><label>Initial Quantity</label><input type="number" id="mi-q"></div>
-                                <div class="f-unit"><label>Unit Cost ($)</label><input type="number" id="mi-c"></div>
-                            </div>
-                            <div class="f-unit"><label>Clearance Level Required</label><select id="mi-r">${RANKS.map(r => `<option>${r}</option>`).join('')}</select></div>
-                            <button class="btn-primary" style="width:100%; padding:15px" onclick="Actions.addAsset()">Commit to Matrix</button>
-                        `;
-                        break;
-                    case 'staff':
-                        h = `
-                            <h2 style="margin-bottom:35px; color:#fff; letter-spacing:-1px">Recruit New Agent</h2>
-                            <div class="f-unit"><label>Full Legal Name</label><input id="ms-n"></div>
-                            <div class="fg-2">
-                                <div class="f-unit"><label>Operator ID</label><input id="ms-u"></div>
-                                <div class="f-unit"><label>Security Key</label><input type="password" id="ms-p"></div>
-                            </div>
-                            <div class="f-unit"><label>Rank Assignment</label><select id="ms-r">${RANKS.map(r => `<option>${r}</option>`).join('')}</select></div>
-                            <button class="btn-primary" style="width:100%; padding:15px" onclick="Actions.addStaff()">Authorize Promotion</button>
-                        `;
-                        break;
-                    case 'manifest':
-                        const skus = DB.inventory.map(a => `<option>${a.s}</option>`).join('');
-                        h = `
-                            <h2 style="margin-bottom:35px; color:#fff; letter-spacing:-1px">Supply Manifest</h2>
-                            <div class="f-unit"><label>Related Asset SKU</label><select id="mo-s">${skus}</select></div>
-                            <div class="fg-2">
-                                <div class="f-unit"><label>Manifest Type</label><select id="mo-t"><option>INBOUND</option><option>OUTBOUND</option></select></div>
-                                <div class="f-unit"><label>Quantity</label><input type="number" id="mo-q"></div>
-                            </div>
-                            <div class="f-unit"><label>Origin / Destination Point</label><input id="mo-l"></div>
-                            <button class="btn-primary" style="width:100%; padding:15px" onclick="Actions.addManifest()">Process Shipment</button>
-                        `;
-                        break;
-                    case 'tx':
-                        h = `
-                            <h2 style="margin-bottom:35px; color:#fff; letter-spacing:-1px">Ledger Entry</h2>
-                            <div class="f-unit"><label>Capital Entry Description</label><input id="mt-d"></div>
-                            <div class="fg-2">
-                                <div class="f-unit"><label>Debit (-)</label><input type="number" id="mt-dr" value="0"></div>
-                                <div class="f-unit"><label>Credit (+)</label><input type="number" id="mt-cr" value="0"></div>
-                            </div>
-                            <button class="btn-primary" style="width:100%; padding:15px" onclick="Actions.addTransaction()">Verify Entry</button>
-                        `;
-                        break;
-                }
-                
-                t.innerHTML = h + `<button style="width:100%; border:none; margin-top:15px; color:var(--text-dim); background:none" onclick="UI.closeModal()">ABORT_OPERATION</button>`;
-                document.getElementById('modal-layer').classList.add('on');
+            renderPersonnel() {
+                const b = document.getElementById('staff-body');
+                b.innerHTML = STATE.users.map(u => `
+                    <tr>
+                        <td style="font-family:var(--font-mono)">${u.id}</td>
+                        <td><b>${u.n}</b></td>
+                        <td><span class="rank-badge">${u.r}</span></td>
+                        <td style="font-size:11px">${u.since}</td>
+                        <td><button class="btn-danger" onclick="Logic.purge('agent', '${u.id}')">PURGE</button></td>
+                    </tr>
+                `).join('');
             },
 
-            closeModal() {
-                document.getElementById('modal-layer').classList.remove('on');
+            renderLogs() {
+                const b = document.getElementById('audit-body');
+                b.innerHTML = STATE.logs.map(l => `<div>${l}</div>`).join('');
+            },
+
+            renderDashBars() {
+                const b = document.getElementById('dash-bars');
+                b.innerHTML = '';
+                for(let i=0; i<20; i++){
+                    const h = Math.random()*90 + 10;
+                    b.innerHTML += `<div class="bar" style="height:${h}%"></div>`;
+                }
+            },
+
+            log(tag, msg) {
+                STATE.logs.unshift(`[${new Date().toLocaleTimeString()}] ${tag}: ${msg} (@${STATE.activeUser?STATE.activeUser.u:'SYS'})`);
+                if(STATE.logs.length > 500) STATE.logs.pop();
+                this.save();
+            },
+
+            notify(m) {
+                const e = document.getElementById('auth-msg');
+                e.innerText = m; e.classList.remove('hide');
+                setTimeout(() => e.classList.add('hide'), 3000);
+            },
+
+            updateClock() {
+                setInterval(() => {
+                    const cl = document.getElementById('luna-clock');
+                    if(cl) cl.innerText = new Date().toLocaleString() + " // LUNA_STABLE";
+                }, 1000);
+            },
+
+            runDiagnostics() {
+                const size = (JSON.stringify(STATE).length / 1024).toFixed(2);
+                const perc = (size / 5120) * 100;
+                const dSize = document.getElementById('diag-size');
+                const dBar = document.getElementById('diag-bar');
+                if(dSize) dSize.innerText = size + " KB";
+                if(dBar) dBar.style.width = Math.min(perc, 100) + "%";
+            },
+
+            exportData() {
+                const blob = new Blob([JSON.stringify(STATE, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = `LUNA_SNAPSHOT_${Date.now()}.json`;
+                a.click();
+            },
+
+            wipeLogs() {
+                if(RANKS.indexOf(STATE.activeUser.r) < 13) return alert("OWNER_CLEARANCE_REQUIRED");
+                if(confirm("Wipe all telemetry data?")) {
+                    STATE.logs = [];
+                    this.save();
+                    this.log("SYS_WIPE", "Audit trail purged by Owner.");
+                }
+            },
+
+            shutdown() {
+                if(confirm("TERMINATE CONNECTION?")) location.reload();
             }
         };
 
-        /**
-         * BUSINESS LOGIC CONTROLLERS
-         */
-        const Actions = {
-            addAsset() {
-                const n = document.getElementById('mi-n').value;
-                const s = document.getElementById('mi-s').value;
-                const q = parseInt(document.getElementById('mi-q').value);
-                const c = parseFloat(document.getElementById('mi-c').value);
-                const r = document.getElementById('mi-r').value;
-
-                if (!n || !s) return;
-                DB.inventory.push({ n, s, q, c, r });
-                Core.log("ASSET_INIT", `Asset ${s} registered in Matrix by ${CURRENT_USER.u}`);
-                this.finalize();
-            },
-
-            addStaff() {
-                const n = document.getElementById('ms-n').value;
-                const u = document.getElementById('ms-u').value;
-                const p = document.getElementById('ms-p').value;
-                const r = document.getElementById('ms-r').value;
-
-                DB.users.push({
-                    id: 'IX-' + Math.random().toString(16).slice(2,6).toUpperCase(),
-                    n, u, p, r, c: new Date().toISOString().slice(0,10)
-                });
-                Core.log("AGENT_RECRUIT", `Agent ${u} promoted to ${r} by ${CURRENT_USER.u}`);
-                this.finalize();
-            },
-
-            addManifest() {
-                const s = document.getElementById('mo-s').value;
-                const t = document.getElementById('mo-t').value;
-                const q = parseInt(document.getElementById('mo-q').value);
-                const l = document.getElementById('mo-l').value;
-
-                const asset = DB.inventory.find(x => x.s === s);
-                if (t === 'INBOUND') asset.q += q;
-                else {
-                    if (asset.q < q) return alert("INSUFFICIENT_STOCK_VOLUME");
-                    asset.q -= q;
-                }
-
-                DB.manifests.push({
-                    id: 'MN-' + Math.random().toString(36).slice(2,7).toUpperCase(),
-                    s, t, q, l, at: new Date().toISOString()
-                });
-                Core.log("LOGISTICS_EXEC", `${t} manifest for ${s} processed.`);
-                this.finalize();
-            },
-
-            addTransaction() {
-                const d = document.getElementById('mt-d').value;
-                const dr = document.getElementById('mt-dr').value;
-                const cr = document.getElementById('mt-cr').value;
-
-                DB.transactions.push({
-                    id: Date.now().toString().slice(-6),
-                    d, dr, cr, by: CURRENT_USER.u
-                });
-                Core.log("LEDGER_WRITE", `New entry recorded: ${d}`);
-                this.finalize();
-            },
-
-            finalize() {
-                Core.save();
-                UI.closeModal();
-                UI.renderAll();
+        const Router = {
+            go(v, el) {
+                document.querySelectorAll('.view').forEach(x => x.classList.add('hide'));
+                document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+                document.getElementById('v-'+v).classList.remove('hide');
+                el.classList.add('active');
             }
         };
 
-        // Initialize Core on Load
-        window.onload = () => Core.init();
+        const Modal = {
+            open(type) {
+                const mount = document.getElementById('modal-mount');
+                let html = `<h1>Initialize ${type}</h1><div class="spacer"></div>`;
+                
+                if(type === 'asset') {
+                    html += `
+                        <div class="grid-2">
+                            <div><label class="card-label">Description</label><input id="f1" style="width:100%"></div>
+                            <div><label class="card-label">SKU</label><input id="f2" style="width:100%"></div>
+                        </div><div class="spacer"></div>
+                        <div class="grid-2">
+                            <div><label class="card-label">Cost ($)</label><input id="f3" type="number" style="width:100%"></div>
+                            <div><label class="card-label">Price ($)</label><input id="f4" type="number" style="width:100%"></div>
+                        </div><div class="spacer"></div>
+                        <div><label class="card-label">Initial Qty</label><input id="f5" type="number" style="width:100%"></div>
+                    `;
+                } else {
+                    html += `
+                        <div class="f-unit"><label class="card-label">Legal Name</label><input id="f1" style="width:100%"></div><div class="spacer"></div>
+                        <div class="grid-2">
+                            <div><label class="card-label">Operator ID</label><input id="f2" style="width:100%"></div>
+                            <div><label class="card-label">Security Key</label><input id="f3" type="password" style="width:100%"></div>
+                        </div><div class="spacer"></div>
+                        <label class="card-label">Assigned Rank</label>
+                        <select id="f4" style="width:100%">${RANKS.map(r => `<option>${r}</option>`).join('')}</select>
+                    `;
+                }
+                
+                html += `<div class="spacer"></div><button class="btn-luna" style="width:100%" onclick="Logic.commit('${type}')">COMMIT_TO_DATABASE</button>`;
+                mount.innerHTML = html + `<button style="background:none; border:none; margin-top:20px; color:var(--m-text-dim); width:100%" onclick="Modal.close()">ABORT_OPERATION</button>`;
+                document.getElementById('modal-shade').classList.add('on');
+            },
+
+            viewTire(sku) {
+                const tire = STATE.inventory.find(x => x.sku === sku);
+                const sales = STATE.ledger.filter(x => x.sku === sku);
+                const totalSold = sales.reduce((a,c) => a + (c.qty||1), 0);
+                const mount = document.getElementById('modal-mount');
+                
+                mount.innerHTML = `
+                    <div class="flex-bet">
+                        <h1>${tire.name}</h1>
+                        <span class="rank-badge">${sku}</span>
+                    </div>
+                    <div class="spacer"></div>
+                    <div class="grid-2">
+                        <div class="glass-card" style="padding:20px">
+                            <div class="card-label">Sales Frequency</div>
+                            <div class="card-value" style="font-size:24px">${totalSold} Units</div>
+                        </div>
+                        <div class="glass-card" style="padding:20px">
+                            <div class="card-label">Net Profit</div>
+                            <div class="card-value" style="font-size:24px; color:var(--m-success)">$${(totalSold * (tire.price - tire.cost)).toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div class="spacer"></div>
+                    <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:24px; max-height:200px; overflow-y:auto">
+                        <div class="card-label">Deep Sales Ledger</div>
+                        ${sales.map(s => `
+                            <div class="flex-bet" style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:12px">
+                                <span>Sold ${s.qty||1} unit(s) @ $${s.cr}</span>
+                                <span style="color:var(--m-text-dim)">by @${s.by}</span>
+                            </div>
+                        `).join('') || '<p style="font-size:11px; margin-top:10px">NO_SALES_RECORDED</p>'}
+                    </div>
+                    <div class="spacer"></div>
+                    <div class="flex-bet" style="gap:20px">
+                        <input id="sale-qty" type="number" value="1" style="width:80px">
+                        <button class="btn-luna" style="flex:1" onclick="Logic.executeSale('${sku}')">EXECUTE_SALE</button>
+                    </div>
+                `;
+                document.getElementById('modal-shade').classList.add('on');
+            },
+
+            close() { document.getElementById('modal-shade').classList.remove('on'); }
+        };
+
+        const Logic = {
+            commit(type) {
+                const f1 = document.getElementById('f1').value;
+                const f2 = document.getElementById('f2').value;
+                const f3 = document.getElementById('f3').value;
+                const f4 = document.getElementById('f4').value;
+                
+                if(type === 'asset') {
+                    STATE.inventory.push({
+                        name: f1, sku: f2, cost: parseFloat(f3), price: parseFloat(f4), q: parseInt(document.getElementById('f5').value)
+                    });
+                } else {
+                    STATE.users.push({
+                        n: f1, u: f2, p: f3, r: f4, 
+                        id: 'AG-'+Math.random().toString(36).slice(2,6).toUpperCase(),
+                        since: new Date().toLocaleDateString()
+                    });
+                }
+                App.log("DATA_ADD", `Initialized ${type}: ${f1}`);
+                Modal.close();
+                App.save();
+            },
+
+            executeSale(sku) {
+                const tire = STATE.inventory.find(x => x.sku === sku);
+                const q = parseInt(document.getElementById('sale-qty').value);
+                if(tire.q < q) return alert("INSUFFICIENT_STOCK");
+                
+                tire.q -= q;
+                const id = Math.floor(Math.random()*999999);
+                STATE.ledger.push({
+                    id, desc: `Sale: ${tire.name} (x${q})`,
+                    sku, cr: tire.price * q, by: STATE.activeUser.u, at: Date.now(), qty: q
+                });
+                
+                App.log("SALE", `Sold ${q} unit(s) of ${sku}`);
+                Modal.close();
+                App.save();
+            },
+
+            purge(type, id) {
+                if(RANKS.indexOf(STATE.activeUser.r) < 6) return alert("INSUFFICIENT_PRIVILEGES");
+                if(!confirm("ARE YOU SURE YOU WANT TO PURGE THIS RECORD?")) return;
+                
+                if(type === 'tire') STATE.inventory = STATE.inventory.filter(x => x.sku !== id);
+                else STATE.users = STATE.users.filter(x => x.id !== id);
+                
+                App.log("PURGE", `Deleted ${type} record: ${id}`);
+                App.save();
+            },
+
+            printReceipt(id) {
+                const tx = STATE.ledger.find(x => x.id == id);
+                const out = document.getElementById('receipt-output');
+                out.innerHTML = `
+                    <div style="text-align:center">
+                        <h1 style="margin:0">INVENTORY LUNA OS</h1>
+                        <p>TERMINAL SALES RECEIPT // TXN #${tx.id}</p>
+                    </div>
+                    <hr style="border:none; border-top:1px dashed #000; margin:20px 0">
+                    <p><b>TIMESTAMP:</b> ${new Date(tx.at).toLocaleString()}</p>
+                    <p><b>OPERATOR:</b> ${tx.by}</p>
+                    <p><b>DESCRIPTION:</b> ${tx.desc}</p>
+                    <p><b>SKU REF:</b> ${tx.sku || 'N/A'}</p>
+                    <hr style="border:none; border-top:1px dashed #000; margin:20px 0">
+                    <h2 style="text-align:right">TOTAL: $${(tx.cr || tx.dr).toLocaleString()}</h2>
+                    <div style="text-align:center; margin-top:60px">
+                        <p style="font-size:10px">VERIFIED BY IX-CORE LUNA ENGINE</p>
+                        <p style="font-size:9px">MOONLIGHT PROTOCOL V10.0</p>
+                    </div>
+                `;
+                window.print();
+            }
+        };
+
+        // SYSTEM BOOT
+        window.onload = () => App.init();
     </script>
 </body>
 </html>
